@@ -1,0 +1,11 @@
+{% extends "header_footer.html" %}
+{% block content %}
+    <h1>Page Count</h1>
+    <p>
+    {{ message }}
+    </p>
+    <h2>Your messages:</h2>
+    {% for m in messages %}
+    <div><p><i>{{ m }}</i></p></div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,76 @@
+:root {
+    --cardinnerborderlight: 3px solid #AAA;
+    --cardinnerborderdark: 3px solid black;
+}
+
+body{ color: #CC0033; background: #339900; }
+.block{ display:block; }
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+.card {
+    border-radius: 4px; 
+    /* This "shrink-wraps" the card to be as small as its contents */
+    display: inline-block;
+    border: 0px solid black;
+    text-align: center;
+    padding: 2px;
+    margin: 10px;
+    background: #FFF;
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5);
+    transition: box-shadow 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
+    cursor: grab;
+} 
+
+/* When clicked, make the shadow larger as if lifting */
+.card.ui-draggable-dragging {
+    cursor: grabbing;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.cardtopleft{ 
+    border-right: var(--cardinnerborderlight);
+    border-bottom: var(--cardinnerborderlight);
+    height:70px;
+    width:70px;
+    /* to vertically center text */
+    line-height:80px;
+    float: left; 
+    background: #DDDDDD;
+    font-size: 45px;
+    margin-right: 3px;
+}
+.cardtopright{ 
+    border-left: var(--cardinnerborderlight);
+    border-bottom: var(--cardinnerborderlight);
+    height:70px; 
+    width:70px; 
+    /* to vertically center text */
+    line-height:80px;
+    margin-left: 73px;
+    background: #DDDDDD;
+    font-size: 45px;
+}
+.cardtopleftknown{
+    border-right: var(--cardinnerborderdark);
+    border-bottom: var(--cardinnerborderdark);
+    background: white;
+}
+.cardtoprightknown{
+    border-left: var(--cardinnerborderdark);
+    border-bottom: var(--cardinnerborderdark);
+    background: white;
+}
+.cardbottom{ text-align: center; height:70px }
