@@ -39,7 +39,7 @@ def pagecount():
 @app.route('/hanabisample')
 @login_required
 def hanabisample():
-    return render_template('hanabisample.html', title='Hanabi Sample Board')
+    return render_template('hanabisample.html', title='Hanabi Sample Board', socketio_namespace='/hanabisample')
 
 #########
 # Login #
