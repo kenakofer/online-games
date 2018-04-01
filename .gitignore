@@ -1,0 +1,10 @@
+/config.py
+*.pyc
+*.db
+*.wsgi
+*.swp
+*.back
+/venv
+/venv
+/activate
+__pycache__
