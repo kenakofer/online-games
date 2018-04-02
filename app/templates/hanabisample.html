@@ -2,14 +2,14 @@
 
 {% block head %}
     <link rel='stylesheet' href='{{ url_for("static",filename="styles/hanabi.css") }}'>
-    <!-- For draggable divs -->
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script>
-    </script>
+
+    <!-- For jquery ui-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <!-- For knockout.js -->
-    <script src="{{ url_for("static",filename="js/knockout-3.4.2.js") }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+
     <script>
     // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
     $( document ).ready(function() {
