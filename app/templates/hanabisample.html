@@ -1,29 +1,82 @@
 {% extends "header_footer.html" %}
+
 {% block head %}
-<link rel='stylesheet' href='{{ url_for("static",filename="styles/hanabi.css") }}'>    
-<!-- For draggable divs -->
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<style>
-  #draggable { width: 150px; height: 150px; padding: 0.5em; }
-</style>
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script>
-  $( function() {
-    $( ".draggable" ).draggable({revert: true, stack:".draggable" });
-  } );
-</script>
+    <link rel='stylesheet' href='{{ url_for("static",filename="styles/hanabi.css") }}'>
+    <!-- For draggable divs -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+    </script>
+    <!-- For knockout.js -->
+    <script src="{{ url_for("static",filename="js/knockout-3.4.2.js") }}"></script>
+    <script>
+    // This is a simple *viewmodel* - JavaScript that defines the data and behavior of your UI
+    $( document ).ready(function() {
+        function Card(id, position, letter, number){
+            var self = this;
+            self.card_id = ko.observable(id);
+            self.card_position = ko.observable(position);
+            self.card_letter = ko.observable(letter);
+            self.card_number = ko.observable(number);
+        };
+        function AppViewModel() {
+            var self = this;
+            self.cards = ko.observableArray([
+                new Card(0, 'P1C1', 'B', 3),
+                new Card(1, 'P1C2', '', 1),
+                new Card(2, 'P1C3', 'B', ''),
+                new Card(3, 'P1C4', '', ''),
+                new Card(4, 'P1C4', 'A', '5'),
+            ])
+            /* 
+            self.fullName = ko.computed(function() {
+                return self.card_letter() + self.card_number();
+            }, this);
+            */ 
+            /*
+            self.capitalize_letter = function() {
+                var currentVal = self.card_letter();
+                self.card_letter(currentVal.toUpperCase());
+            };    
+            */
+        }
+        var apm = new AppViewModel()
+        // Activates knockout.js
+        ko.applyBindings(apm);
+
+        // For socket events
+        socket.on('CARD DATA', function(data) {
+          which_card = apm.cards()[data.card_id]
+          for (field in data){
+              console.log('setting field '+field)
+              which_card[field](data[field]);
+          }
+        });
+
+        // For draggability
+        $( function() {
+          $( ".draggable" ).draggable({revert: "invalid", stack:".draggable" });
+        } );
+	$( ".droppable" ).droppable({
+	  classes: {
+	    "ui-droppable-active": "ui-state-active",
+	    "ui-droppable-hover": "ui-state-hover",
+	  }
+	});
+    });
+    </script>
 {% endblock %}
 
 {% block content %}
-<div class="card noselect ui-widget-content draggable"> 
-    <div class="cardtopleft cardtopleftknown">B</div>
-    <div class="cardtopright"></div>
-    <div class="cardbottom">Could be:</div>
-</div>
-<div class="card noselect ui-widget-content draggable"> 
-    <div class="cardtopleft"></div>
-    <div class="cardtopright cardtoprightknown">5</div>
-    <div class="cardbottom">Could be:</div>
-</div>
+    <div data-bind="foreach: cards">
+        <div class="card noselect ui-widget-content draggable" data-bind="attr: {'id': 'card'+card_id()}"> 
+            <div class="cardtopleft" data-bind="text: $data.card_letter"></div>
+            <div class="cardtopright" data-bind="text: $data.card_number"></div>
+            <div class="cardbottom">Could be:</div>
+        </div>
+    </div>
+    <div class="drop_pile droppable">
+        drop here
+    </div>
 {% endblock %}

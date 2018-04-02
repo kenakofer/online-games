@@ -4,6 +4,13 @@
 }
 
 body{ color: #CC0033; background: #339900; }
+.drop_pile {
+    background: #4A0;
+    color: #AF5;
+    border-radius: 6px;
+    width: 160px;
+    height: 160px;
+}
 .block{ display:block; }
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
@@ -73,4 +80,4 @@ body{ color: #CC0033; background: #339900; }
     border-bottom: var(--cardinnerborderdark);
     background: white;
 }
-.cardbottom{ text-align: center; height:70px }
+.cardbottom{ text-align: center; height:73px }

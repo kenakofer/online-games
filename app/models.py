@@ -11,7 +11,7 @@ class User(UserMixin, db.Model):
 
 
     def __repr__(self):
-        return '<User {}>'.format(self.email)
+        return '{} (id={})'.format(self.fullname, self.id)
 
 @login.user_loader
 def load_user(id):
