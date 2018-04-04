@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
     <!-- For knockout.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
 
@@ -24,10 +25,10 @@
             var self = this;
             self.cards = ko.observableArray([
                 new Card(0, 'P1C1', 'B', 3),
-                new Card(1, 'P1C2', '', 1),
-                new Card(2, 'P1C3', 'B', ''),
-                new Card(3, 'P1C4', '', ''),
-                new Card(4, 'P1C4', 'A', '5'),
+                //new Card(1, 'P1C2', '', 1),
+                //new Card(2, 'P1C3', 'B', ''),
+                //new Card(3, 'P1C4', '', ''),
+                //new Card(4, 'P1C4', 'A', '5'),
             ])
             /* 
             self.fullName = ko.computed(function() {
@@ -48,10 +49,30 @@
         // For socket events
         socket.on('CARD DATA', function(data) {
           which_card = apm.cards()[data.card_id]
+          if (!which_card){
+            console.log("No such card: "+data.card_id);
+            return;
+          }
           for (field in data){
               console.log('setting field '+field)
               which_card[field](data[field]);
           }
+        });
+
+        socket.on('CARD MOVE', function(data) {
+            cid = data.card_id
+            position = $("#"+data.table_pos).position()
+            console.log('Moving card...')
+            draggable = $("#"+data.card_id)
+            console.log(draggable)
+            console.log(position)
+            draggable.animate(
+                    {left:position.left+6, top:position.top+20},
+                    {duration:500}
+                    );
+            if (data.table_pos == "trash")
+                draggable.draggable('destroy')
+
         });
 
         // For draggability
@@ -62,7 +83,16 @@
 	  classes: {
 	    "ui-droppable-active": "ui-state-active",
 	    "ui-droppable-hover": "ui-state-hover",
-	  }
+	  },
+            drop: function( event, ui ) {
+                card_id = ui.draggable.context.id;
+                place_id = event.target.id;
+                message = "I dropped "+card_id+" in place "+place_id;
+                console.log(message);
+                //console.log(event);
+                //console.log(ui);
+                socket.emit("CARD MOVE", {card_id: card_id, place_id: place_id});
+            }
 	});
     });
     </script>
@@ -70,13 +100,17 @@
 
 {% block content %}
     <div data-bind="foreach: cards">
-        <div class="card noselect ui-widget-content draggable" data-bind="attr: {'id': 'card'+card_id()}"> 
+        <div class="card noselect ui-widget-content draggable" style='top:600;' data-bind="attr: {'id': 'card'+card_id()}"> 
             <div class="cardtopleft" data-bind="text: $data.card_letter"></div>
             <div class="cardtopright" data-bind="text: $data.card_number"></div>
             <div class="cardbottom">Could be:</div>
         </div>
     </div>
-    <div class="drop_pile droppable">
-        drop here
+    <div class="drop_pile droppable" id='P1C1', style='left:30;top:80' >P1C1</div>
+    <div class="drop_pile droppable" id='P1C2', style='left:200;top:80'>P1C4</div>
+    <div class="drop_pile droppable" id='P1C3', style='left:370;top:80'>P1C4</div>
+    <div class="drop_pile droppable" id='P1C4', style='left:540;top:80'>P1C4</div>
+    <div class="drop_pile droppable" id='trash' style='left:30;top:270'>
+        Trash
     </div>
 {% endblock %}

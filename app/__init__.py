@@ -13,4 +13,4 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 socketio = SocketIO(app)
 
-from app import routes, models, shell_setup, sockets
+from app import routes, models, shell_setup, sockets, hanabi

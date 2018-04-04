@@ -4,11 +4,7 @@
         <!-- For socket stuff -->
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
-        var socket = io.connect("https://games.gc.my{{ socketio_namespace }}");
-        socket.on('connect', function() {
-            socket.emit('my event', {data: 'I\'m connected! Namespace: {{ socketio_namespace }}'});
-            console.log('I guess I\'m connected! Namespace: {{ socketio_namespace }}');
-        });
+var socket = io("https://games.gc.my{{ socketio_namespace }}")
         // Code to enable use of "*" as catch all event without blocking other calls
         var onevent = socket.onevent;
         socket.onevent = function (packet) {

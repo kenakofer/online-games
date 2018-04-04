@@ -6,10 +6,14 @@
 body{ color: #CC0033; background: #339900; }
 .drop_pile {
     background: #4A0;
-    color: #AF5;
+    color: #BF6;
     border-radius: 6px;
     width: 160px;
-    height: 160px;
+    height: 177px;
+    position: absolute;
+    z-index: -1000000;
+    padding-left: 5px;
+    padding-top: 3px;
 }
 .block{ display:block; }
 .noselect {
@@ -28,21 +32,22 @@ body{ color: #CC0033; background: #339900; }
     border: 0px solid black;
     text-align: center;
     padding: 2px;
-    margin: 10px;
+    margin: 0px;;
     background: #FFF;
     /* Add shadows to create the "card" effect */
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5);
     transition: box-shadow 0.3s;
+    position: absolute;
 }
 
 /* On mouse-over, add a deeper shadow */
-.card:hover {
+.ui-draggable:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
     cursor: grab;
 } 
 
 /* When clicked, make the shadow larger as if lifting */
-.card.ui-draggable-dragging {
+.ui-draggable-dragging {
     cursor: grabbing;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }

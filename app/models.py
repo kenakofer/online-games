@@ -6,9 +6,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     username = db.Column(db.String(32), index=True, unique=True)
     fullname = db.Column(db.String(128), index=True, nullable=False)
-
     pagecount = db.Column(db.Integer, default=0, nullable=False)
-
+    tmp = {}
 
     def __repr__(self):
         return '{} (id={})'.format(self.fullname, self.id)

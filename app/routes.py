@@ -5,6 +5,7 @@ from math import floor
 from .forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
+from app.hanabi import hanabi_games, HanabiGame
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
 google_login = GoogleLogin(app)
@@ -40,6 +41,40 @@ def pagecount():
 @login_required
 def hanabisample():
     return render_template('hanabisample.html', title='Hanabi Sample Board', socketio_namespace='/hanabisample')
+
+@app.route('/hanabi/<player_num>/<gameid>')
+@login_required
+def hanabi(player_num, gameid):
+    print("{} is requesting to join hanabi gameid {}".format(current_user.fullname, gameid))
+    gameid = str(gameid)
+    # If the game doesn't already exist, create it!
+    if not gameid in hanabi_games:
+        hanabi_games[gameid] = HanabiGame(int(player_num), gameid)
+        print("Created gameid {}".format(gameid))
+    # See if we are already in the player list
+    game = hanabi_games[gameid]
+    if current_user in game.players:
+        print("Player is returning")
+    # Otherwise, see if it can take more players
+    elif (len(game.players) < game.player_count):
+        print("Player is new")
+        index = len(game.players)
+        current_user.tmp[gameid] = {'player_index':index}
+        game.players.append(current_user)
+    else:
+        return "The game {} already has {} players".format(gameid, game.player_count)
+
+    print("Taking {} player index".format(current_user.tmp[gameid]['player_index'])) #Put the user into the game room
+    return render_template(
+            'hanabi.html', 
+            title='Hanabi Board', 
+            socketio_namespace='/hanabi',
+            player_index=current_user.tmp[gameid]['player_index'],
+            player_count=game.player_count,
+            hand_size=game.hand_size,
+            letters=HanabiGame.letters,
+            gameid=gameid,
+            )
 
 #########
 # Login #
