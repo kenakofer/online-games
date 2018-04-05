@@ -39,7 +39,7 @@ class HanabiGame:
 
     def new_recent_message(self,message):
         print("Adding message: "+str(message))
-        recent_messages.append(message)
+        self.recent_messages.append(message)
 
 
     def draw_card(self, player, pi=None):
@@ -65,6 +65,7 @@ class HanabiGame:
             return None
         if not self.player_turn == i:
             print('Player {}, index {} can not play card {}: it is turn of player {}'.format(player, i, card, self.player_turn))
+            return None
         # Before we return, make sure we pass along to the next player
         self.next_turn();
         # Reveal the card to all
@@ -91,12 +92,15 @@ class HanabiGame:
         if not str(i) == card.card_pos:
             print('Player {} can not trash card {}: not in hand'.format(player, card))
             return None
-        # Get the corresponding pile
-            card.change_pos('TRASH')
-            card.reveal()
-            self.gain_clue()
-            self.new_recent_message("Player {}, index {} trashed card {}".format(player, i, card))
+        if not self.player_turn == i:
+            print('Player {}, index {} can not trash card {}: it is turn of player {}'.format(player, i, card, self.player_turn))
             return None
+        # Get the corresponding pile
+        card.change_pos('TRASH')
+        card.reveal()
+        self.gain_clue()
+        self.new_recent_message("Player {}, index {} trashed card {}".format(player, i, card))
+        return None
 
     def lose_strike(self):
         self.strikes_remaining -= 1
