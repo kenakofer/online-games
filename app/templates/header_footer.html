@@ -15,7 +15,8 @@ var socket = io("https://games.gc.my{{ socketio_namespace }}")
         };
         // Note that this is run AFTER a more specific event handler
         socket.on("*",function(event,data) {
-            console.log('Server event: '+JSON.stringify(event)+'\n    has data: '+JSON.stringify(data));
+            console.log('Server event: '+JSON.stringify(event)+'\n    has data:');
+            console.log(data);
         });
         </script>
 

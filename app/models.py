@@ -1,5 +1,5 @@
 from app import db, login
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -7,11 +7,22 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(32), index=True, unique=True)
     fullname = db.Column(db.String(128), index=True, nullable=False)
     pagecount = db.Column(db.Integer, default=0, nullable=False)
-    tmp = {}
 
     def __repr__(self):
         return '{} (id={})'.format(self.fullname, self.id)
 
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return self.id
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+def get_stable_user():
+    return User.query.get(current_user.id)

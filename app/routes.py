@@ -4,7 +4,7 @@ from flask_oauth2_login import GoogleLogin
 from math import floor
 from .forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, get_stable_user
 from app.hanabi import hanabi_games, HanabiGame
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
@@ -45,7 +45,9 @@ def hanabisample():
 @app.route('/hanabi/<player_num>/<gameid>')
 @login_required
 def hanabi(player_num, gameid):
-    print("{} is requesting to join hanabi gameid {}".format(current_user.fullname, gameid))
+    # Current_user now will be the same object as current_user, so we get user here
+    user = get_stable_user()
+    print("{} is requesting to join hanabi gameid {}".format(user, gameid))
     gameid = str(gameid)
     # If the game doesn't already exist, create it!
     if not gameid in hanabi_games:
@@ -53,23 +55,24 @@ def hanabi(player_num, gameid):
         print("Created gameid {}".format(gameid))
     # See if we are already in the player list
     game = hanabi_games[gameid]
-    if current_user in game.players:
+    print("The users in the game already are {}".format(game.players))
+    if user in game.players:
         print("Player is returning")
     # Otherwise, see if it can take more players
     elif (len(game.players) < game.player_count):
         print("Player is new")
         index = len(game.players)
-        current_user.tmp[gameid] = {'player_index':index}
-        game.players.append(current_user)
+        game.player_index[user] = index
+        game.players.append(user)
     else:
         return "The game {} already has {} players".format(gameid, game.player_count)
 
-    print("Taking {} player index".format(current_user.tmp[gameid]['player_index'])) #Put the user into the game room
+    print("Taking {} player index".format(game.player_index[user])) #Put the user into the game room
     return render_template(
             'hanabi.html', 
             title='Hanabi Board', 
             socketio_namespace='/hanabi',
-            player_index=current_user.tmp[gameid]['player_index'],
+            player_index=game.player_index[user],
             player_count=game.player_count,
             hand_size=game.hand_size,
             letters=HanabiGame.letters,
