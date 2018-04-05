@@ -1,5 +1,5 @@
 from app import socketio
-from flask_socketio import emit
+from flask_socketio import emit, join_room, leave_room
 from flask_login import current_user
 from app.models import get_stable_user
 from time import sleep
@@ -42,6 +42,10 @@ def update_request(data):
     g = hanabi_games[data['gameid']]
     emit('UPDATE INFO', g.get_full_update(current_user))
 
+@socketio.on('JOIN ROOM', namespace='/hanabi')
+def join(data):
+    join_room(data['room'])
+
 # The client tells us that they moved a card. We decide if it's legal and what the implications are
 @socketio.on('CARD MOVE', namespace='/hanabi')
 def card_move(data):
@@ -53,9 +57,12 @@ def card_move(data):
     if data['place_id']=="TRASH":
         result = g.trash_card(get_stable_user(), g.card_from_id(data['card_id']))
 
+    # At the moment, just have the clients request their own individual updates
+    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=g.gameid)
+
     # At the moment, just update the client with all the data, whether they
     # need/want it or not
-    emit('UPDATE INFO', g.get_full_update(get_stable_user()))
+    # emit('UPDATE INFO', g.get_full_update(get_stable_user()))
 
     # TODO other locations
 

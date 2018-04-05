@@ -48,7 +48,7 @@ $( document ).ready(function() {
 	pos_to_push.push(new TablePosition('DECK',{left:x,top:y}));
 	x+=170;
 	pos_to_push.push(new TablePosition('PLAY',{left:x,top:y}));
-	
+
 	ko.utils.arrayPushAll(self.table_positions, pos_to_push);
 
     }
@@ -112,6 +112,10 @@ $( document ).ready(function() {
     // For socket events
     socket.on('connect', function() {
 	request_update();
+        socket.emit('JOIN ROOM', {room:template_gameid});
+    });
+    socket.on('SHOULD REQUEST UPDATE', function(data){
+       request_update();
     });
     socket.on('UPDATE INFO', function(data) {
 	console.log('UPDATE INFO gave data: ');
@@ -150,7 +154,7 @@ $( document ).ready(function() {
 
     $( "#PLAY" ).addClass("droppable");
     $( "#TRASH" ).addClass("droppable");
-      
+
     $( ".droppable" ).droppable({
       classes: {
 	"ui-droppable-active": "ui-state-active",

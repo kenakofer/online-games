@@ -26,7 +26,7 @@ body{ color: #CC0033; background: #339900; }
                                   supported by Chrome and Opera */
 }
 .card {
-    border-radius: 4px; 
+    border-radius: 4px;
     /* This "shrink-wraps" the card to be as small as its contents */
     display: inline-block;
     border: 0px solid black;
@@ -42,37 +42,37 @@ body{ color: #CC0033; background: #339900; }
 
 .ui-draggable {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
-} 
+}
 /* On mouse-over, add a deeper shadow */
 .ui-draggable:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
     cursor: grab;
-} 
+}
 
 
 /* When clicked, make the shadow larger as if lifting */
 .ui-draggable-dragging {
     cursor: grabbing;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); 
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
-.cardtopleft{ 
+.cardtopleft{
     border-right: var(--cardinnerborderlight);
     border-bottom: var(--cardinnerborderlight);
     height:70px;
     width:70px;
     /* to vertically center text */
     line-height:80px;
-    float: left; 
+    float: left;
     background: #DDDDDD;
     font-size: 45px;
     margin-right: 3px;
 }
-.cardtopright{ 
+.cardtopright{
     border-left: var(--cardinnerborderlight);
     border-bottom: var(--cardinnerborderlight);
-    height:70px; 
-    width:70px; 
+    height:70px;
+    width:70px;
     /* to vertically center text */
     line-height:80px;
     margin-left: 73px;
