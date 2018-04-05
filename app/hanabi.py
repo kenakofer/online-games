@@ -100,6 +100,7 @@ class HanabiGame:
         card.reveal()
         self.gain_clue()
         self.new_recent_message("Player {}, index {} trashed card {}".format(player, i, card))
+        self.next_turn()
         return None
 
     def lose_strike(self):

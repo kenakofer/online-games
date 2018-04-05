@@ -69,16 +69,19 @@ $( document ).ready(function() {
 	    console.log("No such card: "+cid);
 	}
     };
+    var card_z_pos = 2;
     move_card = function(apm_card, server=false) {
 	draggable = $("#"+apm_card.card_id());
 	posid = "#"+apm_card.card_position();
 	console.log('Moving card '+apm_card.card_id()+' to posid '+posid);
 	position = $("#"+apm_card.card_position()).position();
+        draggable.css({"z-index": card_z_pos});
+        card_z_pos += 2;
 	draggable.animate(
 		{left:position.left+6, top:position.top+20},
 		{duration:500}
 		);
-        if (server){
+        if (true){
             // If the server puts the card in DECK, TRASH, a play pile, or
             // another players hand, destroy the draggability.
             // Equivalently, if the server does NOT place the card in
@@ -123,7 +126,8 @@ $( document ).ready(function() {
     socket.on('UPDATE INFO', function(data) {
 	console.log('UPDATE INFO gave data: ');
         console.log(data);
-        //Turn change
+
+        // On turn change, move the indicator
         if (data.player_turn != apm.player_turn()){
             turn = data.player_turn
             apm.player_turn(turn);
@@ -145,6 +149,7 @@ $( document ).ready(function() {
 		//TODO does this cause knockout updates if values don't change?
 		apm_card.card_letter(card.card_letter || "");
 		apm_card.card_number(card.card_number || "");
+                // This is commented because we need the server to move cards to trash that have just been placed there, so that their draggability can be destroyed.
                 if (card.card_pos != undefined && apm_card.card_position() != card.card_pos){
                     apm_card.card_position(card.card_pos || "");
                     move_card(apm_card, server=true);
