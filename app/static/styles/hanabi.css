@@ -16,6 +16,25 @@ body{ color: #CC0033; background: #339900; }
     padding-left: 5px;
     padding-top: 3px;
 }
+@keyframes drop_pile_dragging {
+    from {background-color: #8B6;}
+    to   {background-color: #5A3;}
+}
+.drop_pile.ui-state-active{
+    color: #EFE;
+    background: #5A3;
+    border: 2px solid #474;
+    animation-name: drop_pile_dragging;
+    animation-duration: .5s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+.drop_pile.ui-droppable-hover{
+    background: #163;
+    animation-name: none;
+    border: 2px solid #242;
+}
 .block{ display:block; }
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
@@ -48,13 +67,17 @@ body{ color: #CC0033; background: #339900; }
 .ui-draggable:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
     cursor: grab;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
 }
 
 
 /* When clicked, make the shadow larger as if lifting */
 .ui-draggable-dragging {
-    cursor: grabbing;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    cursor: grabbing;
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
 }
 
 .cardtopleft{
@@ -103,4 +126,5 @@ body{ color: #CC0033; background: #339900; }
     height: 185px;
     left: 28px;
     top: 78px;
+    box-shadow: 0 0 0 0; 
 }
