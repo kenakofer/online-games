@@ -33,8 +33,7 @@
         </div>
     </div>
     <div data-bind="foreach: table_positions">
-        <div class="drop_pile" 
-             data-bind="attr:{id:id, style:'left:'+position().left+'; top:'+position().top}, text: id" ></div>
-
+        <div class="drop_pile" data-bind="attr:{id:id, style:'left:'+position().left+'; top:'+position().top}, text: id" ></div>
     </div>
+    <div class="active-player-indicator ui-widget-content draggable">test</div>
 {% endblock %}

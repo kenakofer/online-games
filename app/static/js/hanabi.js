@@ -29,7 +29,7 @@ $( document ).ready(function() {
 	// Create the array of table positions to be added all at once to knockout
 	self.table_positions = ko.observableArray([]);
 	var pos_to_push = []
-	// Start with the player hands
+	// Start with the player hands, at x=30,y=80
 	y=80;
 	for (p in _.range(self.player_count)){
 	    x=30;
@@ -123,6 +123,19 @@ $( document ).ready(function() {
     socket.on('UPDATE INFO', function(data) {
 	console.log('UPDATE INFO gave data: ');
         console.log(data);
+        //Turn change
+        if (data.player_turn != apm.player_turn()){
+            turn = data.player_turn
+            apm.player_turn(turn);
+            active_player_indicator = $(".active-player-indicator");
+            active_player_indicator.draggable()
+            active_player_indicator.animate(
+                    {top:turn*190+78},
+                    {duration:500}
+                );
+
+        }
+        //Card movements
 	data.cards.forEach(function(card) {
 	    apm_card = get_apm_card(card.card_id);
 	    if (!apm_card){
