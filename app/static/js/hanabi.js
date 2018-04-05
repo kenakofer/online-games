@@ -18,6 +18,9 @@ $( document ).ready(function() {
     function AppViewModel() {
 	var self = this;
 	self.cards = ko.observableArray([]);
+        self.strikes_remaining = ko.observable(-1);
+        self.clues = ko.observable(-1);
+        self.player_turn = ko.observable(0);
 	// No need for these to be observable
 	self.my_player_index = template_player_index;
 	self.player_count = template_player_count;
@@ -120,7 +123,7 @@ $( document ).ready(function() {
     socket.on('UPDATE INFO', function(data) {
 	console.log('UPDATE INFO gave data: ');
         console.log(data);
-	data.forEach(function(card) {
+	data.cards.forEach(function(card) {
 	    apm_card = get_apm_card(card.card_id);
 	    if (!apm_card){
 		//Create the card

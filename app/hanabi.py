@@ -21,7 +21,7 @@ class HanabiGame:
         self.strikes_remaining = HanabiGame.total_strikes
         self.clues = HanabiGame.total_clues
         # Create the cards
-        self.all_cards = HanabiDeck.get_fresh_deck(self) 
+        self.all_cards = HanabiDeck.get_fresh_deck(self)
         # Create the trash position
         self.card_positions = {'TRASH':[]}
         # Create the deck position, containing all cards at the moment
@@ -35,7 +35,7 @@ class HanabiGame:
         # Create the play pile positions
         for l in HanabiGame.letters:
             self.card_positions[l] = []
-        
+
     def draw_card(self, player, pi=None):
         if pi==None:
             pi = self.player_index[player]
@@ -57,6 +57,10 @@ class HanabiGame:
         if not str(i) == card.card_pos:
             print('Player {}, index {} can not play card {}: it is in hand {}'.format(player, i, card, card.card_pos))
             return None
+        if not self.player_turn == i:
+            print('Player {}, index {} can not play card {}: it is turn of player {}'.format(player, i, card, self.player_turn))
+        # Before we return, make sure we pass along to the next player
+        self.next_turn();
         # Get the corresponding pile
         pile = self.card_positions[card.card_letter]
         # Check if the number is next
@@ -69,6 +73,9 @@ class HanabiGame:
             card.reveal()
             self.lose_strike()
             return None
+
+    def next_turn(self):
+        self.player_turn = (self.player_turn+1) % self.player_count
 
     def trash_card(self, player, card):
         i = self.player_index[player]
@@ -97,7 +104,13 @@ class HanabiGame:
         #Most of the info needed in the cards
         card_info = [c.get_info(user) for c in self.all_cards]
         print("Giving full update to {}".format(user))
-        return card_info
+        all_data = {
+            "cards":card_info,
+            "player_turn":self.player_turn,
+            "clues":self.clues,
+            "strikes_remaining":self.strikes_remaining,
+            }
+        return all_data
 
     def card_from_id(self, card_id):
         for card in self.all_cards:
@@ -130,7 +143,7 @@ class HanabiCard:
     def get_info(self, player):
         #Give nothing other than card_pos and card_id if in deck or in pi's hand
         d = {'card_pos':str(self.card_pos_html()),'card_id':str(self.card_id)}
-        if not self.card_pos == 'DECK' and not self.in_player_hand(player): 
+        if not self.card_pos == 'DECK' and not self.in_player_hand(player):
             d['card_letter'] = str(self.card_letter)
             d['card_number'] = str(self.card_number)
         elif self.revealed['number']:
