@@ -15,6 +15,7 @@ class HanabiGame:
         self.players = []
         self.player_index = {}
         self.gameid = gameid
+        self.recent_messages = []
 
         self.player_turn = 0
         self.hand_size = 4 if self.player_count > 2 else 5
@@ -35,6 +36,11 @@ class HanabiGame:
         # Create the play pile positions
         for l in HanabiGame.letters:
             self.card_positions[l] = []
+
+    def new_recent_message(self,message):
+        print("Adding message: "+str(message))
+        recent_messages.append(message)
+
 
     def draw_card(self, player, pi=None):
         if pi==None:
@@ -61,17 +67,20 @@ class HanabiGame:
             print('Player {}, index {} can not play card {}: it is turn of player {}'.format(player, i, card, self.player_turn))
         # Before we return, make sure we pass along to the next player
         self.next_turn();
+        # Reveal the card to all
+        card.reveal()
         # Get the corresponding pile
         pile = self.card_positions[card.card_letter]
         # Check if the number is next
         if len(pile)+1 == card.card_number:
             # return pile for ease of emits
             card.change_pos(card.card_letter)
+            self.new_recent_message("Player {}, index {} successfully played card {}".format(player, i, card))
             return pile
         else:
-            card.change_pos('TRASH')
-            card.reveal()
+            card.change_pos('TRASH') # We don't call trash_card because that gives clues back
             self.lose_strike()
+            self.new_recent_message("Player {}, index {} tried to play card {}, but it doesn't have a pile".format(player, i, card))
             return None
 
     def next_turn(self):
@@ -86,6 +95,7 @@ class HanabiGame:
             card.change_pos('TRASH')
             card.reveal()
             self.gain_clue()
+            self.new_recent_message("Player {}, index {} trashed card {}".format(player, i, card))
             return None
 
     def lose_strike(self):
@@ -109,6 +119,7 @@ class HanabiGame:
             "player_turn":self.player_turn,
             "clues":self.clues,
             "strikes_remaining":self.strikes_remaining,
+            "recent_messages":self.recent_messages,
             }
         return all_data
 
