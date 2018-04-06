@@ -47,10 +47,10 @@ $( document ).ready(function() {
 	// TODO trash piles
 	y+=210; x=30;
 	pos_to_push.push(new TablePosition('TRASH',{left:x,top:y}));
-	x+=170;
-	pos_to_push.push(new TablePosition('DECK',{left:x,top:y}));
-	x+=170;
+	x+=340;
 	pos_to_push.push(new TablePosition('PLAY',{left:x,top:y}));
+	x+=340;
+	pos_to_push.push(new TablePosition('DECK',{left:x,top:y}));
 
 	ko.utils.arrayPushAll(self.table_positions, pos_to_push);
 

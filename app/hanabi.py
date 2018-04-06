@@ -45,6 +45,7 @@ class HanabiGame:
     def draw_card(self, player, pi=None):
         if pi==None:
             pi = self.player_index[player]
+        pi = str(pi)
         if len(self.card_positions[pi]) >= self.hand_size:
             print('{} can\'t draw a card when their hand is full!'.format(player))
             return None
@@ -76,11 +77,13 @@ class HanabiGame:
         if len(pile)+1 == card.card_number:
             # return pile for ease of emits
             card.change_pos(card.card_letter)
+            self.draw_card(player)
             self.new_recent_message("Player {}, index {} successfully played card {}".format(player, i, card))
             return pile
         else:
             card.change_pos('TRASH') # We don't call trash_card because that gives clues back
             self.lose_strike()
+            self.draw_card(player)
             self.new_recent_message("Player {}, index {} tried to play card {}, but it doesn't have a pile".format(player, i, card))
             return None
 
@@ -99,6 +102,7 @@ class HanabiGame:
         card.change_pos('TRASH')
         card.reveal()
         self.gain_clue()
+        self.draw_card(player)
         self.new_recent_message("Player {}, index {} trashed card {}".format(player, i, card))
         self.next_turn()
         return None
