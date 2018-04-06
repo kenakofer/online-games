@@ -81,22 +81,19 @@ $( document ).ready(function() {
 		{left:position.left+6, top:position.top+20},
 		{duration:500}
 		);
-        if (true){
-            // If the server puts the card in DECK, TRASH, a play pile, or
-            // another players hand, destroy the draggability.
-            // Equivalently, if the server does NOT place the card in
-            // the current players hand, destroy draggability.
-            // Otherwise, enable it.
-            if (! apm_card.card_position().includes("P"+template_player_index+"C")){
-                console.log("destroying draggability on card "+apm_card.card_id());
-                try {
-                    draggable.draggable('destroy');
-                } catch (err) {}
-            } else {
-                console.log("enabling draggability on card "+apm_card.card_id());
-                draggable.draggable({revert: "invalid", stack:".draggable" });
-            }
-
+        // If the server puts the card in DECK, TRASH, a play pile, or
+        // another players hand, destroy the draggability.
+        // Equivalently, if the server does NOT place the card in
+        // the current players hand, destroy draggability.
+        // Otherwise, enable it.
+        if (! apm_card.card_position().includes("P"+template_player_index+"C")){
+            console.log("destroying draggability on card "+apm_card.card_id());
+            try {
+                draggable.draggable('destroy');
+            } catch (err) {}
+        } else {
+            console.log("enabling draggability on card "+apm_card.card_id());
+            draggable.draggable({revert: "invalid", stack:".draggable" });
         }
     };
     apm_add_card = function(data){
@@ -149,28 +146,12 @@ $( document ).ready(function() {
 		//TODO does this cause knockout updates if values don't change?
 		apm_card.card_letter(card.card_letter || "");
 		apm_card.card_number(card.card_number || "");
-                // This is commented because we need the server to move cards to trash that have just been placed there, so that their draggability can be destroyed.
                 if (card.card_pos != undefined && apm_card.card_position() != card.card_pos){
                     apm_card.card_position(card.card_pos || "");
                     move_card(apm_card, server=true);
                 }
 	    }
 	});
-    });
-
-    socket.on('CARD MOVE', function(data) {
-	move_card(get_apm_card(data.card_id));
-    });
-
-    socket.on('CARD ADD', function(data){
-	cid = data.card_id;
-	pos = data.card_pos;
-	letter = data.card_letter;
-	number = data.card_number;
-	apm_card = new Card(cid,pos,letter,number);
-	apm.cards.push(apm_card);
-	move_card(apm_card);
-
     });
 
     $( "#PLAY" ).addClass("droppable");
