@@ -186,6 +186,11 @@ $( document ).ready(function() {
                     {top: turn * apm.y_spacing + apm.border_top-3},
                     {duration:500}
                 );
+            if (apm.my_player_index == apm.player_turn()){
+                $(".active-player-indicator").addClass('my-turn');
+            } else {
+                $(".active-player-indicator").removeClass('my-turn');
+            }
 
         }
         //Card changes
