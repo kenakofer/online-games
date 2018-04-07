@@ -78,6 +78,9 @@ class HanabiGame:
             # return pile for ease of emits
             card.change_pos(card.card_letter)
             self.draw_card(player)
+            # Gain a clue if you play the highest number on a pile
+            if card.card_number == max(HanabiGame.numbers):
+                self.gain_clue()
             self.new_recent_message("Player {}, index {} successfully played card {}".format(player, i, card))
             return pile
         else:
