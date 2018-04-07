@@ -29,18 +29,19 @@ var socket = io("https://games.gc.my{{ socketio_namespace }}")
     </head>
     <body>
         <header class='header'>
-            Games.gc.my
-            <span align=RIGHT>
-            {% if current_user.is_anonymous %}
-            <a href="/login">Login</a>
-            {% else %}
-            Hello, <b>{{ current_user.fullname }}</b>
-            <a href="/logout">Logout</a>
+            <span> Games.gc.my </span> 
+            <span><a href='/pagecount'>PageCount</a></span>
+            <span><a href='/hanabi'>Hanabi</a></span>
+            <span style='float:right;'>
+                {% if current_user.is_anonymous %}
+                <a href="/login">Login</a>
+                {% else %}
+                Hello, <b>{{ current_user.fullname }}</b>
+                <a href="/logout">Logout</a>
             {% endif %}
             </span>
             <hr>
         </header>
-            <a href='/pagecount'>PageCount</a>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     <ul>

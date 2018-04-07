@@ -79,6 +79,15 @@ def hanabi(player_num, gameid):
             gameid=gameid,
             )
 
+@app.route('/hanabi')
+@login_required
+def hanabi_lobby():
+    return render_template(
+                'hanabi_lobby.html',
+                title='Hanabi Lobby',
+            )
+
+
 #########
 # Login #
 #########
