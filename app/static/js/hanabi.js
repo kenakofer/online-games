@@ -11,6 +11,7 @@ $( document ).ready(function() {
 	self.card_number = ko.observable(number);
         self.could_be_letters = ko.observable("");
         self.could_be_numbers = ko.observable("");
+        self.move_confirmed_by_server = false;
     };
     function TablePosition(id, coord_position){
 	var self = this;
@@ -39,6 +40,7 @@ $( document ).ready(function() {
 	self.letters = template_letters;
 	// Create the array of table positions to be added all at once to knockout
 	self.table_positions = ko.observableArray([]);
+        self.trashed_cards = 0;
 
         self.x_spacing = parseInt($(".drop_pile").css("width"), 10) + 15;
         self.y_spacing = parseInt($(".drop_pile").css("height"), 10) + 25;
@@ -95,16 +97,13 @@ $( document ).ready(function() {
     };
     var card_z_pos = 2;
     move_card = function(apm_card, server=false) {
+        apm_card.move_confirmed_by_server = server;
 	draggable = $("#"+apm_card.card_id());
 	posid = "#"+apm_card.card_position();
 	console.log('Moving card '+apm_card.card_id()+' to posid '+posid);
 	position = $("#"+apm_card.card_position()).position();
         draggable.css({"z-index": card_z_pos});
         card_z_pos += 2;
-	draggable.animate(
-		{left:position.left+6, top:position.top+20},
-		{duration:500}
-		);
         // If the server puts the card in DECK, TRASH, a play pile, or
         // another players hand, destroy the draggability.
         // Equivalently, if the server does NOT place the card in
@@ -113,12 +112,27 @@ $( document ).ready(function() {
         if (! apm_card.card_position().includes("P"+template_player_index+"C")){
             console.log("destroying draggability on card "+apm_card.card_id());
             try {
+                draggable.removeClass('my-card'); 
                 draggable.draggable('destroy');
             } catch (err) {}
         } else {
             console.log("enabling draggability on card "+apm_card.card_id());
             draggable.draggable({revert: "invalid", stack:".draggable" });
+            draggable.addClass('my-card'); 
         }
+        //Shrink cards in the trash
+        if (server == true && apm_card.card_position() == 'TRASH'){
+            draggable.addClass("shrink-trash");
+            tc = apm.trashed_cards;
+            position.left += (tc%6) * 40;
+            position.top += Math.floor(tc/6) * 25;
+            apm.trashed_cards += 1;
+            //$(card_id).css("scale", .3);
+        }
+	draggable.animate(
+		{left:position.left+6, top:position.top+20},
+		{duration:500}
+		);
     };
     apm_add_card = function(data){
 	cid = data.card_id || "";
@@ -194,7 +208,7 @@ $( document ).ready(function() {
                 $("#"+card.card_id+" .cardtopright").addClass("known");
             }
             // Update card position
-            if (card.card_pos != undefined && apm_card.card_position() != card.card_pos){
+            if ((! apm_card.move_confirmed_by_server) || apm_card.card_position() != card.card_pos){
                 apm_card.card_position(card.card_pos || "");
                 move_card(apm_card, server=true);
             }

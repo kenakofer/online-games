@@ -16,12 +16,18 @@ body{ color: #CC0033; background: #339900; }
     padding-left: 5px;
     padding-top: 3px;
 }
+#TRASH {
+    color: #F33;
+    width: 240px;
+}
+#PLAY {
+    color: white;
+}
 @keyframes drop_pile_dragging {
     from {background-color: #8B6;}
     to   {background-color: #5A3;}
 }
 .drop_pile.ui-state-active{
-    color: #EFE;
     background: #5A3;
     border: 2px solid #474;
     animation-name: drop_pile_dragging;
@@ -52,12 +58,14 @@ body{ color: #CC0033; background: #339900; }
     border: 1px solid #ddd;
     text-align: center;
     padding: 2px;
-    margin: 0px;;
-    background: #FFF;
+    margin: 0px;
+    background: white;
     /* Add shadows to create the "card" effect */
     /* box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5); */
     transition: box-shadow 0.3s;
     position: absolute;
+    transform: scale(1);
+    transform-origin: top left;
 }
 .ui-draggable {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
@@ -79,6 +87,14 @@ body{ color: #CC0033; background: #339900; }
     cursor: grabbing;
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
+}
+
+.ui-widget-content.card.shrink-trash {
+    transform: scale(.33);
+    transition: transform .4s;
+}
+.ui-widget-content.card.my-card {
+    background: #DDF;
 }
 
 .cardtopleft{
@@ -103,7 +119,6 @@ body{ color: #CC0033; background: #339900; }
     font-size: 45px;
 }
 .known{
-    background: white;
     color: black;
 }
 .cardbottom{ text-align: center; height:43px }
