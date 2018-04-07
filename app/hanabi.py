@@ -200,8 +200,8 @@ class HanabiCard:
         d = {
             'card_pos':str(self.card_pos_html()),
             'card_id':str(self.card_id),
-            'could_be_letters':self.could_be['letter'],
-            'could_be_numbers':self.could_be['number'],
+            'could_be_letters':''.join(self.could_be['letter']),
+            'could_be_numbers':''.join(map(str, self.could_be['number'])),
             }
         if not self.card_pos == 'DECK' and not self.in_player_hand(player):
             d['card_letter'] = str(self.card_letter)

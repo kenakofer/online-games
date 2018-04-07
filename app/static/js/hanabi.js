@@ -39,37 +39,40 @@ $( document ).ready(function() {
 	self.letters = template_letters;
 	// Create the array of table positions to be added all at once to knockout
 	self.table_positions = ko.observableArray([]);
+
+        self.x_spacing = parseInt($(".drop_pile").css("width"), 10) + 15;
+        self.y_spacing = parseInt($(".drop_pile").css("height"), 10) + 25;
+        self.border_left = 30;
+        self.border_top  = 80;
 	var pos_to_push = []
-	// Start with the player hands, at x=30,y=80
-	y=80;
+	// Start with the player hands, at x=border_left,y=border_top
+	y=self.border_top;
 	for (p in _.range(self.player_count)){
-	    x=30;
+	    x=self.border_left;
 	    for (c in _.range(self.hand_size)){
 		pos_to_push.push(new TablePosition('P'+p+'C'+c, {left:x,top:y}));
-		x += 170;
+		x += self.x_spacing;
 	    }
-	    y += 190;
+	    y += self.y_spacing;
 	}
-	x=30
+	x=self.border_left
 	y+=20;
 	// Add each build pile
-	self.letters.forEach(function(l){ pos_to_push.push(new TablePosition('PILE'+l,{left:x,top:y})); x+=170; });
+	self.letters.forEach(function(l){ pos_to_push.push(new TablePosition('PILE'+l,{left:x,top:y})); x+=self.x_spacing; });
 	// Add the trash pile
 	// TODO trash piles
-	y+=210; x=30;
+	y+=self.y_spacing+20; x=self.border_left;
 	pos_to_push.push(new TablePosition('TRASH',{left:x,top:y}));
-	x+=340;
+	x+=self.x_spacing*2;
 	pos_to_push.push(new TablePosition('PLAY',{left:x,top:y}));
-	x+=340;
+	x+=self.x_spacing*2;
 	pos_to_push.push(new TablePosition('DECK',{left:x,top:y}));
 
 	ko.utils.arrayPushAll(self.table_positions, pos_to_push);
 
-        var label_clues = new Label('LABEL_ALL',{left:540, top:y},"Clues: 8");
-        var label_clues = new Label('LABEL_ALL',{left:540, top:y},"Clues: 8");
         ko.utils.arrayPushAll(self.labels, [
-            label_clues   = new Label('LABEL_CLUES'  ,{left:540, top:y},    "Clues: 8"),
-            label_strikes = new Label('LABEL_STRIKES',{left:540, top:y+20}, "Strikes: 3"),
+            label_clues   = new Label('LABEL_CLUES'  ,{left:self.border_left+3*self.x_spacing, top:y},    "Clues left: 8"),
+            label_strikes = new Label('LABEL_STRIKES',{left:self.border_left+3*self.x_spacing, top:y+20}, "Strikes left: 3"),
         ]);
 
     }
@@ -156,8 +159,8 @@ $( document ).ready(function() {
         console.log(data);
         apm.clues(data.clues);
         apm.strikes_remaining(data.strikes_remaining);
-        apm.labels()[0].text("Clues: "+apm.clues());
-        apm.labels()[1].text("Strikes: "+apm.strikes_remaining());
+        apm.labels()[0].text("Clues left: "+apm.clues());
+        apm.labels()[1].text("Strikes left: "+apm.strikes_remaining());
 
         // On turn change, move the indicator
         if (data.player_turn != apm.player_turn()){
@@ -166,28 +169,35 @@ $( document ).ready(function() {
             active_player_indicator = $(".active-player-indicator");
             active_player_indicator.draggable()
             active_player_indicator.animate(
-                    {top:turn*190+78},
+                    {top: turn * apm.y_spacing + apm.border_top-3},
                     {duration:500}
                 );
 
         }
-        //Card movements
+        //Card changes
 	data.cards.forEach(function(card) {
 	    apm_card = get_apm_card(card.card_id);
 	    if (!apm_card){
 		//Create the card
 		apm_add_card(card);
-	    } else {
-		//TODO does this cause knockout updates if values don't change?
-		apm_card.card_letter(card.card_letter || "");
-		apm_card.card_number(card.card_number || "");
-		apm_card.could_be_letters(card.could_be_letters || "");
-		apm_card.could_be_numbers(card.could_be_numbers || "");
-                if (card.card_pos != undefined && apm_card.card_position() != card.card_pos){
-                    apm_card.card_position(card.card_pos || "");
-                    move_card(apm_card, server=true);
-                }
-	    }
+            }
+            //TODO does this cause knockout updates if values don't change?
+            // Update info on card
+            apm_card.card_letter(card.card_letter || "");
+            apm_card.card_number(card.card_number || "");
+            apm_card.could_be_letters(card.could_be_letters || "");
+            apm_card.could_be_numbers(card.could_be_numbers || "");
+            if (! card.could_be_letters){
+                $("#"+card.card_id+" .cardtopleft").addClass("known");
+            }
+            if (! card.could_be_numbers){
+                $("#"+card.card_id+" .cardtopright").addClass("known");
+            }
+            // Update card position
+            if (card.card_pos != undefined && apm_card.card_position() != card.card_pos){
+                apm_card.card_position(card.card_pos || "");
+                move_card(apm_card, server=true);
+            }
 	});
     });
 
