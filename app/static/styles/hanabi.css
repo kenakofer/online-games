@@ -45,11 +45,11 @@ body{ color: #CC0033; background: #339900; }
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }
-.card {
+.ui-widget-content.card {
     border-radius: 4px;
     /* This "shrink-wraps" the card to be as small as its contents */
     display: inline-block;
-    border: 1px solid black;
+    border: 1px solid #ddd;
     text-align: center;
     padding: 2px;
     margin: 0px;;
@@ -59,7 +59,6 @@ body{ color: #CC0033; background: #339900; }
     transition: box-shadow 0.3s;
     position: absolute;
 }
-
 .ui-draggable {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
 }
@@ -67,6 +66,7 @@ body{ color: #CC0033; background: #339900; }
 .ui-draggable:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
     cursor: grab;
+    border: 1px solid #666;
     cursor: -webkit-grab;
     cursor: -moz-grab;
 }
@@ -75,6 +75,7 @@ body{ color: #CC0033; background: #339900; }
 /* When clicked, make the shadow larger as if lifting */
 .ui-draggable-dragging {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    border: 1px solid #444;
     cursor: grabbing;
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
