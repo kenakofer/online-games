@@ -15,11 +15,20 @@ $( document ).ready(function() {
     function TablePosition(id, coord_position){
 	var self = this;
 	self.id = ko.observable(id);
-	self.position = ko.observable(coord_position)
-    }
+	self.position = ko.observable(coord_position);
+    };
+    function Label(id, coord_position, text){
+	var self = this;
+	self.id = ko.observable(id);
+	self.position = ko.observable(coord_position);
+        self.text = ko.observable(text)
+    };
+
+
     function AppViewModel() {
 	var self = this;
 	self.cards = ko.observableArray([]);
+	self.labels = ko.observableArray([]);
         self.strikes_remaining = ko.observable(-1);
         self.clues = ko.observable(-1);
         self.player_turn = ko.observable(0);
@@ -56,11 +65,21 @@ $( document ).ready(function() {
 
 	ko.utils.arrayPushAll(self.table_positions, pos_to_push);
 
+        var label_clues = new Label('LABEL_ALL',{left:540, top:y},"Clues: 8");
+        var label_clues = new Label('LABEL_ALL',{left:540, top:y},"Clues: 8");
+        ko.utils.arrayPushAll(self.labels, [
+            label_clues   = new Label('LABEL_CLUES'  ,{left:540, top:y},    "Clues: 8"),
+            label_strikes = new Label('LABEL_STRIKES',{left:540, top:y+20}, "Strikes: 3"),
+        ]);
+
     }
     apm = new AppViewModel()
     // Activates knockout.js
     ko.applyBindings(apm);
 
+    get_clues = function(){
+        return apm.clues();
+    }
 
     // Knockout helper functions
     get_apm_card = function(cid) {
@@ -132,7 +151,13 @@ $( document ).ready(function() {
     });
     socket.on('UPDATE INFO', function(data) {
 	console.log('UPDATE INFO gave data: ');
+
+        //Update labels
         console.log(data);
+        apm.clues(data.clues);
+        apm.strikes_remaining(data.strikes_remaining);
+        apm.labels()[0].text("Clues: "+apm.clues());
+        apm.labels()[1].text("Strikes: "+apm.strikes_remaining());
 
         // On turn change, move the indicator
         if (data.player_turn != apm.player_turn()){

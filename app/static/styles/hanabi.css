@@ -128,3 +128,7 @@ body{ color: #CC0033; background: #339900; }
     top: 78px;
     box-shadow: 0 0 0 0; 
 }
+
+.label {
+    position: absolute;
+}

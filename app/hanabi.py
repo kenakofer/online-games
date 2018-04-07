@@ -104,6 +104,8 @@ class HanabiGame:
         if not info in ['letter','number']:
             print('Player {}, index {} can not clue nonexistant info type {}'.format(player, i, info))
         # So it's a legal request
+        self.clues -= 1
+        self.next_turn()
         if info == 'letter':
             for c in self.card_positions[card.card_pos]:
                 if card.card_letter == c.card_letter:
@@ -118,8 +120,6 @@ class HanabiGame:
                     c.could_be['number']=[]
                 else:
                     if card.card_number in c.could_be['number']: c.could_be['number'].remove(card.card_number)
-                self.clues -= 1
-                self.next_turn()
         return card
 
 
@@ -146,11 +146,9 @@ class HanabiGame:
     def lose_strike(self):
         self.strikes_remaining -= 1
         #TODO losing etc
-        pass
 
     def gain_clue(self):
         self.clues = min(self.clues+1,HanabiGame.total_clues)
-        pass
 
     def get_full_update(self, user):
         if not user in self.players:

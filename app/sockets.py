@@ -62,7 +62,7 @@ def card_move(data):
 
 @socketio.on('CLUE CARD', namespace='/hanabi')
 def clue_card(data):
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD MOVE', data))
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD CLUE', data))
     g = hanabi_games[data['gameid']]
     g.give_clue(current_user, g.card_from_id(data['card_id']), data['card_field'])
     # At the moment, just have the clients request their own individual updates
