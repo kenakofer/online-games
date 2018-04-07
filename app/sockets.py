@@ -54,16 +54,16 @@ def card_move(data):
     g = hanabi_games[data['gameid']]
     if data['place_id']=="PLAY":
         result = g.play_card(get_stable_user(), g.card_from_id(data['card_id']))
-    if data['place_id']=="TRASH":
+    elif data['place_id']=="TRASH":
         result = g.trash_card(get_stable_user(), g.card_from_id(data['card_id']))
 
     # At the moment, just have the clients request their own individual updates
     emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=g.gameid)
 
-    # At the moment, just update the client with all the data, whether they
-    # need/want it or not
-    # emit('UPDATE INFO', g.get_full_update(get_stable_user()))
-
-    # TODO other locations
-
-
+@socketio.on('CLUE CARD', namespace='/hanabi')
+def clue_card(data):
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD MOVE', data))
+    g = hanabi_games[data['gameid']]
+    g.give_clue(current_user, g.card_from_id(data['card_id']), data['card_field'])
+    # At the moment, just have the clients request their own individual updates
+    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=g.gameid)

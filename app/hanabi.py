@@ -87,6 +87,42 @@ class HanabiGame:
             self.new_recent_message("Player {}, index {} tried to play card {}, but it doesn't have a pile".format(player, i, card))
             return None
 
+    def give_clue(self, player, card, info):
+        i = self.player_index[player]
+        if str(i) == card.card_pos:
+            print('Player {}, index {} can not clue to card {}: it is in their hand!'.format(player, i, card, card.card_pos))
+            return None
+        if not card.card_pos.isdigit():
+            print('Player {}, index {} can not clue to card {}: it is not in a player\'s hand!'.format(player, i, card))
+            return None
+        if not self.player_turn == i:
+            print('Player {}, index {} can not clue to card {}: it is turn of player {}'.format(player, i, card, self.player_turn))
+            return None
+        if self.clues <= 0:
+            print('Player {}, index {} can not clue: no clues left'.format(player, i))
+            return None
+        if not info in ['letter','number']:
+            print('Player {}, index {} can not clue nonexistant info type {}'.format(player, i, info))
+        # So it's a legal request
+        if info == 'letter':
+            for c in self.card_positions[card.card_pos]:
+                if card.card_letter == c.card_letter:
+                    c.reveal(which=info)
+                    c.could_be['letter']=[]
+                else:
+                    if card.card_letter in c.could_be['letter']: c.could_be['letter'].remove(card.card_letter)
+        elif info == 'number':
+            for c in self.card_positions[card.card_pos]:
+                if card.card_number == c.card_number:
+                    c.reveal(which=info)
+                    c.could_be['number']=[]
+                else:
+                    if card.card_number in c.could_be['number']: c.could_be['number'].remove(card.card_number)
+                self.clues -= 1
+                self.next_turn()
+        return card
+
+
     def next_turn(self):
         self.player_turn = (self.player_turn+1) % self.player_count
 
@@ -149,6 +185,7 @@ class HanabiCard:
         self.card_pos = pos         # key to HanabiGame.card_positions
         self.game = game
         self.revealed = {'number':False,'letter':False}
+        self.could_be = {'letter':list(HanabiGame.letters),'number':list(set(HanabiGame.numbers))}
 
     def __repr__(self):
         return "Card {}{} (id:{}) in {}".format(self.card_letter,self.card_number,self.card_id,self.card_pos)
@@ -162,14 +199,19 @@ class HanabiCard:
 
     def get_info(self, player):
         #Give nothing other than card_pos and card_id if in deck or in pi's hand
-        d = {'card_pos':str(self.card_pos_html()),'card_id':str(self.card_id)}
+        d = {
+            'card_pos':str(self.card_pos_html()),
+            'card_id':str(self.card_id),
+            'could_be_letters':self.could_be['letter'],
+            'could_be_numbers':self.could_be['number'],
+            }
         if not self.card_pos == 'DECK' and not self.in_player_hand(player):
             d['card_letter'] = str(self.card_letter)
             d['card_number'] = str(self.card_number)
         elif self.revealed['number']:
             d['card_number'] = str(self.card_number)
         elif self.revealed['letter']:
-            d['card_letter'] = str(self.card_number)
+            d['card_letter'] = str(self.card_letter)
         return d
 
     def card_pos_html(self):
@@ -192,6 +234,7 @@ class HanabiCard:
     def reveal(self, which=None, value=True):
         if not which:
             self.revealed['number'] = self.revealed['letter'] = value
+            self.could_be['number'] = self.could_be['letter'] = []
         else:
             self.revealed[which] = value
 

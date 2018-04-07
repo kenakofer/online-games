@@ -4,7 +4,7 @@
     <link rel='stylesheet' href='{{ url_for("static",filename="styles/hanabi.css") }}'>
     <!-- For jquery and jquery ui-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
     <!-- For knockout.js -->
@@ -29,7 +29,10 @@
         <div class="card noselect ui-widget-content draggable" style='top:600;' data-bind="attr: {'id': card_id()}"> 
             <div class="cardtopleft" data-bind="text: card_letter"></div>
             <div class="cardtopright" data-bind="text: card_number"></div>
-            <div class="cardbottom">Could be:</div>
+            <div class="cardbottom">Could be: <br>
+                <span style="float:left;"  data-bind="text: could_be_letters"></span>
+                <span style="float:right;" data-bind="text: could_be_numbers"></span>
+            </div>
         </div>
     </div>
     <div data-bind="foreach: table_positions">

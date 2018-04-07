@@ -9,6 +9,8 @@ $( document ).ready(function() {
 	self.card_position = ko.observable(position);
 	self.card_letter = ko.observable(letter);
 	self.card_number = ko.observable(number);
+        self.could_be_letters = ko.observable("");
+        self.could_be_numbers = ko.observable("");
     };
     function TablePosition(id, coord_position){
 	var self = this;
@@ -101,11 +103,19 @@ $( document ).ready(function() {
 	pos = data.card_pos || "";
 	letter = data.card_letter || "";
 	number = data.card_number || "";
-	console.log('New card with '+cid+pos+letter+number);
+	console.log('New card '+cid+' at '+pos);
 	apm_card = new Card(cid,pos,letter,number);
 	apm.cards.push(apm_card);
 	move_card(apm_card, server=true);
 	draggable = $("#"+apm_card.card_id());
+        $(".cardtopleft").off("click").on("click", function(){
+            card_id = $(this)[0].parentElement.id;
+            socket.emit('CLUE CARD', {'card_id':card_id,'card_field':'letter','gameid':template_gameid});
+        });
+        $(".cardtopright").off("click").on("click", function(){
+            card_id = $(this)[0].parentElement.id;
+            socket.emit('CLUE CARD', {'card_id':card_id,'card_field':'number','gameid':template_gameid});
+        });
     };
 
     // Socketio functions
@@ -146,6 +156,8 @@ $( document ).ready(function() {
 		//TODO does this cause knockout updates if values don't change?
 		apm_card.card_letter(card.card_letter || "");
 		apm_card.card_number(card.card_number || "");
+		apm_card.could_be_letters(card.could_be_letters || "");
+		apm_card.could_be_numbers(card.could_be_numbers || "");
                 if (card.card_pos != undefined && apm_card.card_position() != card.card_pos){
                     apm_card.card_position(card.card_pos || "");
                     move_card(apm_card, server=true);
