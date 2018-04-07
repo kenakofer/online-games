@@ -206,9 +206,9 @@ class HanabiCard:
         if not self.card_pos == 'DECK' and not self.in_player_hand(player):
             d['card_letter'] = str(self.card_letter)
             d['card_number'] = str(self.card_number)
-        elif self.revealed['number']:
+        if self.revealed['number']:
             d['card_number'] = str(self.card_number)
-        elif self.revealed['letter']:
+        if self.revealed['letter']:
             d['card_letter'] = str(self.card_letter)
         return d
 
