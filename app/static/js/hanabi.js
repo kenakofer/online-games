@@ -101,7 +101,7 @@ $( document ).ready(function() {
 	draggable = $("#"+apm_card.card_id());
 	posid = "#"+apm_card.card_position();
 	console.log('Moving card '+apm_card.card_id()+' to posid '+posid);
-	position = $("#"+apm_card.card_position()).position();
+	position = $(posid).position();
         draggable.css({"z-index": card_z_pos});
         card_z_pos += 2;
         // If the server puts the card in DECK, TRASH, a play pile, or
@@ -128,6 +128,14 @@ $( document ).ready(function() {
             position.top += Math.floor(tc/6) * 25;
             apm.trashed_cards += 1;
             //$(card_id).css("scale", .3);
+        }
+        // Hide could be divs if not in a player's hand
+        div = $("#"+apm_card.card_id()+" .cardbottom");
+        console.log(div);
+        if (posid.includes('TRASH') || posid.includes('DECK') || posid.includes('PILE')){
+            div.hide()
+        } else {
+            div.show()
         }
 	draggable.animate(
 		{left:position.left+6, top:position.top+20},

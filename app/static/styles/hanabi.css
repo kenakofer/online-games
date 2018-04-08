@@ -58,6 +58,7 @@ body{ color: white; background: #339900; }
     border: 1px solid #ddd;
     text-align: center;
     padding: 2px;
+    height: 107px;
     margin: 0px;
     background: white;
     /* Add shadows to create the "card" effect */
