@@ -11,3 +11,9 @@ html, body {
 .push {
   height: 50px;
 }
+.header {
+    padding: 10px;
+}
+.header span {
+    margin: 20px;
+}

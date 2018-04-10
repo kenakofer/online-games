@@ -62,7 +62,6 @@ $( document ).ready(function() {
 	// Add each build pile
 	self.letters.forEach(function(l){ pos_to_push.push(new TablePosition('PILE'+l,{left:x,top:y})); x+=self.x_spacing; });
 	// Add the trash pile
-	// TODO trash piles
 	y+=self.y_spacing+20; x=self.border_left;
 	pos_to_push.push(new TablePosition('TRASH',{left:x,top:y}));
 	x+=self.x_spacing*2;
@@ -120,7 +119,11 @@ $( document ).ready(function() {
             draggable.draggable({revert: "invalid", stack:".draggable" });
             draggable.addClass('my-card'); 
         }
-        //Shrink cards in the trash
+        // Make cards in deck have the right back
+        if (apm_card.card_position() == 'DECK'){
+            draggable.addClass('my-card');
+        }
+        // Shrink cards in the trash
         if (server == true && apm_card.card_position() == 'TRASH'){
             draggable.addClass("shrink-trash");
             tc = apm.trashed_cards;
@@ -191,7 +194,7 @@ $( document ).ready(function() {
             active_player_indicator = $(".active-player-indicator");
             active_player_indicator.draggable()
             active_player_indicator.animate(
-                    {top: turn * apm.y_spacing + apm.border_top-3},
+                    {top: turn * apm.y_spacing + apm.border_top-6},
                     {duration:500}
                 );
             if (apm.my_player_index == apm.player_turn()){

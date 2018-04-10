@@ -3,7 +3,7 @@
     --cardinnerborderdark: 3px solid black;
 }
 
-body{ color: white; background: #339900; }
+body{ color: white; background: #583; }
 .drop_pile {
     background: #8B6;
     color: #BF6;
@@ -17,7 +17,7 @@ body{ color: white; background: #339900; }
     padding-top: 3px;
 }
 #TRASH {
-    color: #F33;
+    color: #D22;
     width: 240px;
 }
 #PLAY {
@@ -55,7 +55,7 @@ body{ color: white; background: #339900; }
     border-radius: 4px;
     /* This "shrink-wraps" the card to be as small as its contents */
     display: inline-block;
-    border: 1px solid #ddd;
+    border: 3px solid #68A;
     text-align: center;
     padding: 2px;
     height: 107px;
@@ -75,7 +75,7 @@ body{ color: white; background: #339900; }
 .ui-draggable:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
     cursor: grab;
-    border: 1px solid #666;
+    border: 3px solid #469;
     cursor: -webkit-grab;
     cursor: -moz-grab;
 }
@@ -95,7 +95,7 @@ body{ color: white; background: #339900; }
     transition: transform .4s;
 }
 .ui-widget-content.card.my-card {
-    background: #DDF;
+    background: #69E;
 }
 
 .cardtopleft{
@@ -127,13 +127,13 @@ body{ color: white; background: #339900; }
 /* the first class is to increase css specificity ;) */
 .ui-widget-content.active-player-indicator{
     position:absolute;
-    border: 2px solid yellow;
+    border: 3px solid #d22;
     border-radius: 8px;
-    background: #390;
+    background: #583;
     z-index: -2;
-    width: 657px;
+    width: 658px;
     height: 146px;
-    left: 27px;
+    left: 25px;
     top: 78px;
     box-shadow: 0 0 0 0; 
 }
@@ -147,5 +147,5 @@ body{ color: white; background: #339900; }
     color: white;
     font-size: 20px;
 }
-#LABEL_CLUES { color: #BFF; }
-#LABEL_STRIKES { color: #FBB; }
+#LABEL_CLUES { color: #ACE; }
+#LABEL_STRIKES { color: #EAA; }
