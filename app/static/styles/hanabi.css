@@ -18,10 +18,12 @@ body{ color: white; background: #583; }
 }
 #TRASH {
     color: #D22;
-    width: 240px;
+    width: 330px;
 }
 #PLAY {
     color: white;
+    width: 190px;
+    height: 143px;
 }
 @keyframes drop_pile_dragging {
     from {background-color: #8B6;}
@@ -94,6 +96,10 @@ body{ color: white; background: #583; }
     transform: scale(.33);
     transition: transform .4s;
 }
+.ui-widget-content.card.shrink-play {
+    transform: scale(.5);
+    transition: transform .4s;
+}
 .ui-widget-content.card.my-card {
     background: #69E;
 }
@@ -134,11 +140,11 @@ body{ color: white; background: #583; }
     width: 658px;
     height: 146px;
     left: 25px;
-    top: 78px;
+    top: 75px;
     box-shadow: 0 0 0 0; 
 }
 .ui-widget-content.active-player-indicator.my-turn{
-    background: yellow;
+    background: #D22;
 }
 
 .label {

@@ -223,7 +223,7 @@ class HanabiCard:
             ci = self.game.card_positions[self.card_pos].index(self)
             return "P{}C{}".format(pi,ci)
         #Otherwise it must be a play pile
-        return "PILE{}".format(self.card_pos)
+        return "PLAY"
 
     def change_pos(self, new_pos):
         poss = self.game.card_positions
@@ -257,24 +257,3 @@ class HanabiDeck:
         for i,c in enumerate(deck):
             c.card_id = "CARD"+str(i)
         return deck
-
-#class HanabiPile:
-#
-#    def __init__(self, letter):
-#        assert letter in HanabiGame.letters
-#        self.letter = letter
-#        self.cards = []
-#        self.next_number = 1
-#        self.id = 'PILE'+letter
-#
-#    def add_card(self, card):
-#        #TODO this is a real issue to remove it from its old spot
-#        if card.card_letter != self.letter:
-#            print('Can\'t place card with letter {} on pile with letter {}!'.format(card.card_letter, self.letter))
-#            return None
-#        if card.card_number != self.next_number:
-#            print('Can\'t place card with  {} on pile expecting a {}!'.format(card.card_number, self.number))
-#            return None
-#        card.pos = self.id
-#        self.cards.append(card)
-#        return card

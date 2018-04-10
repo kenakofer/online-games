@@ -46,9 +46,10 @@ $( document ).ready(function() {
         self.y_spacing = parseInt($(".drop_pile").css("height"), 10) + 25;
         self.border_left = 30;
         self.border_top  = 80;
+        y = self.border_top;
+        x = self.border_left;
 	var pos_to_push = []
 	// Start with the player hands, at x=border_left,y=border_top
-	y=self.border_top;
 	for (p in _.range(self.player_count)){
 	    x=self.border_left;
 	    for (c in _.range(self.hand_size)){
@@ -57,25 +58,30 @@ $( document ).ready(function() {
 	    }
 	    y += self.y_spacing;
 	}
-	x=self.border_left
-	y+=20;
-	// Add each build pile
-	self.letters.forEach(function(l){ pos_to_push.push(new TablePosition('PILE'+l,{left:x,top:y})); x+=self.x_spacing; });
+        // Make active player indicator the right width
+        active_player_indicator = $(".active-player-indicator");
+        active_player_indicator.css({'width': self.x_spacing * self.hand_size + "px"});
+        // Put play piles, trash, and indicators to the right of everything
+        play_area_left = self.x_spacing * self.hand_size + self.border_left + 10;
+	x=play_area_left;
+	y = self.border_top+25; //Leave room for labels
 	// Add the trash pile
-	y+=self.y_spacing+20; x=self.border_left;
-	pos_to_push.push(new TablePosition('TRASH',{left:x,top:y}));
-	x+=self.x_spacing*2;
 	pos_to_push.push(new TablePosition('PLAY',{left:x,top:y}));
-	x+=self.x_spacing*2;
+        x += 210;
+        y += 4;
 	pos_to_push.push(new TablePosition('DECK',{left:x,top:y}));
-
+	x=play_area_left;
+        y+= self.y_spacing;
+	pos_to_push.push(new TablePosition('TRASH',{left:x,top:y}));
 	ko.utils.arrayPushAll(self.table_positions, pos_to_push);
-
+        // Labels
+        y = self.border_top;
+        x = play_area_left
         ko.utils.arrayPushAll(self.labels, [
-            label_clues   = new Label('LABEL_CLUES'  ,{left:self.border_left+3*self.x_spacing, top:y},    "Clues left: 8"),
-            label_strikes = new Label('LABEL_STRIKES',{left:self.border_left+3*self.x_spacing, top:y+20}, "Strikes left: 3"),
+            label_clues   = new Label('LABEL_CLUES'  ,{left:x, top:y},    "Clues left: 8"),
+            label_strikes = new Label('LABEL_STRIKES',{left:x+130, top:y}, "Strikes left: 3"),
         ]);
-
+        y += 25;
     }
     apm = new AppViewModel()
     // Activates knockout.js
@@ -127,10 +133,22 @@ $( document ).ready(function() {
         if (server == true && apm_card.card_position() == 'TRASH'){
             draggable.addClass("shrink-trash");
             tc = apm.trashed_cards;
-            position.left += (tc%6) * 40;
-            position.top += Math.floor(tc/6) * 25;
+            position.left += (tc%8) * 40;
+            position.top += Math.floor(tc/8) * 25;
             apm.trashed_cards += 1;
-            //$(card_id).css("scale", .3);
+        }
+        // Shrink cards in the play
+        if (server == true && apm_card.card_position() == 'PLAY'){
+            draggable.addClass("shrink-play");
+            which = apm_card.card_letter().charCodeAt(0) - 'A'.charCodeAt(0);
+            num = parseInt(apm_card.card_number(),10);
+            position.left += (which%3) * 65 + Math.floor(which/3)*32;
+            position.top += Math.floor(which/3) * 65;
+            // Tiny stack down and left
+            position.left += num*2;
+            position.top += num*2;
+            // fix z index, important on page reload
+            draggable.css({"z-index": num});
         }
         // Hide could be divs if not in a player's hand
         div = $("#"+apm_card.card_id()+" .cardbottom");
