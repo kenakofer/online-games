@@ -100,7 +100,7 @@ $( document ).ready(function() {
 	    console.log("No such card: "+cid);
 	}
     };
-    var card_z_pos = 2;
+    var card_z_pos = 100;
     move_card = function(apm_card, server=false) {
         apm_card.move_confirmed_by_server = server;
 	draggable = $("#"+apm_card.card_id());
@@ -117,13 +117,18 @@ $( document ).ready(function() {
         if (! apm_card.card_position().includes("P"+template_player_index+"C")){
             console.log("destroying draggability on card "+apm_card.card_id());
             try {
-                draggable.removeClass('my-card'); 
+                draggable.removeClass('my-card');
+                draggable.removeClass('draggable');
                 draggable.draggable('destroy');
             } catch (err) {}
         } else {
             console.log("enabling draggability on card "+apm_card.card_id());
-            draggable.draggable({revert: "invalid", stack:".draggable" });
-            draggable.addClass('my-card'); 
+            draggable.draggable({revert: "invalid", start: function (event, ui) {
+                $( this ).css({"z-index": card_z_pos});
+                card_z_pos += 2;
+            }});
+            draggable.addClass('my-card');
+            draggable.addClass('draggable');
         }
         // Make cards in deck have the right back
         if (apm_card.card_position() == 'DECK'){
