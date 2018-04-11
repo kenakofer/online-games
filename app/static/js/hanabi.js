@@ -13,10 +13,11 @@ $( document ).ready(function() {
         self.could_be_numbers = ko.observable("");
         self.move_confirmed_by_server = false;
     };
-    function TablePosition(id, coord_position){
+    function TablePosition(id, coord_position, text=undefined){
 	var self = this;
 	self.id = ko.observable(id);
 	self.position = ko.observable(coord_position);
+        self.text = ko.observable(text || id);
     };
     function Label(id, coord_position, text){
 	var self = this;
@@ -53,7 +54,12 @@ $( document ).ready(function() {
 	for (p in _.range(self.player_count)){
 	    x=self.border_left;
 	    for (c in _.range(self.hand_size)){
-		pos_to_push.push(new TablePosition('P'+p+'C'+c, {left:x,top:y}));
+                tp = new TablePosition('P'+p+'C'+c, {left:x,top:y}, " ");
+		self.table_positions.push(tp);
+                if (c == 0){
+                    console.log('Here')
+                    tp.text("Waiting for player "+p+" to connect...");
+                }
 		x += self.x_spacing;
 	    }
 	    y += self.y_spacing;
@@ -209,6 +215,10 @@ $( document ).ready(function() {
         apm.strikes_remaining(data.strikes_remaining);
         apm.labels()[0].text("Clues left: "+apm.clues());
         apm.labels()[1].text("Strikes left: "+apm.strikes_remaining());
+        //Update player list
+        if (data.players) for (i in data.players) {
+            $( "#P"+i+"C0" ).text(data.players[i]);
+        }
 
         // On turn change, move the indicator
         if (data.player_turn != apm.player_turn()){
@@ -254,6 +264,9 @@ $( document ).ready(function() {
 	});
     });
 
+    for (p in _.range(apm.player_count)){
+        $( '#P'+p+'C0' ).css({'width':apm.x_spacing*apm.hand_size-13,'z-index':-1});
+    }
     $( "#PLAY" ).addClass("droppable");
     $( "#TRASH" ).addClass("droppable");
 

@@ -166,6 +166,7 @@ class HanabiGame:
             "clues":self.clues,
             "strikes_remaining":self.strikes_remaining,
             "recent_messages":self.recent_messages,
+            "players":list(map(lambda p: p.fullname, self.players)),
             }
         return all_data
 

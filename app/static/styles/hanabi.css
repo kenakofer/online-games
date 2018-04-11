@@ -10,7 +10,7 @@ body{ color: white; background: #583; }
     border-radius: 6px;
     border: 2px solid #474;
     width: 117px;
-    height: 135px;
+    height: 140px;
     position: absolute;
     z-index: -2;
     padding-left: 5px;
@@ -148,13 +148,13 @@ body{ color: white; background: #583; }
     background: #583;
     z-index: -10;
     width: 658px;
-    height: 146px;
+    height: 153px;
     left: 25px;
     top: 75px;
     box-shadow: 0 0 0 0; 
 }
 .ui-widget-content.active-player-indicator.my-turn{
-    background: #D22;
+    /*background: #D22;*/
 }
 
 .label {

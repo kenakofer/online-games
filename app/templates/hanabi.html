@@ -36,10 +36,10 @@
         </div>
     </div>
     <div data-bind="foreach: table_positions">
-        <div class="drop_pile" data-bind="attr:{id:id, style:'left:'+position().left+'; top:'+position().top}, text: id" ></div>
+        <div class="drop_pile" data-bind="attr:{id:id, style:'left:'+position().left+'; top:'+position().top}, text: text" ></div>
     </div>
     <div data-bind="foreach: labels">
         <div class="label" data-bind="attr:{id:id, style:'left:'+position().left+'; top:'+position().top}, text: text" ></div>
     </div>
-    <div class="active-player-indicator"></div>
+    <div class="active-player-indicator ui-widget-content"></div>
 {% endblock %}
