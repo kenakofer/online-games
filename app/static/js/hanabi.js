@@ -215,9 +215,19 @@ $( document ).ready(function() {
         apm.strikes_remaining(data.strikes_remaining);
         apm.labels()[0].text("Clues left: "+apm.clues());
         apm.labels()[1].text("Strikes left: "+apm.strikes_remaining());
+        // Swap out player indexes for names and pronouns
+        if (data.players) for (i in data.players) for (mi in data.recent_messages){
+            if (i == template_player_index)
+                data.recent_messages[mi] = data.recent_messages[mi].replace('['+i+']', 'you');
+            else
+                data.recent_messages[mi] = data.recent_messages[mi].replace('['+i+']', data.players[i]);
+        }
         //Update player list
         if (data.players) for (i in data.players) {
-            $( "#P"+i+"C0" ).text(data.players[i]);
+            m = data.recent_messages[i];
+            $( "#P"+i+"C0" ).text(
+                data.players[i]+": "+m
+            );
         }
 
         // On turn change, move the indicator

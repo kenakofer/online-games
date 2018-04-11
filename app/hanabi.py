@@ -15,7 +15,7 @@ class HanabiGame:
         self.players = []
         self.player_index = {}
         self.gameid = gameid
-        self.recent_messages = []
+        self.recent_messages = ["" for i in range(player_num)]
 
         self.player_turn = 0
         self.hand_size = 4 if self.player_count > 2 else 5
@@ -37,9 +37,9 @@ class HanabiGame:
         for l in HanabiGame.letters:
             self.card_positions[l] = []
 
-    def new_recent_message(self,message):
+    def new_recent_message(self, message, player_index):
         print("Adding message: "+str(message))
-        self.recent_messages.append(message)
+        self.recent_messages[player_index] = message
 
 
     def draw_card(self, player, pi=None):
@@ -81,13 +81,13 @@ class HanabiGame:
             # Gain a clue if you play the highest number on a pile
             if card.card_number == max(HanabiGame.numbers):
                 self.gain_clue()
-            self.new_recent_message("Player {}, index {} successfully played card {}".format(player, i, card))
+            self.new_recent_message("played card {}{}".format(card.card_letter, card.card_number), i)
             return pile
         else:
             card.change_pos('TRASH') # We don't call trash_card because that gives clues back
             self.lose_strike()
             self.draw_card(player)
-            self.new_recent_message("Player {}, index {} tried to play card {}, but it doesn't have a pile".format(player, i, card))
+            self.new_recent_message("failed to place card {}{}".format(card.card_letter, card.card_number), i)
             return None
 
     def give_clue(self, player, card, info):
@@ -110,6 +110,7 @@ class HanabiGame:
         self.clues -= 1
         self.next_turn()
         if info == 'letter':
+            self.new_recent_message("told [{}] about all {}s".format(card.card_pos, card.card_letter), i)
             for c in self.card_positions[card.card_pos]:
                 if card.card_letter == c.card_letter:
                     c.reveal(which=info)
@@ -117,6 +118,7 @@ class HanabiGame:
                 else:
                     if card.card_letter in c.could_be['letter']: c.could_be['letter'].remove(card.card_letter)
         elif info == 'number':
+            self.new_recent_message("told [{}] about all {}s".format(card.card_pos, card.card_number), i)
             for c in self.card_positions[card.card_pos]:
                 if card.card_number == c.card_number:
                     c.reveal(which=info)
@@ -142,7 +144,7 @@ class HanabiGame:
         card.reveal()
         self.gain_clue()
         self.draw_card(player)
-        self.new_recent_message("Player {}, index {} trashed card {}".format(player, i, card))
+        self.new_recent_message("trashed card {}{}".format(card.card_letter, card.card_number), i)
         self.next_turn()
         return None
 
