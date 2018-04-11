@@ -29,15 +29,15 @@ var socket = io("https://games.gc.my{{ socketio_namespace }}")
     </head>
     <body>
         <header class='header'>
-            <span>Games.gc.my</span>|
+            <span><b>Games.gc.my</b></span>|
             <span><a href='/pagecount'>PageCount</a></span>|
-            <span><a href='/hanabi'>Hanabi</a></span>|
+            <span><a href='/hanabi'>Hanabi</a></span>
             <span style='float:right;'>
                 {% if current_user.is_anonymous %}
                 <a href="/login">Login</a>
                 {% else %}
                 Hello, <b>{{ current_user.fullname }}</b>
-                <a href="/logout">Logout</a>
+                <a href="/logout" style="color:#ffc;">Logout</a>
             {% endif %}
             </span>
             <hr>

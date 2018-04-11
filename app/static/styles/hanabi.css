@@ -3,16 +3,16 @@
     --cardinnerborderdark: 3px solid black;
 }
 
-body{ color: white; background: #583; }
+/*body{ color: white; background: #583; }*/
 .drop_pile {
     background: #8B6;
-    color: #BF6;
+    color: #DFA;
     border-radius: 6px;
     border: 2px solid #474;
     width: 117px;
-    height: 140px;
+    height: 145px;
     position: absolute;
-    z-index: -2;
+    z-index: 0;
     padding-left: 5px;
     padding-top: 3px;
 }
@@ -146,9 +146,9 @@ body{ color: white; background: #583; }
     border: 3px solid #d22;
     border-radius: 8px;
     background: #583;
-    z-index: -10;
+    z-index: 0;
     width: 658px;
-    height: 153px;
+    height: 157px;
     left: 25px;
     top: 75px;
     box-shadow: 0 0 0 0; 

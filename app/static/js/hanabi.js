@@ -58,7 +58,7 @@ $( document ).ready(function() {
 		self.table_positions.push(tp);
                 if (c == 0){
                     console.log('Here')
-                    tp.text("Waiting for player "+p+" to connect...");
+                    tp.text("Waiting for player "+(parseInt(p,10)+1)+" to connect...");
                 }
 		x += self.x_spacing;
 	    }
@@ -159,7 +159,7 @@ $( document ).ready(function() {
             position.left += num*2;
             position.top += num*2;
             // fix z index, important on page reload
-            draggable.css({"z-index": num});
+            draggable.css({"z-index": num+2});
         }
         // Hide could be divs if not in a player's hand
         div = $("#"+apm_card.card_id()+" .cardbottom");
@@ -170,7 +170,7 @@ $( document ).ready(function() {
             div.show()
         }
 	draggable.animate(
-		{left:position.left+6, top:position.top+20},
+		{left:position.left+7, top:position.top+25},
 		{duration:500}
 		);
     };
@@ -235,7 +235,6 @@ $( document ).ready(function() {
             turn = data.player_turn
             apm.player_turn(turn);
             active_player_indicator = $(".active-player-indicator");
-            active_player_indicator.draggable()
             active_player_indicator.animate(
                     {top: turn * apm.y_spacing + apm.border_top-6},
                     {duration:500}
@@ -275,7 +274,7 @@ $( document ).ready(function() {
     });
 
     for (p in _.range(apm.player_count)){
-        $( '#P'+p+'C0' ).css({'width':apm.x_spacing*apm.hand_size-13,'z-index':-1});
+        $( '#P'+p+'C0' ).css({'width':apm.x_spacing*apm.hand_size-13,'z-index':1});
     }
     $( "#PLAY" ).addClass("droppable");
     $( "#TRASH" ).addClass("droppable");
