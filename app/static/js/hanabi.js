@@ -42,6 +42,7 @@ $( document ).ready(function() {
 	// Create the array of table positions to be added all at once to knockout
 	self.table_positions = ko.observableArray([]);
         self.trashed_cards = 0;
+        self.game_over = false;
 
         self.x_spacing = parseInt($(".drop_pile").css("width"), 10) + 15;
         self.y_spacing = parseInt($(".drop_pile").css("height"), 10) + 25;
@@ -86,6 +87,7 @@ $( document ).ready(function() {
         ko.utils.arrayPushAll(self.labels, [
             label_clues   = new Label('LABEL_CLUES'  ,{left:x, top:y},    "Clues left: 8"),
             label_strikes = new Label('LABEL_STRIKES',{left:x+130, top:y}, "Strikes left: 3"),
+            label_game_over = new Label('LABEL_GAME_OVER',{left:x+270, top:y}, ""),
         ]);
         y += 25;
     }
@@ -271,6 +273,13 @@ $( document ).ready(function() {
                 move_card(apm_card, server=true);
             }
 	});
+
+        apm.game_over = data.game_over == 1
+        if (apm.game_over){
+            $( ".draggable" ).draggable('destroy');
+            $( ".draggable" ).removeClass('draggable');
+            apm.labels()[2].text("GAME OVER");
+        }
     });
 
     for (p in _.range(apm.player_count)){

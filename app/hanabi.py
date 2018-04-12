@@ -16,6 +16,7 @@ class HanabiGame:
         self.player_index = {}
         self.gameid = gameid
         self.recent_messages = ["" for i in range(player_num)]
+        self.game_over = False
 
         self.player_turn = 0
         self.hand_size = 4 if self.player_count > 2 else 5
@@ -67,8 +68,6 @@ class HanabiGame:
         if not self.player_turn == i:
             print('Player {}, index {} can not play card {}: it is turn of player {}'.format(player, i, card, self.player_turn))
             return None
-        # Before we return, make sure we pass along to the next player
-        self.next_turn();
         # Reveal the card to all
         card.reveal()
         # Get the corresponding pile
@@ -82,12 +81,14 @@ class HanabiGame:
             if card.card_number == max(HanabiGame.numbers):
                 self.gain_clue()
             self.new_recent_message("played card {}{}".format(card.card_letter, card.card_number), i)
+            self.next_turn();
             return pile
         else:
             card.change_pos('TRASH') # We don't call trash_card because that gives clues back
             self.lose_strike()
             self.draw_card(player)
             self.new_recent_message("failed to place card {}{}".format(card.card_letter, card.card_number), i)
+            self.next_turn();
             return None
 
     def give_clue(self, player, card, info):
@@ -130,6 +131,23 @@ class HanabiGame:
 
     def next_turn(self):
         self.player_turn = (self.player_turn+1) % self.player_count
+        #Check for end of game
+        if (self.strikes_remaining == 0 or not self.can_play()):
+            self.game_over=True
+
+    def can_play(self):
+        # Has a card to play or trash:
+        has_card = len(self.card_positions[str(self.player_turn)]) > 0
+        # Has a clue to give
+        has_clue = self.clues;
+        # and a person to give it to
+        other_card=False
+        for i in range(self.player_count):
+            if (str(i) != str(self.player_turn) and len(self.card_positions[str(i)]) > 0):
+                other_card=True
+                break
+        return (has_card or (has_clue and other_card))
+
 
     def trash_card(self, player, card):
         i = self.player_index[player]
@@ -150,7 +168,6 @@ class HanabiGame:
 
     def lose_strike(self):
         self.strikes_remaining -= 1
-        #TODO losing etc
 
     def gain_clue(self):
         self.clues = min(self.clues+1,HanabiGame.total_clues)
@@ -169,6 +186,7 @@ class HanabiGame:
             "strikes_remaining":self.strikes_remaining,
             "recent_messages":self.recent_messages,
             "players":list(map(lambda p: p.fullname, self.players)),
+            "game_over":int(self.game_over),
             }
         return all_data
 
