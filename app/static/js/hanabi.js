@@ -231,6 +231,9 @@ $( document ).ready(function() {
                 data.players[i]+": "+m
             );
         }
+        // Update deck count
+        cards_left = data.cards.filter( c => c.card_pos=="DECK" ).length;
+        $( "#DECK" ).text("DECK: "+cards_left);
 
         // On turn change, move the indicator
         if (data.player_turn != apm.player_turn()){
