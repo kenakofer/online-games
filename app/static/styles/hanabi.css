@@ -15,7 +15,7 @@
     z-index: 0;
     padding-left: 5px;
     padding-top: 3px;
-    font-family: monospace;
+    font-family: "Courier New", Courier, monospace;
     font-size: 16px;
 }
 #TRASH {
@@ -140,6 +140,8 @@
     text-align: center;
     height:43px;
     margin-top: 5px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 15px;
 }
 
 /* the first class is to increase css specificity ;) */

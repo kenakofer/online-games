@@ -43,11 +43,12 @@
 {% endblock %}
 
 {% block content %}
+    <h1>Hanabi</h1>
     <div data-bind="foreach: cards">
-        <div class="card noselect ui-widget-content draggable" style='top:600;' data-bind="attr: {'id': card_id()}"> 
+        <div class="card noselect ui-widget-content draggable" style='top:600;' data-bind="attr: {'id': card_id()}">
             <div class="cardtopleft" data-bind="text: card_letter"></div>
             <div class="cardtopright" data-bind="text: card_number"></div>
-            <div class="cardbottom">Could be: <br>
+            <div class="cardbottom" ><span style="font-family: serif;"> Could be: </span> <br>
                 <span style="float:left; font-weight:bold;"  data-bind="text: could_be_letters"></span>
                 <span style="float:right;font-weight:bold;" data-bind="text: could_be_numbers"></span>
             </div>

@@ -13,6 +13,7 @@ html, body {
   border-radius: 15px;
   color: #ffd;
   font-family: sans-serif;
+  position: relative; /* Just so descendants can position: absolute */
 }
 h1 {
     color: #ff8;
