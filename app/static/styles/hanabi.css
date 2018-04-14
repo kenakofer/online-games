@@ -169,4 +169,5 @@
 }
 #LABEL_CLUES { color: #ACE; }
 #LABEL_STRIKES { color: #EAA; }
-#LABEL_GAME_OVER { color: red; }
+#LABEL_GAME_OVER { color: red; background: #250; line-height: .8; padding: 5px 5px 0 5px; }
+#LABEL_SCORE { color: white; font-weight: bold;}

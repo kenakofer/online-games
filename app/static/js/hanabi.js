@@ -82,12 +82,13 @@ $( document ).ready(function() {
 	pos_to_push.push(new TablePosition('TRASH',{left:x,top:y}));
 	ko.utils.arrayPushAll(self.table_positions, pos_to_push);
         // Labels
-        y = self.border_top;
+        y = self.border_top-25;
         x = play_area_left
         ko.utils.arrayPushAll(self.labels, [
-            label_clues   = new Label('LABEL_CLUES'  ,{left:x, top:y},    "Clues left: 8"),
-            label_strikes = new Label('LABEL_STRIKES',{left:x+130, top:y}, "Strikes left: 3"),
-            label_game_over = new Label('LABEL_GAME_OVER',{left:x+270, top:y}, ""),
+            self.label_score   = new Label('LABEL_SCORE'  ,{left:x, top:y},    "Score: 0"),
+            self.label_game_over = new Label('LABEL_GAME_OVER',{left:x+130, top:y}, ""),
+            self.label_clues   = new Label('LABEL_CLUES'  ,{left:x, top:y+25},    "Clues left: 8"),
+            self.label_strikes = new Label('LABEL_STRIKES',{left:x+130, top:y+25}, "Strikes left: 3"),
         ]);
         y += 25;
     }
@@ -215,8 +216,9 @@ $( document ).ready(function() {
         console.log(data);
         apm.clues(data.clues);
         apm.strikes_remaining(data.strikes_remaining);
-        apm.labels()[0].text("Clues left: "+apm.clues());
-        apm.labels()[1].text("Strikes left: "+apm.strikes_remaining());
+        apm.label_clues.text("Clues left: "+apm.clues());
+        apm.label_strikes.text("Strikes left: "+apm.strikes_remaining());
+        apm.label_score.text("Score: "+data.score);
         // Swap out player indexes for names and pronouns
         if (data.players) for (i in data.players) for (mi in data.recent_messages){
             if (i == template_player_index)
@@ -281,7 +283,7 @@ $( document ).ready(function() {
         if (apm.game_over){
             $( ".draggable" ).draggable('destroy');
             $( ".draggable" ).removeClass('draggable');
-            apm.labels()[2].text("GAME OVER");
+            apm.label_game_over.text("GAME OVER");
         }
     });
 
