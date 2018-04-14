@@ -18,7 +18,7 @@ def page_not_found(e):
 
 @app.errorhandler(401)
 def not_authorized(e):
-    return redirect('/login')
+    return login()
 
 @app.route("/")
 @app.route("/index")
@@ -36,11 +36,6 @@ def pagecount():
         messages.append( str(current_user.pagecount**2-1)+' is a cool nuber')
         message = 'You have visited this page {} times!'.format(current_user.pagecount)
     return render_template('pagecount.html', title='Pagecount', message=message,  messages=messages)
-
-@app.route('/hanabisample')
-@login_required
-def hanabisample():
-    return render_template('hanabisample.html', title='Hanabi Sample Board', socketio_namespace='/hanabisample')
 
 @app.route('/hanabi/<player_num>/<gameid>')
 @login_required
@@ -94,8 +89,8 @@ def hanabi_lobby():
 @app.route('/login')
 def login():
     if current_user.is_authenticated:
-        return redirect('/index')
-    return """<html><a href="{}">Login with Google</a>""".format(google_login.authorization_url())
+        return redirect('/')
+    return redirect(format(google_login.authorization_url()))
 
 @google_login.login_success
 def login_success(token, profile):
@@ -112,10 +107,9 @@ def login_success(token, profile):
     login_user(user) #TODO add remember me option
     print(message)
     flash(message)
-    return redirect('/index')
-    #return jsonify(token=token, profile=profile)
+    return redirect('/')
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect('/index')
+    return redirect('/')
