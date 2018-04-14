@@ -1,4 +1,6 @@
 from random import shuffle
+from app import db
+from app.models import GameScore, User
 
 #The list to be filled with hanabigames
 hanabi_games = {}
@@ -133,7 +135,29 @@ class HanabiGame:
         self.player_turn = (self.player_turn+1) % self.player_count
         #Check for end of game
         if (self.strikes_remaining == 0 or not self.can_play()):
-            self.game_over=True
+            if not self.game_over:
+                self.submit_score()
+                self.game_over=True
+
+    def submit_score(self):
+        g = GameScore(
+                type = 'hanabi',
+                gname = self.gameid,
+                score = self.get_score(),
+                playercount = self.player_count,
+                handsize = self.hand_size,
+                highestcard = max(HanabiGame.numbers),
+                lettercount = len(HanabiGame.letters),
+                strictness = 0, # TODO change once there are stricter settings
+            )
+        for u in self.players:
+            user = User.query.get(u.id) # Not sure why this is needed, something about sessions expiring
+            user.games.append(g)
+            print("Saving game to database for {}".format(user))
+        db.session.commit()
+
+    def get_score(self):
+        return sum(map(len, [self.card_positions[l] for l in HanabiGame.letters]))
 
     def can_play(self):
         # Has a card to play or trash:
@@ -186,6 +210,7 @@ class HanabiGame:
             "strikes_remaining":self.strikes_remaining,
             "recent_messages":self.recent_messages,
             "players":list(map(lambda p: p.fullname, self.players)),
+            "score":self.get_score(),
             "game_over":int(self.game_over),
             }
         return all_data
