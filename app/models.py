@@ -51,9 +51,11 @@ class GameScore(db.Model):
     score = db.Column(db.Float, nullable=False)
     datetime = db.Column(db.DateTime(), nullable=False, default=datetime.utcnow)
     # For hanabi
-    playercount = db.Column(db.Integer)
     handsize = db.Column(db.Integer)
     highestcard = db.Column(db.Integer)
     lettercount = db.Column(db.Integer)
+    cluemax = db.Column(db.Integer)
+    strikemax = db.Column(db.Integer)
     strictness = db.Column(db.Integer)
+
 

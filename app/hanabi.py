@@ -144,10 +144,11 @@ class HanabiGame:
                 type = 'hanabi',
                 gname = self.gameid,
                 score = self.get_score(),
-                playercount = self.player_count,
                 handsize = self.hand_size,
                 highestcard = max(HanabiGame.numbers),
                 lettercount = len(HanabiGame.letters),
+                cluemax = HanabiGame.total_clues,
+                strikemax = HanabiGame.total_strikes,
                 strictness = 0, # TODO change once there are stricter settings
             )
         for u in self.players:
