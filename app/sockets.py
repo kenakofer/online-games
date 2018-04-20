@@ -4,6 +4,7 @@ from flask_login import current_user
 from app.models import get_stable_user
 from time import sleep
 from app.hanabi import HanabiGame, hanabi_games
+from app.blitz import BlitzGame, blitz_games
 
 @socketio.on('message')
 def handle_message(message):
@@ -12,19 +13,6 @@ def handle_message(message):
 @socketio.on('my event')
 def handle_my_custom_event(json):
     print('custom event "my event" received json: ' + str(json))
-
-
-# Hanabisample
-@socketio.on('connect', namespace='/hanabisample')
-def test_connect_hanabi():
-    print('Client {}: Connected to hanabisample'.format(current_user))
-    emit('NOTIFICATION', {'data':'Welcome to hanabisample, {}!'.format(current_user)})
-    emit('NOTIFICATION', {'data':'Let\'s all welcome {} to hanabisample!'.format(current_user)}, broadcast=True)
-
-
-@socketio.on('CARD MOVE', namespace='/hanabisample')
-def test_connect_hanabi(data):
-    print('Client {}, event {}: {}'.format(current_user, 'CARD MOVE', data))
 
 ##########
 # Hanabi #
@@ -67,3 +55,46 @@ def clue_card(data):
     g.give_clue(current_user, g.card_from_id(data['card_id']), data['card_field'])
     # At the moment, just have the clients request their own individual updates
     emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=g.gameid)
+
+
+
+#########
+# Blitz #
+#########
+
+@socketio.on('connect', namespace='/blitz')
+def connect_blitz():
+    print('Client {}: Connected to blitz'.format(current_user))
+    emit('NOTIFICATION', {'data':'Welcome to blitz, {}!'.format(current_user)})
+    emit('NOTIFICATION', {'data':'Let\'s all welcome {} to blitz!'.format(current_user)}, broadcast=True)
+
+@socketio.on('UPDATE REQUEST', namespace='/blitz')
+def update_request(data):
+    print('Client UPDATE REQUEST: {}'.format(data))
+    g = blitz_games[data['gameid']]
+    g.get_full_update()
+
+@socketio.on('JOIN ROOM', namespace='/blitz')
+def join(data):
+    join_room(data['room'])
+
+# The client tells us that they moved a card. We decide if it's legal and what the implications are
+@socketio.on('CARD MOVE', namespace='/blitz')
+def card_move(data):
+    g = blitz_games[data['gameid']]
+    player = g.get_blitz_player(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD MOVE', data))
+    if "PLAY" in data['card_pos']:
+        print("Trying to play the card...")
+        result = player.play_card(g.card_from_id(data['card_id']), g.card_positions[data['card_pos']])
+    g.get_full_update()
+
+@socketio.on('DEAL DECK', namespace='/blitz')
+def card_move(data):
+    g = blitz_games[data['gameid']]
+    player = g.get_blitz_player(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'DEAL DECK', data))
+    result = player.deal_deck()
+    g.get_full_update()
+
+

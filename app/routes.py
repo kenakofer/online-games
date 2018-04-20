@@ -1,11 +1,12 @@
 from app import app, db
-from flask import render_template, flash, redirect, jsonify
+from flask import render_template, flash, redirect, jsonify, request
 from flask_oauth2_login import GoogleLogin
 from math import floor
 from .forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, get_stable_user
 from app.hanabi import hanabi_games, HanabiGame
+from app.blitz import blitz_games, BlitzGame
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
 google_login = GoogleLogin(app)
@@ -82,6 +83,51 @@ def hanabi_lobby():
                 title='Hanabi Lobby',
             )
 
+###############
+# Dutch Blitz #
+###############
+@app.route('/blitz/<gameid>')
+@login_required
+def blitz(gameid):
+    player_num = request.args.get('num') or 2
+    AI_num = request.args.get('AI') or 0
+    # Current_user now will be the same object as current_user, so we get user here
+    user = get_stable_user()
+    print("{} is requesting to join blitz gameid {}".format(user, gameid))
+    gameid = str(gameid)
+    # If the game doesn't already exist, create it!
+    if not gameid in blitz_games:
+        blitz_games[gameid] = BlitzGame(int(player_num), gameid, AI_num=AI_num)
+        print("Created gameid {}".format(gameid))
+    # See if we are already in the player list
+    game = blitz_games[gameid]
+    print("The users in the game already are {}".format([p.session_user for p in game.players]))
+    # Otherwise, see if it can take more players
+    index = -1
+    for i,p in enumerate(game.players):
+
+        if not p.session_user and not p.AI:
+            print("Player is new")
+            p.session_user = user
+            index = i
+            break
+        elif p.session_user == user:
+            index = i
+            print("Player is returning")
+            break
+    if index==-1:
+        return "The game {} already has {} players".format(gameid, game.player_count)
+
+    print("Taking {} player index".format(index)) #Put the user into the game room
+    return render_template(
+            'blitz.html', 
+            title='Dutch Blitz', 
+            socketio_namespace='/blitz',
+            player_index=index,
+            player_count=game.player_count,
+            queue_size=game.queue_size,
+            gameid=gameid,
+            )
 
 #########
 # Login #

@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
         return '{} (id={})'.format(self.fullname, self.id)
 
     def __eq__(self, other):
-        return self.id == other.id
+        return other and self.id == other.id
 
     def __ne__(self, other):
         return not self.__eq__(other)

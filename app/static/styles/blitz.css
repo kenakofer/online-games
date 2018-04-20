@@ -18,15 +18,6 @@
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
 }
-#TRASH {
-    color: #D22;
-    width: 330px;
-}
-#PLAY {
-    color: white;
-    width: 190px;
-    height: 151px;
-}
 @keyframes drop_pile_dragging {
     from {background-color: #8B6;}
     to   {background-color: #5A3;}
@@ -34,11 +25,11 @@
 .drop_pile.ui-state-active{
     background: #5A3;
     border: 2px solid #474;
-    animation-name: drop_pile_dragging;
+/*    animation-name: drop_pile_dragging;
     animation-duration: .5s;
     animation-direction: alternate;
     animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
+    animation-timing-function: ease-in-out;*/
 }
 .drop_pile.ui-droppable-hover{
     background: #163;
@@ -59,10 +50,11 @@
     border-radius: 4px;
     /* This "shrink-wraps" the card to be as small as its contents */
     display: inline-block;
-    border: 3px solid #68A;
-    text-align: center;
+    border: 2px solid #565;
+    text-align: left;
     padding: 2px;
-    height: 107px;
+    height: 95px;
+    width: 89px;
     margin: 0px;
     background: white;
     /* Add shadows to create the "card" effect */
@@ -71,6 +63,63 @@
     position: absolute;
     transform: scale(1);
     transform-origin: top left;
+    float: left;
+    color: #555;
+    padding: 15px 0 0 15px;
+    font-size: 45px;
+}
+.ui-widget-content.card.yellow {
+    background: #FFB;
+}
+.ui-widget-content.card.red {
+    background: #FBB;
+}
+.ui-widget-content.card.blue {
+    background: #9CF;
+}
+.ui-widget-content.card.green {
+    background: #BFB;
+}
+.ui-widget-content.card.unknown.CARD0 {
+    background: #5D4;
+    background-image: url("/static/images/blitz_icons/pump_stencil.png");
+    background-size: contain;
+}
+.ui-widget-content.card.unknown.CARD0:hover {
+    background: #3B2;
+    background-image: url("/static/images/blitz_icons/pump_stencil.png");
+    background-size: contain;
+    cursor: pointer;
+}
+.ui-widget-content.card.unknown.CARD1 {
+    background: #f66;
+    background-image: url("/static/images/blitz_icons/buggy_stencil.png");
+    background-size: contain;
+}
+.ui-widget-content.card.unknown.CARD1.mycard:hover {
+    background: #D44;
+    background-image: url("/static/images/blitz_icons/buggy_stencil.png");
+    background-size: contain;
+}
+.ui-widget-content.card.unknown.CARD2 {
+    background: #77f;
+    background-image: url("/static/images/blitz_icons/plow_stencil.png");
+    background-size: contain;
+}
+.ui-widget-content.card.unknown.CARD2.mycard:hover {
+    background: #44B;
+    background-image: url("/static/images/blitz_icons/plow_stencil.png");
+    background-size: contain;
+}
+.ui-widget-content.card.unknown.CARD3 {
+    background: #fc0;
+    background-image: url("/static/images/blitz_icons/bucket_stencil.png");
+    background-size: contain;
+}
+.ui-widget-content.card.unknown.CARD3.mycard:hover {
+    background: #EB0;
+    background-image: url("/static/images/blitz_icons/bucket_stencil.png");
+    background-size: contain;
 }
 .ui-draggable {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
@@ -79,7 +128,7 @@
 .ui-draggable:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
     cursor: grab;
-    border: 3px solid #469;
+    border: 2px solid #243;
     cursor: -webkit-grab;
     cursor: -moz-grab;
 }
@@ -93,81 +142,14 @@
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
 }
-
-.ui-widget-content.card.shrink-trash {
-    transform: scale(.33);
-    transition: transform .4s;
-}
-.ui-widget-content.card.shrink-play {
-    transform: scale(.5);
-    transition: transform .4s;
-}
 .ui-widget-content.card.my-card {
     background: #69E;
 }
-
-.cardtopleft{
-/*    border-right: var(--cardinnerborderlight);
-    border-bottom: var(--cardinnerborderlight); */
-    height:60px;
-    width:50px;
-    /* to vertically center text */
-    line-height:70px;
-    float: left;
-    color: #AAA;
-    font-size: 45px;
-    margin-right: 3px;
-}
-.cardtopright{
-    height:60px;
-    width:50px;
-    /* to vertically center text */
-    line-height:70px;
-    color: #AAA;
-    margin-left: 53px;
-    font-size: 45px;
-}
-.known{
-    color: black;
-}
-.cardtopleft:hover{
-    color: black;
-}
-.cardtopright:hover{
-    color: black;
-}
-.cardbottom{ 
-    text-align: center;
-    height:43px;
-    margin-top: 5px;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 15px;
-}
-
-/* the first class is to increase css specificity ;) */
-.ui-widget-content.active-player-indicator{
-    position:absolute;
-    border: 3px solid #d22;
-    border-radius: 8px;
-    background: #583;
-    z-index: 0;
-    width: 658px;
-    height: 157px;
-    left: 25px;
-    top: 75px;
-    box-shadow: 0 0 0 0; 
-}
-.ui-widget-content.active-player-indicator.my-turn{
-    /*background: #D22;*/
-}
-
 .label {
     position: absolute;
     font-weight: bold;
     color: white;
     font-size: 20px;
 }
-#LABEL_CLUES { color: #ACE; }
-#LABEL_STRIKES { color: #EAA; }
 #LABEL_GAME_OVER { color: red; background: #250; line-height: .8; padding: 3px; }
 #LABEL_SCORE { color: white; font-weight: bold;}
