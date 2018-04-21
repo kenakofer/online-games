@@ -3,15 +3,43 @@ from app import app, db, socketio
 from app.models import GameScore, User
 import threading
 from time import sleep, time
-from random import random
+from random import random, sample
 
 #The list to be filled with blitzgames
 blitz_games = {}
+
+bot_first_names = [
+    "SAMUEL",
+    "JACOB",
+    "JOHN",
+    "ISAAC",
+    "ABRAM",
+    "MARK",
+    "MARY",
+    "RUTH",
+    "MARTHA",
+    "SARAH",
+    "HANNAH",
+    "MIRIAM",
+    "MERVIN",
+]
+bot_last_names = [
+    "MILLER",
+    "STOLTZFUS",
+    "HERSHBERGER",
+    "YODER",
+    "HOCHSTETLER",
+    "TROYER",
+    "SCHROCK",
+]
+def get_random_bot_name():
+    return sample(bot_first_names, 1)[0] + "BOT " + sample(bot_last_names, 1)[0]
 
 class BlitzAI( threading.Thread ):
 
     def __init__(self,name,player,speed,mistakes):
         threading.Thread.__init__(self)
+        self.name = name
         self.player = player
         self.player.AI = self
         self.speed = speed
@@ -23,7 +51,6 @@ class BlitzAI( threading.Thread ):
     def run(self):
         while not self.game.game_over:
             self.check_card_loop() or self.player.deal_deck()
-            sleep(self.speed + random()-.5)
             self.player.game.delete_if_stale()
             if self.stopped():
                 print("Blitz AI thread for game {} has been prematurely stopped".format(self.player.game.gameid))
@@ -42,6 +69,8 @@ class BlitzAI( threading.Thread ):
         for c in cards_to_check:
             # Find an empty pile to play a 1 in
             for p in self.game.play_piles:
+                if len(p.cards) > 0:
+                    sleep(self.speed + random()*.05 - .025)
                 if (c.number==len(p.cards)+1) and (len(p.cards)==0 or p.cards[0].color == c.color):
                     self.player.play_card(c, p)
                     return True
@@ -75,7 +104,9 @@ class BlitzPlayer:
         self.game.thread_lock.acquire()
         i = self.player_index
         cards_to_update = card.pos.cards + to_pos.cards
-        if not card.pos in self.card_positions.values():
+        if self.game.game_over:
+            print('Player {}, index {} can\'t play {}: the game is over!'.format(self, i, card, card.pos))
+        elif not card.pos in self.card_positions.values():
             print('Player {}, index {} can\'t play {}: it\'s in pos {}, not theirs!'.format(self, i, card, card.pos))
         elif not "DUMP" in card.pos.name and not "QUEUE" in card.pos.name:
             print('Player {}, index {} can\'t play {}: it\'s in pos {}'.format(self, i, card, card.pos))
@@ -126,6 +157,12 @@ class BlitzPlayer:
                 deck_cards[-1].move_to(self.card_positions['DUMP'])
         self.game.get_full_update(cards=cards_to_update)
 
+    def get_display_name(self):
+        if self.session_user:
+            return self.session_user.fullname
+        if self.AI:
+            return self.AI.name
+        return None
 
 
 class BlitzCard:
@@ -221,7 +258,7 @@ class BlitzGame:
         for pi in range(self.player_count):
             p = BlitzPlayer(pi,self)
             if pi >= self.player_count - self.AI_num:
-                ai = BlitzAI('AI{}'.format(pi),p,1.5, 0)
+                ai = BlitzAI(get_random_bot_name(),p,.1, 0)
                 ai.start()
                 self.ais.append(ai)
         self.time_of_last_update = time()
@@ -252,7 +289,7 @@ class BlitzGame:
         card_info.sort(key=lambda c: "DECK" not in c['pos'])
         card_info.sort(key=lambda c: "STOCK" not in c['pos'])
         card_info.sort(key=lambda c: "PLAY" in c['pos']) #First, we want PLAY cards last
-        player_names = [p.session_user.fullname for p in self.players if p.session_user]
+        player_names = [p.get_display_name() for p in self.players if p.session_user or p.AI]
         scores = [p.get_score() for p in self.players]
         all_data = {
             "cards":card_info,
