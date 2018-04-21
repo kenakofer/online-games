@@ -20,10 +20,9 @@ def handle_my_custom_event(json):
 ##########
 
 @socketio.on('connect', namespace='/hanabi')
-def connect_hanabi():
+def connect_hanabi(data):
     print('Client {}: Connected to hanabi'.format(current_user))
     emit('NOTIFICATION', {'data':'Welcome to hanabi, {}!'.format(current_user)})
-    emit('NOTIFICATION', {'data':'Let\'s all welcome {} to hanabi!'.format(current_user)}, broadcast=True)
 
 @socketio.on('UPDATE REQUEST', namespace='/hanabi')
 def update_request(data):
@@ -34,6 +33,7 @@ def update_request(data):
 @socketio.on('JOIN ROOM', namespace='/hanabi')
 def join(data):
     join_room(data['room'])
+    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
 
 # The client tells us that they moved a card. We decide if it's legal and what the implications are
 @socketio.on('CARD MOVE', namespace='/hanabi')
@@ -67,7 +67,6 @@ def clue_card(data):
 def connect_blitz():
     print('Client {}: Connected to blitz'.format(current_user))
     emit('NOTIFICATION', {'data':'Welcome to blitz, {}!'.format(current_user)})
-    emit('NOTIFICATION', {'data':'Let\'s all welcome {} to blitz!'.format(current_user)}, broadcast=True)
 
 @socketio.on('UPDATE REQUEST', namespace='/blitz')
 def update_request(data):
@@ -79,6 +78,7 @@ def update_request(data):
 @socketio.on('JOIN ROOM', namespace='/blitz')
 def join(data):
     join_room(data['room'])
+    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
 
 # The client tells us that they moved a card. We decide if it's legal and what the implications are
 @socketio.on('CARD MOVE', namespace='/blitz')
