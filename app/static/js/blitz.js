@@ -129,7 +129,7 @@ $( document ).ready(function() {
                 self.table_positions.push(tp);
                 $( "#PLAY"+i ).addClass('.play_pile');
             }
-            y= self.border_top + 2*self.y_spacing + 4*ys + 20;
+            y= self.border_top + 2*self.y_spacing + 2*ys + 30;
             x=self.border_left
             self.table_positions.push(new TablePosition("CLEARED", {left:x,top:y}, "CLEARED",cleared_stack));
 
