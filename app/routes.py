@@ -46,7 +46,7 @@ def hanabi(player_num, gameid):
     print("{} is requesting to join hanabi gameid {}".format(user, gameid))
     gameid = str(gameid)
     # If the game doesn't already exist, create it!
-    if not gameid in hanabi_games:
+    if not gameid in hanabi_games or hanabi_games[gameid].game_over:
         hanabi_games[gameid] = HanabiGame(int(player_num), gameid)
         print("Created gameid {}".format(gameid))
     # See if we are already in the player list
@@ -98,7 +98,7 @@ def blitz(gameid):
     print("{} is requesting to join blitz gameid {}".format(user, gameid))
     gameid = str(gameid)
     # If the game doesn't already exist, create it!
-    if not gameid in blitz_games:
+    if not gameid in blitz_games or blitz_games[gameid].game_over:
         blitz_games[gameid] = BlitzGame(int(player_num), gameid, AI_num=AI_num, queue_size=queue_size, stock_size=stock_size)
         print("Created gameid {}".format(gameid))
     # See if we are already in the player list
