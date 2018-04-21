@@ -2,8 +2,19 @@
 
 $( document ).ready(function() {
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    shuffle = function(array) {
+        var currentIndex = array.length, tmp, randomIndex;
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+            // Pick a remaining element
+            randomIndex = Math.floor(Math.random() * currentIndex)
+            currentIndex -= 1;
+            // And swap it with the currentIndex
+            tmp = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = tmp;
+        }
+        return array;
     }
 
     // Knockout.js: This is a simple *viewmodel* - JavaScript that defines the
@@ -52,32 +63,77 @@ $( document ).ready(function() {
 	self.table_positions = ko.observableArray([]);
         self.x_spacing = parseInt($(".drop_pile").css("width"), 10) + 10;
         self.y_spacing = parseInt($(".drop_pile").css("height"), 10) + 15;
+        ys = parseInt($(".drop_pile").css("height"), 10) + 6
+        xs = parseInt($(".drop_pile").css("width"), 10) + 6
         self.border_left = 30;
         self.border_top  = 80;
+        self.player_piles_width = (self.queue_size + 2) * self.x_spacing + 20
         y = self.border_top;
         x = self.border_left;
-	var pos_to_push = []
         // Create all the TablePositions at specific locations
         tight_stack={top:.5,left:.5}
-	for (pi in _.range(self.player_count)){
-            pi1 = 1+parseInt(pi,10);
-            self.table_positions.push(new TablePosition('P'+pi+'_STOCK', {left:x,top:y}," ",tight_stack));
-            self.table_positions.push(new TablePosition('P'+pi+'_QUEUE', {left:x,top:y},"Waiting for player "+pi1+" to connect...",stack_position_offset={top:0,left:self.x_spacing}, true,false,false ));
-            x += self.queue_size * self.x_spacing;
-            clickable = (pi == template_player_index)
-            self.table_positions.push(new TablePosition('P'+pi+'_DECK', {left:x,top:y},"DECK", tight_stack, false,clickable,false));
-            x += self.x_spacing;
-            self.table_positions.push(new TablePosition('P'+pi+'_DUMP', {left:x,top:y},"DUMP", tight_stack, "top",false,false));
-            x += 20;
-	    for (c in _.range(4)){
+        loose_stack={top:1,left:1}
+        cleared_stack={top:0,left:22}
+        if (self.player_count > 4) {
+            for (pi in _.range(self.player_count)){
+                pi1 = 1+parseInt(pi,10);
+                self.table_positions.push(new TablePosition('P'+pi+'_STOCK', {left:x,top:y}," ",loose_stack));
+                self.table_positions.push(new TablePosition('P'+pi+'_QUEUE', {left:x,top:y},"Waiting for player "+pi1+" to connect...",stack_position_offset={top:0,left:self.x_spacing}, true,false,false ));
+                x += self.queue_size * self.x_spacing;
+                clickable = (pi == template_player_index)
+                self.table_positions.push(new TablePosition('P'+pi+'_DECK', {left:x,top:y},"DECK", tight_stack, false,clickable,false));
                 x += self.x_spacing;
-                tp = new TablePosition('PLAY'+pi+c, {left:x,top:y}, " ", tight_stack, false,false,true);
-		self.table_positions.push(tp);
-	    }
-	    x = self.border_left;
-	    y += self.y_spacing;
-	}
-        self.table_positions.push(new TablePosition("CLEARED", {left:x,top:y}, "CLEARED"));
+                self.table_positions.push(new TablePosition('P'+pi+'_DUMP', {left:x,top:y},"DUMP", tight_stack, "top",false,false));
+                x += 20;
+                x = self.border_left;
+                y += self.y_spacing;
+            }
+            self.table_positions.push(new TablePosition("CLEARED", {left:x,top:y}, "CLEARED",cleared_stack));
+
+            y = self.border_top;
+            shuffled = shuffle(_.range(4*self.player_count))
+            for (r in _.range(self.player_count)){
+                x = self.border_left + self.player_piles_width;
+                for (c in _.range(4)){
+                    i = parseInt(r) * 4 + parseInt(c);
+                    tp = new TablePosition('PLAY'+shuffled[i], {left:x,top:y}, " ", loose_stack, false,false,true);
+                    self.table_positions.push(tp);
+                    $( "#PLAY"+i ).addClass('.play_pile');
+                    x += xs;
+                }
+                y += ys;;
+            }
+        }
+        else{ //4 or fewer players
+            for (pi in _.range(self.player_count)){
+                if (pi%2 == 0) y=self.border_top;
+                else y= self.border_top + self.y_spacing + 2*ys + 25;
+                if (Math.floor(pi/2) == 0) x=self.border_left;
+                else x=self.border_left + self.player_piles_width;
+
+                pi1 = 1+parseInt(pi,10);
+                self.table_positions.push(new TablePosition('P'+pi+'_STOCK', {left:x,top:y}," ",loose_stack));
+                self.table_positions.push(new TablePosition('P'+pi+'_QUEUE', {left:x,top:y},"Waiting for player "+pi1+" to connect...",stack_position_offset={top:0,left:self.x_spacing}, true,false,false ));
+                x += self.queue_size * self.x_spacing;
+                clickable = (pi == template_player_index);
+                self.table_positions.push(new TablePosition('P'+pi+'_DECK', {left:x,top:y},"DECK", tight_stack, false,clickable,false));
+                x += self.x_spacing;
+                self.table_positions.push(new TablePosition('P'+pi+'_DUMP', {left:x,top:y},"DUMP", tight_stack, "top",false,false));
+            }
+            x = self.border_left + 2*xs;
+            shuffled = shuffle(_.range(4*self.player_count))
+            for (i in _.range(4*self.player_count)){
+                x = self.border_left + 2.3*xs + Math.floor(i/2)*xs;
+                y = self.border_top + self.y_spacing + 10 + (i%2)*ys;
+                tp = new TablePosition('PLAY'+shuffled[i], {left:x,top:y}, " ", loose_stack, false,false,true);
+                self.table_positions.push(tp);
+                $( "#PLAY"+i ).addClass('.play_pile');
+            }
+            y= self.border_top + 2*self.y_spacing + 4*ys + 20;
+            x=self.border_left
+            self.table_positions.push(new TablePosition("CLEARED", {left:x,top:y}, "CLEARED",cleared_stack));
+
+        }
         // Labels
         y = self.border_top-25;
         x = self.border_left;
@@ -85,6 +141,7 @@ $( document ).ready(function() {
             self.label_game_over = new Label('LABEL_GAME_OVER',{left:x+130, top:y}, ""),
         ]);
     }
+
     apm = new AppViewModel()
     // Activates knockout.js
     ko.applyBindings(apm);
@@ -282,6 +339,13 @@ $( document ).ready(function() {
         if (apm_tp.droppable){
             //console.log("Adding class droppable to #"+apm_tp.id());
             elem.addClass("droppable");
+        }
+    }
+
+    for (r in _.range(apm.player_count)){
+        for (c in _.range(4)){
+            i = parseInt(r) * 4 + parseInt(c);
+            $( "#PLAY"+i ).addClass('play_pile');
         }
     }
 

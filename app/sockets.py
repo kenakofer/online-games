@@ -84,10 +84,9 @@ def card_move(data):
     g = blitz_games[data['gameid']]
     player = g.get_blitz_player(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD MOVE', data))
-    if "PLAY" in data['card_pos']:
-        print("Trying to play the card...")
-        result = player.play_card(g.card_from_id(data['card_id']), g.card_positions[data['card_pos']])
-    g.get_full_update()
+    print("Trying to play the card...")
+    result = player.play_card(g.card_from_id(data['card_id']), g.card_positions[data['card_pos']])
+    # g.get_full_update() This is run in play_card
 
 @socketio.on('DEAL DECK', namespace='/blitz')
 def card_move(data):
@@ -95,6 +94,3 @@ def card_move(data):
     player = g.get_blitz_player(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'DEAL DECK', data))
     result = player.deal_deck()
-    g.get_full_update()
-
-

@@ -4,7 +4,6 @@ from app.models import GameScore, User
 import threading
 from time import sleep
 from random import random
-#from flask_socketio import emit
 
 #The list to be filled with blitzgames
 blitz_games = {}
@@ -32,12 +31,6 @@ class BlitzAI( threading.Thread ):
         for c in cards_to_check:
             # Find an empty pile to play a 1 in
             for p in self.game.play_piles:
-                '''
-                print(c.number, len(p.cards)+1)
-                print(len(p.cards))
-                if (len(p.cards)>0):
-                    print(p.cards[0].color, c.color)
-                '''
                 if (c.number==len(p.cards)+1) and (len(p.cards)==0 or p.cards[0].color == c.color):
                     self.player.play_card(c, p)
                     return True
@@ -55,13 +48,14 @@ class BlitzPlayer:
         self.cards = BlitzDeck.get_fresh_player_deck(self)
         # Create the player's card positions
         # The stock pile
-        self.card_positions['STOCK']= CardPosition(game,"P{}_STOCK".format(pi),self.cards[:9])
+        si = self.game.stock_size
+        self.card_positions['STOCK']= CardPosition(game,"P{}_STOCK".format(pi),self.cards[:si])
         # The queue positions, holding 4 cards, the first of which could be on top of the stock pile
-        self.card_positions['QUEUE']= CardPosition(game,"P{}_QUEUE".format(pi),self.cards[9:13])
+        self.card_positions['QUEUE']= CardPosition(game,"P{}_QUEUE".format(pi),self.cards[si : si+self.game.queue_size])
         # The dump position
         self.card_positions['DUMP']= CardPosition(game,"P{}_DUMP".format(pi),[])
         # The deck position
-        self.card_positions['DECK']= CardPosition(game,"P{}_DECK".format(pi),self.cards[13:])
+        self.card_positions['DECK']= CardPosition(game,"P{}_DECK".format(pi),self.cards[si+self.game.queue_size:])
 
         def __repr__(self):
             return str(self.session_user)
@@ -69,6 +63,7 @@ class BlitzPlayer:
     def play_card(self, card, to_pos):
         self.game.thread_lock.acquire()
         i = self.player_index
+        cards_to_update = card.pos.cards + to_pos.cards
         if not card.pos in self.card_positions.values():
             print('Player {}, index {} can\'t play {}: it\'s in pos {}, not theirs!'.format(self, i, card, card.pos))
         elif not "DUMP" in card.pos.name and not "QUEUE" in card.pos.name:
@@ -86,20 +81,20 @@ class BlitzPlayer:
         else:
             if 'QUEUE' in card.pos.name:
                 if len(self.card_positions['STOCK'].cards) > 0:
-                    self.card_positions['STOCK'].cards[-1].move_to(self.card_positions['QUEUE'], prepend=True)
+                    top_stock = self.card_positions['STOCK'].cards[-1]
+                    top_stock.move_to(self.card_positions['QUEUE'], prepend=True)
+                    cards_to_update.append(top_stock)
                 else:
                     self.game.game_over = True
 
             card.move_to(to_pos)
             # If it's card #10, remove from the board
             if card.number == 10:
-                for c in card.pos.cards:
+                for c in card.pos.cards[:]:
                     c.move_to(self.game.card_positions['CLEARED'])
-                    c.reveal(value=False)
-
             self.played_cards += 1
         self.game.thread_lock.release()
-        self.game.get_full_update()
+        self.game.get_full_update(cards=cards_to_update)
         return to_pos
 
     def get_score(self):
@@ -109,6 +104,7 @@ class BlitzPlayer:
         # Reset deck when all cards are gone
         deck_cards = self.card_positions['DECK'].cards
         dump_cards = self.card_positions['DUMP'].cards
+        cards_to_update = deck_cards + dump_cards
         if len(deck_cards) == 0:
             for i in range(len(dump_cards)-1, -1, -1):
                 dump_cards[i].move_to(self.card_positions['DECK'])
@@ -117,7 +113,7 @@ class BlitzPlayer:
                 if len(deck_cards) == 0:
                     break
                 deck_cards[-1].move_to(self.card_positions['DUMP'])
-        self.game.get_full_update()
+        self.game.get_full_update(cards=cards_to_update)
 
 
 
@@ -184,15 +180,21 @@ class CardPosition:
 
 class BlitzGame:
 
-    def __init__(self,player_num,gameid, AI_num=0):
+    def __init__(self,player_num,gameid, AI_num=0, stock_size=9, queue_size=None):
         self.AI_num = int(AI_num)
         self.player_count = player_num
+        self.stock_size = stock_size
+        self.queue_size = queue_size
+        if not self.queue_size:
+            if self.player_count < 3:
+                self.queue_size = 5
+            else:
+                self.queue_size = 4
         self.players = []
         self.all_cards = []
         self.gameid = gameid
         self.recent_messages = ["" for i in range(player_num)]
         self.game_over = False
-        self.queue_size = 4
         self.colors = ['red','green','blue','yellow']
         self.numbers = list(range(1,11))
         self.card_positions = {}
@@ -200,7 +202,7 @@ class BlitzGame:
         self.thread_lock.acquire()
 
         # Create the table positions
-        self.play_piles = [CardPosition(self,"PLAY{}{}".format(r,c),[]) for c in range(4) for r in range(self.player_count) ]
+        self.play_piles = [CardPosition(self,"PLAY{}".format(i),[]) for i in range(4*self.player_count)]
         self.cleared_pile = CardPosition(self,"CLEARED",[])
         # Player card positions are kept track of in the player class, but are
         # also placed in the BlitzGame card_positions
@@ -227,10 +229,11 @@ class BlitzGame:
         #TODO
         print("Passing on submit_score")
 
-    def get_full_update(self):
+    def get_full_update(self, cards=None):
+        cards = cards or self.all_cards
         self.thread_lock.acquire()
         #Most of the info needed in the cards
-        card_info = [c.get_info() for c in self.all_cards]
+        card_info = [c.get_info() for c in cards]
         card_info.sort(key=lambda c: c['card_index'])
         card_info.sort(key=lambda c: "DECK" not in c['pos'])
         card_info.sort(key=lambda c: "STOCK" not in c['pos'])
@@ -269,7 +272,17 @@ class BlitzDeck:
                 # We won't set positions, trusting they will be divied out elsewhere
                 deck.append(BlitzCard(player.game,None,color,num,None,player))
         BlitzDeck.shuffle_cards(deck)
+        i=1
+        while not BlitzDeck.isvalid(deck,player):
+            print("Reshuffling #{}".format(i))
+            i+=1
+            BlitzDeck.shuffle_cards(deck)
         # Ids are telling now. Go through and change
         for i,c in enumerate(deck):
             c.id = "CARD{}_{}".format(player.player_index, i)
         return deck
+
+    def isvalid(deck,player):
+        ss = player.game.stock_size
+        qs = player.game.queue_size
+        return (not 1 in [c.number for c in deck[:ss]]) and (sum([c.number for c in deck[ss:ss+qs]]) < 20)

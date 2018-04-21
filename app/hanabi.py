@@ -197,12 +197,13 @@ class HanabiGame:
     def gain_clue(self):
         self.clues = min(self.clues+1,HanabiGame.total_clues)
 
-    def get_full_update(self, user):
+    def get_full_update(self, user, cards=None):
+        cards = cards or self.all_cards
         if not user in self.players:
             print("Full update request from nonplayer {}".format(user))
             return None
         #Most of the info needed in the cards
-        card_info = [c.get_info(user) for c in self.all_cards]
+        card_info = [c.get_info(user) for c in cards]
         print("Giving full update to {}".format(user))
         all_data = {
             "cards":card_info,

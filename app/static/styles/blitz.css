@@ -9,14 +9,19 @@
     color: #DFA;
     border-radius: 6px;
     border: 2px solid #474;
-    width: 117px;
-    height: 145px;
+    width: 97px;
+    height: 125px;
     position: absolute;
     z-index: 0;
     padding-left: 5px;
     padding-top: 3px;
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
+}
+.drop_pile.play_pile {
+    background: #7A6;
+    border-radius: 4px;
+    border: 2px solid #474;
 }
 @keyframes drop_pile_dragging {
     from {background-color: #8B6;}
@@ -52,9 +57,8 @@
     display: inline-block;
     border: 2px solid #565;
     text-align: left;
-    padding: 2px;
-    height: 95px;
-    width: 89px;
+    height: 75px;
+    width: 69px;
     margin: 0px;
     background: white;
     /* Add shadows to create the "card" effect */
@@ -65,8 +69,9 @@
     transform-origin: top left;
     float: left;
     color: #555;
-    padding: 15px 0 0 15px;
-    font-size: 45px;
+    padding: 10px 0 0 10px;
+    font-size: 35px;
+    font-weight: bold;
 }
 .ui-widget-content.card.yellow {
     background: #FFB;

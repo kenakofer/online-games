@@ -89,15 +89,17 @@ def hanabi_lobby():
 @app.route('/blitz/<gameid>')
 @login_required
 def blitz(gameid):
-    player_num = request.args.get('num') or 2
+    player_num = int(request.args.get('num') or 2)
     AI_num = request.args.get('AI') or 0
+    stock_size = request.args.get('stock') or 9
+    queue_size = request.args.get('queue') or (4 if player_num>2 else 5)
     # Current_user now will be the same object as current_user, so we get user here
     user = get_stable_user()
     print("{} is requesting to join blitz gameid {}".format(user, gameid))
     gameid = str(gameid)
     # If the game doesn't already exist, create it!
     if not gameid in blitz_games:
-        blitz_games[gameid] = BlitzGame(int(player_num), gameid, AI_num=AI_num)
+        blitz_games[gameid] = BlitzGame(int(player_num), gameid, AI_num=AI_num, queue_size=queue_size, stock_size=stock_size)
         print("Created gameid {}".format(gameid))
     # See if we are already in the player list
     game = blitz_games[gameid]
