@@ -288,6 +288,7 @@ $( document ).ready(function() {
             $( "#P"+i+"_QUEUE" ).text(
                 data.players[i]+",  Round Score "+data.score[i]
             );
+            $( "#P"+i+"_QUEUE" ).removeClass('unjoined');
             // Update deck count
             cards_left = data.cards.filter( c => c.pos=="DECK" ).length;
             $( "#p"+i+"DECK" ).text("DECK: "+cards_left);
@@ -331,6 +332,7 @@ $( document ).ready(function() {
 
     for (p in _.range(apm.player_count)){
         $( '#P'+p+'_QUEUE' ).css({'width':apm.x_spacing*apm.queue_size-13,'z-index':1});
+        $( '#P'+p+'_QUEUE' ).addClass('unjoined');
     }
     $( '#P'+template_player_index+'_DECK' ).click(click_function);
     for (i in apm.table_positions()){
