@@ -2,7 +2,7 @@ from random import shuffle
 from app import app, db, socketio
 from app.models import GameScore, User
 import threading
-from time import sleep
+from time import sleep, time
 from random import random
 
 #The list to be filled with blitzgames
@@ -18,11 +18,22 @@ class BlitzAI( threading.Thread ):
         self.mistakes = mistakes
         self.game = player.game
 
+        self._stop_event = threading.Event()
+
     def run(self):
         while not self.game.game_over:
             self.check_card_loop() or self.player.deal_deck()
             sleep(self.speed + random()-.5)
+            self.player.game.delete_if_stale()
+            if self.stopped():
+                print("Blitz AI thread for game {} has been prematurely stopped".format(self.player.game.gameid))
+                return
 
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
 
     def check_card_loop(self):
         cards_to_check = self.player.card_positions['QUEUE'].cards[:]
@@ -147,7 +158,7 @@ class BlitzCard:
         return d
 
     def move_to(self, new_pos, prepend=False):
-        print("Moving card {} to {}".format(self, new_pos))
+        #print("Moving card {} to {}".format(self, new_pos))
         # Remove card from old position, add to new position and set the variable
         if (self.pos):
             self.pos.cards.remove(self)
@@ -204,6 +215,7 @@ class BlitzGame:
         # Create the table positions
         self.play_piles = [CardPosition(self,"PLAY{}".format(i),[]) for i in range(4*self.player_count)]
         self.cleared_pile = CardPosition(self,"CLEARED",[])
+        self.ais = []
         # Player card positions are kept track of in the player class, but are
         # also placed in the BlitzGame card_positions
         for pi in range(self.player_count):
@@ -211,6 +223,8 @@ class BlitzGame:
             if pi >= self.player_count - self.AI_num:
                 ai = BlitzAI('AI{}'.format(pi),p,1.5, 0)
                 ai.start()
+                self.ais.append(ai)
+        self.time_of_last_update = time()
         self.thread_lock.release()
 
     def get_blitz_player(self, session_user):
@@ -257,6 +271,16 @@ class BlitzGame:
             if card.id == card_id:
                 return card
         return None
+
+    def delete_if_stale(self):
+        # Stop the game and AIs if inactive for this many seconds
+        if time() - self.time_of_last_update > 60*60:
+            self.game_over = True
+            print("Stopping game {} due to inactivity".format(self.gameid))
+            for ai in self.ais:
+                ai.stop()
+            self.get_full_update()
+
 
 class BlitzDeck:
 

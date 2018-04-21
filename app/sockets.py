@@ -5,6 +5,7 @@ from app.models import get_stable_user
 from time import sleep
 from app.hanabi import HanabiGame, hanabi_games
 from app.blitz import BlitzGame, blitz_games
+from time import time
 
 @socketio.on('message')
 def handle_message(message):
@@ -73,6 +74,7 @@ def update_request(data):
     print('Client UPDATE REQUEST: {}'.format(data))
     g = blitz_games[data['gameid']]
     g.get_full_update()
+    g.time_of_last_update = time()
 
 @socketio.on('JOIN ROOM', namespace='/blitz')
 def join(data):
@@ -86,6 +88,7 @@ def card_move(data):
     print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD MOVE', data))
     print("Trying to play the card...")
     result = player.play_card(g.card_from_id(data['card_id']), g.card_positions[data['card_pos']])
+    g.time_of_last_update = time()
     # g.get_full_update() This is run in play_card
 
 @socketio.on('DEAL DECK', namespace='/blitz')
