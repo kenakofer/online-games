@@ -20,7 +20,7 @@ def handle_my_custom_event(json):
 ##########
 
 @socketio.on('connect', namespace='/hanabi')
-def connect_hanabi(data):
+def connect_hanabi():
     print('Client {}: Connected to hanabi'.format(current_user))
     emit('NOTIFICATION', {'data':'Welcome to hanabi, {}!'.format(current_user)})
 
