@@ -15,6 +15,20 @@ html, body {
   font-family: sans-serif;
   position: relative; /* Just so descendants can position: absolute */
 }
+.flash_messages {
+    background: #9d7;
+    padding: 20px;
+    margin: 10px;
+    border: 2px solid #453;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 19px;
+    list-style-type: none;
+}
+.set_min_width {
+    /* To be changed by the js on different pages */
+    min-width: 925px;
+}
 h1 {
     color: #ff8;
     margin-top: 0;

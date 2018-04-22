@@ -103,6 +103,7 @@ $( document ).ready(function() {
                 y += self.y_spacing;
             }
             self.table_positions.push(new TablePosition("CLEARED", {left:x,top:y}, "CLEARED",cleared_stack));
+            $( ".content" ).css('min-height', y+ys);
 
             y = self.border_top;
             shuffled = shuffle(_.range(4*self.player_count))
@@ -117,6 +118,7 @@ $( document ).ready(function() {
                 }
                 y += ys;;
             }
+            $( ".set_min_width" ).css("min-width", x-15);
         }
         else{ //4 or fewer players
             for (pi in _.range(self.player_count)){
@@ -146,6 +148,9 @@ $( document ).ready(function() {
             y= self.border_top + 2*self.y_spacing + 2*ys + 30;
             x=self.border_left
             self.table_positions.push(new TablePosition("CLEARED", {left:x,top:y}, "CLEARED",cleared_stack));
+
+            $( ".content" ).css('min-height', y+ys);
+            $( ".set_min_width" ).css("min-width", self.border_left + 2*self.player_piles_width - 30);
 
         }
         // Labels
