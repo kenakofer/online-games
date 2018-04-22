@@ -131,6 +131,14 @@ def blitz(gameid):
             gameid=gameid,
             )
 
+@app.route('/blitz')
+@login_required
+def blitz_lobby():
+    return render_template(
+                'blitz_lobby.html',
+                title='Dutch Blitz Lobby',
+            )
+
 #########
 # Login #
 #########
