@@ -1,7 +1,21 @@
 // Any varibles preceded by "template_" are inserted into the html's inline js
 
 $( document ).ready(function() {
+    // For IE, which doesn't have incl
+    if (!String.prototype.includes) {
+      String.prototype.includes = function(search, start) {
+	'use strict';
+	if (typeof start !== 'number') {
+	  start = 0;
+	}
 
+	if (start + search.length > this.length) {
+	  return false;
+	} else {
+	  return this.indexOf(search, start) !== -1;
+	}
+      };
+    }
     shuffle = function(array) {
         var currentIndex = array.length, tmp, randomIndex;
         // While there remain elements to shuffle...
@@ -30,7 +44,7 @@ $( document ).ready(function() {
         self.card_index = -1; //If there are multiple cards in a position, this is the index of this card
         self.is_top = false;
     };
-    function TablePosition(id, coord_position, text=undefined, stack_position_offset={top:0,left:0}, draggable, clickable, droppable){
+    function TablePosition(id, coord_position, text, stack_position_offset, draggable, clickable, droppable){
 	var self = this;
 	self.id = ko.observable(id);
 	self.pos = ko.observable(coord_position);
@@ -38,7 +52,7 @@ $( document ).ready(function() {
         self.clickable = clickable;
         self.draggable = draggable;
         self.droppable = droppable;
-        self.stack_position_offset = stack_position_offset;
+        self.stack_position_offset = stack_position_offset || {top:0,left:0};
         self.cards = ko.observableArray([]);
     };
     function Label(id, coord_position, text){
@@ -176,7 +190,8 @@ $( document ).ready(function() {
     }
     var card_z_pos = 100;
     var last_deal = -1;
-    move_card = function(apm_card, apm_pos, card_index=0, server=false, is_top=false) {
+    move_card = function(apm_card, apm_pos, card_index, server, is_top) {
+        card_index = card_index || 0;
         // Remove from the cards old position
         if (apm_card.pos()){
             apm_card.pos().cards.remove(apm_card);
@@ -290,7 +305,7 @@ $( document ).ready(function() {
             );
             $( "#P"+i+"_QUEUE" ).removeClass('unjoined');
             // Update deck count
-            cards_left = data.cards.filter( c => c.pos=="DECK" ).length;
+            cards_left = data.cards.filter( function(c){ return c.pos=="DECK" }).length;
             $( "#p"+i+"DECK" ).text("DECK: "+cards_left);
         }
 
