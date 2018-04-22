@@ -1,6 +1,22 @@
 // Any varibles preceded by "template_" are inserted into the html's inline js
 
-$( document ).ready(function() {
+$( document ).ready(function(){
+
+    // For IE, which doesn't have includes
+    if (!String.prototype.includes) {
+      String.prototype.includes = function(search, start) {
+	'use strict';
+	if (typeof start !== 'number') {
+	  start = 0;
+	}
+
+	if (start + search.length > this.length) {
+	  return false;
+	} else {
+	  return this.indexOf(search, start) !== -1;
+	}
+      };
+    }
     // Knockout.js: This is a simple *viewmodel* - JavaScript that defines the
     // data and behavior of your UI
     function Card(id, position, letter, number){
@@ -13,7 +29,7 @@ $( document ).ready(function() {
         self.could_be_numbers = ko.observable("");
         self.move_confirmed_by_server = false;
     };
-    function TablePosition(id, coord_position, text=undefined){
+    function TablePosition(id, coord_position, text){
 	var self = this;
 	self.id = ko.observable(id);
 	self.position = ko.observable(coord_position);
@@ -110,7 +126,7 @@ $( document ).ready(function() {
 	}
     };
     var card_z_pos = 100;
-    move_card = function(apm_card, server=false) {
+    move_card = function(apm_card, server) {
         apm_card.move_confirmed_by_server = server;
 	draggable = $("#"+apm_card.card_id());
 	posid = "#"+apm_card.card_position();
@@ -234,7 +250,7 @@ $( document ).ready(function() {
             );
         }
         // Update deck count
-        cards_left = data.cards.filter( c => c.card_pos=="DECK" ).length;
+        cards_left = data.cards.filter( function(c) {return c.card_pos=="DECK"} ).length;
         $( "#DECK" ).text("DECK: "+cards_left);
 
         // On turn change, move the indicator
