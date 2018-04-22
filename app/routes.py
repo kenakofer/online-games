@@ -1,5 +1,5 @@
 from app import app, db
-from flask import render_template, flash, redirect, jsonify, request
+from flask import render_template, flash, redirect, jsonify, request, url_for
 from flask_oauth2_login import GoogleLogin
 from math import floor
 from .forms import LoginForm
@@ -7,6 +7,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, get_stable_user
 from app.hanabi import hanabi_games, HanabiGame
 from app.blitz import blitz_games, BlitzGame
+from datetime import timedelta
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
 google_login = GoogleLogin(app)
@@ -18,8 +19,12 @@ def page_not_found(e):
     return render_template('404.html'), 404
 
 @app.errorhandler(401)
-def not_authorized(e):
-    return login()
+def handle_needs_login(e):
+    response = redirect('/login')
+    print(request)
+    print("Setting cookie 'next' to {}".format(request.url))
+    response.set_cookie('next', request.url, max_age=timedelta(minutes=5))
+    return response
 
 @app.route("/")
 @app.route("/index")
@@ -146,7 +151,7 @@ def blitz_lobby():
 def login():
     if current_user.is_authenticated:
         return redirect('/')
-    return redirect(format(google_login.authorization_url()))
+    return redirect(google_login.authorization_url())
 
 @google_login.login_success
 def login_success(token, profile):
@@ -163,7 +168,9 @@ def login_success(token, profile):
     login_user(user) #TODO add remember me option
     print(message)
     flash(message)
-    return redirect('/')
+    print("cookie set to {}".format(request.cookies.get('next')))
+    dest = request.cookies.get('next') or '/'
+    return redirect(dest)
 
 @app.route('/logout')
 def logout():
