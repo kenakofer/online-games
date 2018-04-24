@@ -28,6 +28,9 @@ def handle_needs_login(e):
 
 @app.route("/")
 @app.route("/index")
+def index():
+    return render_template('index.html', title='Card and Board Games Online')
+
 @app.route("/pagecount")
 def pagecount():
     messages = [

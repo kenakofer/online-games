@@ -27,7 +27,7 @@ html, body {
 }
 .set_min_width {
     /* To be changed by the js on different pages */
-    min-width: 925px;
+    min-width: 800px;
 }
 h1 {
     color: #ff8;
@@ -35,7 +35,7 @@ h1 {
     font-family: serif;
 }
 h2 {
-    color: #ffa;
+    color: #ffd;
     font-family: serif;
 }
 hr {
@@ -53,6 +53,10 @@ hr {
 .header span {
     margin: 20px;
     color: #FC4;
+}
+a {
+    color: #ee4;
+    font-weight: bold;
 }
 .header a {
     color: #FC4;
