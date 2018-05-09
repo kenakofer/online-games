@@ -47,7 +47,11 @@ $( document ).ready(function() {
         self.position_offset = ko.computed(function() {
             if (self.type() == 'Deck'){
                 return [-10, -27];
+            } else if (self.type() == 'Card' && self.parent_id()){
+                i = self.get_index_in_parent();
+                return [i/2,i/2]
             }
+            // Otherwise
             return [0,0];
         }, this);
 
@@ -81,14 +85,15 @@ $( document ).ready(function() {
 
     // Careful, it places this on top of the pid stack
     TableMovable.prototype.set_parent_id = function(pid){
+        console.log("Setting parent of "+this.id()+" to "+pid);
         if (this.parent_id() === pid)
             return
-        //console.log("Setting parent of "+this.id()+" to "+pid);
         // Remove from old parent dependents if possible
         obj_old_parent = get_apm_obj( this.parent_id() );
         if (obj_old_parent){
             array = obj_old_parent.dependent_ids
-            array.splice( $.inArray(pid, array()), 1);
+            array.splice( $.inArray(this.id(), array()), 1);
+            //console.log('removed '+this.id()+' from parent dependents');
         }
         // Set new parent
         this.parent_id( pid );
@@ -108,6 +113,13 @@ $( document ).ready(function() {
         }
     };
 
+    TableMovable.prototype.get_index_in_parent = function(){
+        p = get_apm_obj(this.parent_id());
+        if (! p)
+            return 0
+        i = p.dependent_ids().indexOf( this.id() );
+        return Math.max(0, i)
+    }
     /*TableMovable.prototype.set_css_for_type = function(){
         html_elem = $('#'+this.id());
         if (this.type() == 'Card'){
