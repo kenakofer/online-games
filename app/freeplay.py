@@ -31,6 +31,22 @@ class FreeplayPlayer():
 
 class TableMovable:
 
+    # Sort in place a list of movables 
+    def sort_movables_for_sending(movables_list):
+        movables_list.sort(key=lambda obj:
+            obj.get_index_in_parent() + (100000000 if isinstance(obj, Card) else 0)
+        )
+
+    def get_index_in_parent(self):
+        if not self.parent:
+            return 0
+        if self in self.parent.dependents:
+            return self.parent.dependents.index(self)
+        # Otherwise
+        return 0
+
+
+
     def __init__(self, id, game, position, dimensions, dependents=[], parent=None, display_name=""):
         self.id = id
         self.game = game
@@ -313,8 +329,9 @@ class FreeplayGame:
     def send_update(self, which_movables=None):
         print("sending update")
         self.thread_lock.acquire()
-        which_movables = which_movables or self.all_movables.values()
-        #Most of the info needed in the cards
+        which_movables = list(which_movables or self.all_movables.values())
+        TableMovable.sort_movables_for_sending(which_movables)
+        # Most of the info needed in the cards
         movables_info = [m.get_info() for m in which_movables]
         player_names = [p.get_display_name() for p in self.players if p.session_user or p.AI]
         all_data = {
