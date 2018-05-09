@@ -42,10 +42,11 @@ $( document ).ready(function() {
         self.player_moving_index = ko.observable(-1);
         self.display_name = ko.observable(display_name = display_name);
         self.depth = ko.observable(0);
+        self.type = ko.observable("");
         self.move_confirmed_by_server = false;
         self.position_offset = ko.computed(function() {
-            if (self.dependent_ids().length > 0){
-                return [0, -27];
+            if (self.type() == 'Deck'){
+                return [-10, -27];
             }
             return [0,0];
         }, this);
@@ -105,8 +106,16 @@ $( document ).ready(function() {
             // Add this to its dependents
             obj_parent.dependent_ids.push(this.id())
         }
-
     };
+
+    /*TableMovable.prototype.set_css_for_type = function(){
+        html_elem = $('#'+this.id());
+        if (this.type() == 'Card'){
+            html_elem.css({
+                "background": "white",
+            });
+        }
+    };*/
 
     function AppViewModel() {
         var self = this;
@@ -334,6 +343,10 @@ $( document ).ready(function() {
                 apm_obj.set_parent_id( obj_data.parent );
             if ('player_moving_index' in obj_data){
                 apm_obj.player_moving_index( parseInt(obj_data.player_moving_index) );
+            }
+            if ('type' in obj_data){
+                apm_obj.type( obj_data.type );
+                //apm_obj.set_css_for_type();
             }
             if (apm_obj.player_moving_index() !== template_player_index){
                 if ('depth' in obj_data) {

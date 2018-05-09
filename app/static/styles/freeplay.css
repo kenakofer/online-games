@@ -14,6 +14,7 @@
     position: absolute;
     z-index: 0;
     padding-left: 5px;
+    transition: box-shadow 0.3s;
     padding-top: 3px;
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
@@ -29,7 +30,6 @@
 }
 .ui-widget-content.card {
     border-radius: 4px;
-    /* This "shrink-wraps" the card to be as small as its contents */
     display: inline-block;
     border: 2px solid #565;
     text-align: left;
@@ -49,9 +49,9 @@
     font-size: 35px;
     font-weight: bold;
 }
-.ui-draggable {
+/*.ui-draggable {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
-}
+}*/
 /* On mouse-over, add a deeper shadow */
 .ui-draggable:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
@@ -62,14 +62,13 @@
 }
 
 /* When clicked, make the shadow larger as if lifting */
-.ui-draggable-dragging {
+.ui-draggable.ui-draggable-dragging {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-    border: 1px solid #444;
     cursor: grabbing;
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
 }
-@keyframes drop_pile_dragging {
+/*@keyframes drop_pile_dragging {
     from {background-color: #8B6;}
     to   {background-color: #5A3;}
 }
@@ -81,7 +80,7 @@
     animation-direction: alternate;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
-}
+}*/
 .label {
     position: absolute;
     font-weight: bold;

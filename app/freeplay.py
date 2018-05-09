@@ -53,7 +53,7 @@ class TableMovable:
 
     # Calling this locks movement to only this player until stop_move is called.
     def start_move(self, player, recursive=False):
-        print("start_move id:{} player:{}".format(self.id, player))
+        #print("start_move id:{} player:{}".format(self.id, player))
         if (self.player_moving):
             print("{} can't start moving {}, it's already being moved by {}!".format(player, self.id, self.player_moving))
             return False
@@ -127,6 +127,7 @@ class TableMovable:
             "dependents":[o.id for o in self.dependents],
             "display_name":self.display_name,
             "depth":self.depth,
+            "type":self.__class__.__name__,
             }
         return d
 
@@ -281,7 +282,7 @@ class FreeplayGame:
         self.depth_counter= [-1, 100000000]
         #For testing, create a deck with cards in it
         deck = Deck(self, (100,100), (100,100), text="mydeck")
-        for i in range(5):
+        for i in range(52):
             Card(self, deck, None, None, alt_text=str(i))
         self.send_update()
 
@@ -321,7 +322,6 @@ class FreeplayGame:
             "players":player_names,
             'recent_messages':self.recent_messages,
             }
-        print(all_data)
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
