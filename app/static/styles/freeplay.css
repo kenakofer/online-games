@@ -1,0 +1,90 @@
+:root {
+    --cardinnerborderlight: 3px solid #AAA;
+    --cardinnerborderdark: 3px solid black;
+}
+
+/*body{ color: white; background: #583; }*/
+.ui-widget-content.deck {
+    background: #8B6;
+    color: #DFA;
+    border-radius: 6px;
+    border: 2px solid #474;
+    width: 97px;
+    height: 125px;
+    position: absolute;
+    z-index: 0;
+    padding-left: 5px;
+    padding-top: 3px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+}
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+.ui-widget-content.card {
+    border-radius: 4px;
+    /* This "shrink-wraps" the card to be as small as its contents */
+    display: inline-block;
+    border: 2px solid #565;
+    text-align: left;
+    height: 75px;
+    width: 69px;
+    margin: 0px;
+    background: white;
+    /* Add shadows to create the "card" effect */
+    /* box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5); */
+    transition: box-shadow 0.3s;
+    position: absolute;
+    transform: scale(1);
+    transform-origin: top left;
+    float: left;
+    color: #555;
+    padding: 10px 0 0 10px;
+    font-size: 35px;
+    font-weight: bold;
+}
+.ui-draggable {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
+}
+/* On mouse-over, add a deeper shadow */
+.ui-draggable:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
+    cursor: grab;
+    border: 2px solid #243;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+}
+
+/* When clicked, make the shadow larger as if lifting */
+.ui-draggable-dragging {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    border: 1px solid #444;
+    cursor: grabbing;
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+}
+@keyframes drop_pile_dragging {
+    from {background-color: #8B6;}
+    to   {background-color: #5A3;}
+}
+.droppable.ui-state-active{
+    background: #5A3;
+    border: 2px solid #474;
+    animation-name: drop_pile_dragging;
+    animation-duration: .5s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+.label {
+    position: absolute;
+    font-weight: bold;
+    color: white;
+    font-size: 20px;
+}

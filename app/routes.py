@@ -7,6 +7,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, get_stable_user
 from app.hanabi import hanabi_games, HanabiGame
 from app.blitz import blitz_games, BlitzGame
+from app.freeplay import freeplay_games, FreeplayGame
 from datetime import timedelta
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
@@ -145,6 +146,48 @@ def blitz_lobby():
     return render_template(
                 'blitz_lobby.html',
                 title='Dutch Blitz Lobby',
+            )
+
+#############
+# Free Play #
+#############
+@app.route('/freeplay/<gameid>')
+@login_required
+def freeplay(gameid):
+    # Current_user now will be the same object as current_user, so we get user here
+    user = get_stable_user()
+    print("{} is requesting to join freeplay gameid {}".format(user, gameid))
+    gameid = str(gameid)
+    # If the game doesn't already exist, create it!
+    if not gameid in freeplay_games:
+        freeplay_games[gameid] = FreeplayGame(gameid)
+        print("Created gameid {}".format(gameid))
+    game = freeplay_games[gameid]
+    print("The users in the game already are {}".format([p.session_user for p in game.players]))
+    # See if we are already in the player list
+    # Otherwise, add to the end
+    index = -1
+    for i,p in enumerate(game.players):
+        if not p.session_user:
+            print("Player is new")
+            p.session_user = user
+            index = i
+            break
+        elif p.session_user == user:
+            index = i
+            print("Player is returning")
+            break
+    if index==-1:
+        index = len(game.players)
+        game.add_player(user)
+
+    print("Taking {} player index".format(index)) #Put the user into the game room
+    return render_template(
+            'freeplay.html',
+            title='Free Play',
+            socketio_namespace='/freeplay',
+            player_index=index,
+            gameid=gameid,
             )
 
 #########

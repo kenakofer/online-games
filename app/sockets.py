@@ -5,6 +5,7 @@ from app.models import get_stable_user
 from time import sleep
 from app.hanabi import HanabiGame, hanabi_games
 from app.blitz import BlitzGame, blitz_games
+from app.freeplay import FreeplayGame, freeplay_games
 from time import time
 
 @socketio.on('message')
@@ -86,7 +87,15 @@ def card_move(data):
     g = blitz_games[data['gameid']]
     player = g.get_blitz_player(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD MOVE', data))
-    print("Trying to play the card...")
+    if not data['card_id'] in g.cards:
+        print("No such card on the server side: {}".format(data['card_id']))
+    else:
+        card = g.cards[data['card_id']]
+        if data['deck']:
+            card.move_to(data['deck'])
+        else:
+            card.move_to(None, position=data['position'])
+
     result = player.play_card(g.card_from_id(data['card_id']), g.card_positions[data['card_pos']])
     g.time_of_last_update = time()
     # g.get_full_update() This is run in play_card
@@ -97,3 +106,62 @@ def card_move(data):
     player = g.get_blitz_player(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'DEAL DECK', data))
     result = player.deal_deck()
+
+#############
+# Free Play #
+#############
+
+@socketio.on('connect', namespace='/freeplay')
+def connect_freeplay():
+    print('Client {}: Connected to freeplay'.format(current_user))
+    emit('NOTIFICATION', {'data':'Welcome to freeplay, {}!'.format(current_user)})
+
+@socketio.on('UPDATE REQUEST', namespace='/freeplay')
+def update_request(data):
+    print('Client UPDATE REQUEST: {}'.format(data))
+    g = freeplay_games[data['gameid']]
+    g.send_update()
+    g.time_of_last_update = time()
+
+@socketio.on('JOIN ROOM', namespace='/freeplay')
+def join(data):
+    join_room(data['room'])
+    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
+
+# The client tells us that they moved a card. We decide if it's legal and what the implications are
+@socketio.on('START MOVE', namespace='/freeplay')
+def start_move(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'START MOVE', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.start_move(player)
+    g.time_of_last_update = time()
+
+@socketio.on('STOP MOVE', namespace='/freeplay')
+def stop_move(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'STOP MOVE', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.stop_move(player, data['position'])
+    g.time_of_last_update = time()
+
+@socketio.on('CONTINUE MOVE', namespace='/freeplay')
+def continue_move(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'CONTINUE MOVE', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.continue_move(player, data['position'])
+    g.time_of_last_update = time()
+
+@socketio.on('COMBINE', namespace='/freeplay')
+def combine(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'COMBINE', data))
+    obj1 = g.all_movables[data['top_id']]
+    obj2 = g.all_movables[data['bottom_id']]
+    obj2.incorporate(obj1)
+    g.time_of_last_update = time()

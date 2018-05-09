@@ -1,0 +1,53 @@
+{% extends "header_footer.html" %}
+
+{% block head %}
+    <link rel='stylesheet' href='{{ url_for("static",filename="styles/freeplay.css") }}'>
+    <!-- For jquery and jquery ui-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+    <!-- For knockout.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+    <!-- For LoDash (_) -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
+    <!-- For socket stuff -->
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+    var socket = io("https://games.gc.my{{ socketio_namespace }}")
+            // Code to enable use of "*" as catch all event without blocking other calls
+            var onevent = socket.onevent;
+            socket.onevent = function (packet) {
+                var args = packet.data || [];
+                onevent.call (this, packet);    // original call
+                packet.data = ["*"].concat(args);
+                onevent.call(this, packet);      // additional call to catch-all
+            };
+            // Note that this is run AFTER a more specific event handler
+            socket.on("*",function(event,data) {
+                console.log('Server event: '+JSON.stringify(event)+'\n    has data:');
+                console.log(data);
+            });
+    </script>
+    <!-- For template variables needed by freeplay.js -->
+    <script type="text/javascript">
+        var template_gameid = "{{ gameid }}";
+        var template_player_index = {{ player_index }};
+    </script>
+    <!-- freeplay.js, the primary logic for the client -->
+    <script type="text/javascript" src='{{ url_for("static",filename="js/freeplay.js") }}'></script>
+
+
+{% endblock %}
+
+{% block content %}
+    <h1>Free Play</h1>
+    <!--<div data-bind="foreach: cards">
+        <div class="card noselect ui-widget-content" data-bind="attr: {'id': id}"> </div>
+    </div>  Cards aren't real -->
+    <div data-bind="foreach: movables">
+        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}" >
+            <span data-bind="text: display_name"></span>
+        </div>
+    </div>
+{% endblock %}
