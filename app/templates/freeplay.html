@@ -46,8 +46,9 @@
         <div class="card noselect ui-widget-content" data-bind="attr: {'id': id}"> </div>
     </div>  Cards aren't real -->
     <div data-bind="foreach: movables">
-        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type" >
+        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type" onclick="clicked_on(this);">
             <span data-bind="text: display_name"></span>
         </div>
     </div>
+    <button id="BUTTONSHUFFLE" class='floating-button' onclick="pressed_shuffle_button();">Shuffle</button>
 {% endblock %}

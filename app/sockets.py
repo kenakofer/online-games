@@ -165,3 +165,12 @@ def combine(data):
     obj2 = g.all_movables[data['bottom_id']]
     obj2.incorporate(obj1)
     g.time_of_last_update = time()
+
+@socketio.on('SHUFFLE', namespace='/freeplay')
+def combine(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'shuffle', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.shuffle_cards()
+    g.time_of_last_update = time()

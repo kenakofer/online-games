@@ -245,9 +245,13 @@ class Deck(TableMovable):
                 )
         game.decks[self.id] = self
 
-    def shuffle_cards():
-        #In place shuffle
+    def shuffle_cards(self):
+        # In place shuffle
         shuffle(self.dependents)
+        for d in self.dependents:
+            d.push_to_top(moving=False)
+        # Update all clients
+        self.game.send_update()
 
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position

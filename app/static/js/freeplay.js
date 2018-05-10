@@ -90,6 +90,23 @@ $( document ).ready(function() {
         }
     };
 
+    sync_action_buttons = function(){
+        // If the option buttons are attached to this object, move it too.
+        obj = get_apm_obj(apm.show_action_buttons_for_id());
+        if (obj){
+            $( '#BUTTONSHUFFLE' ).css({
+                "left":obj.position()[0]+obj.position_offset()[0],
+                "top": obj.position()[1]+obj.position_offset()[1] - 40,
+            });
+        } else {
+            $( '#BUTTONSHUFFLE' ).css({
+                "left":-500,
+                "top": -500,
+            });
+        }
+
+    }
+
     // Careful, it places this on top of the pid stack
     TableMovable.prototype.set_parent_id = function(pid){
         //console.log("Setting parent of "+this.id()+" to "+pid);
@@ -132,6 +149,7 @@ $( document ).ready(function() {
     function AppViewModel() {
         var self = this;
         self.movables = ko.observableArray([]);
+        self.show_action_buttons_for_id = ko.observable(false);
         // No need for these to be observable
         self.my_player_index = template_player_index;
     }
@@ -157,9 +175,41 @@ $( document ).ready(function() {
         return apm_obj
     }
 
+    clicked_on = function(elem){
+        console.log('clicked on:');
+        console.log(elem.id);
+        if ( $( '#'+elem.id ).hasClass('noclick') ){
+            $( '#'+elem.id ).removeClass('noclick');
+            return
+        }
+        // If we clicked on the same one again, hide the button
+        console.log(apm.show_action_buttons_for_id());
+        console.log(elem.id)
+        if (apm.show_action_buttons_for_id() === elem.id){
+
+            console.log('here')
+            apm.show_action_buttons_for_id(false)
+            sync_action_buttons()
+        }
+        else {
+            apm_obj = get_apm_obj(elem.id);
+            apm.show_action_buttons_for_id(elem.id);
+            sync_action_buttons()
+        }
+    }
+    pressed_shuffle_button = function(){
+        id = apm.show_action_buttons_for_id();
+        if (id){
+            console.log('emitting SHUFFLE...');
+            socket.emit('SHUFFLE', {gameid:template_gameid, obj_id:id});
+        }
+    }
+
     draggable_settings = {
             start: function(elem) {
                 html_elem = $('#'+elem.target.id);
+                // This will prevent a click event being triggered at drop time
+                html_elem.addClass('noclick');
                 socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
                 html_elem.css({'z-index':get_dragging_depth()});
                 apm_obj = get_apm_obj(elem.target.id);
@@ -206,6 +256,8 @@ $( document ).ready(function() {
                     apm_dep.position(pos);
                     apm_dep.sync_position(0);
                 });
+                // Move the action buttons
+                sync_action_buttons()
                 // Only send a server update if enough time has passed since the last
                 now = new Date().getTime()
                 if (now - time_of_drag_emit > 200){
@@ -234,6 +286,8 @@ $( document ).ready(function() {
                             $( '#'+apm_dep.id() ).droppable(droppable_settings);
                         } catch (err) {}
                     });
+                    // Move the action buttons
+                    sync_action_buttons()
                     // Tell the server about the stop move
                     socket.emit('STOP MOVE', {gameid:template_gameid, obj_id:elem.target.id, position:pos});
                 }
@@ -348,6 +402,13 @@ $( document ).ready(function() {
                     if (dep_obj)
                         dep_obj.set_parent_id(false);
                 });
+                // If the action buttons were attached to it, detach them
+                if (apm.show_action_buttons_for_id() == apm_obj.id()){
+                    console.log('here');
+                    apm.show_action_buttons_for_id(false);
+                    sync_action_buttons()
+                }
+                // Remove from the movables array
                 apm.movables.splice( $.inArray(apm_obj, apm.movables()), 1);
                 return
             }
@@ -364,6 +425,7 @@ $( document ).ready(function() {
                 if ('depth' in obj_data) {
                     apm_obj.depth( obj_data.depth );
                     should_sync_position = true;
+                    // TODO fix depth issue after shuffle
                 }
                 if ('position' in obj_data) {
                     apm_obj.position( obj_data.position );

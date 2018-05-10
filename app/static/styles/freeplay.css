@@ -19,6 +19,10 @@
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
 }
+button.floating-button {
+    position: absolute;
+}
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
