@@ -19,8 +19,9 @@
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
 }
-button.floating-button {
+button.action-button {
     position: absolute;
+    z-index: 1000000000;
 }
 
 .noselect {

@@ -84,7 +84,7 @@ input[type=submit], button{
     margin: 5px;
     cursor: pointer;
     -webkit-transition-duration: .4s;
-    transition: background .4s, color .4s;
+    transition-duration: .4s;
 }
 input[type=submit]:hover, button:hover{
     background: #9C8;

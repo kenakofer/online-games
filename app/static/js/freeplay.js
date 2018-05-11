@@ -72,7 +72,6 @@ $( document ).ready(function() {
             this.has_synced_once = true;
             time = 0
         }
-        //console.log('calling sync_position on '+this.id());
         html_elem = $('#'+this.id());
         html_elem.css({
             "z-index": this.depth(),
@@ -90,18 +89,19 @@ $( document ).ready(function() {
         }
     };
 
-    sync_action_buttons = function(){
+    sync_action_buttons = function(should_hide){
         // If the option buttons are attached to this object, move it too.
-        obj = get_apm_obj(apm.show_action_buttons_for_id());
-        if (obj){
+        html_obj = $( '#'+apm.show_action_buttons_for_id());
+        html_pos = html_obj.position()
+        if (!should_hide && html_pos){
             $( '#BUTTONSHUFFLE' ).css({
-                "left":obj.position()[0]+obj.position_offset()[0],
-                "top": obj.position()[1]+obj.position_offset()[1] - 40,
+                "left":html_pos.left - 90,
+                "top": html_pos.top,
+                "display": "inline",
             });
         } else {
             $( '#BUTTONSHUFFLE' ).css({
-                "left":-500,
-                "top": -500,
+                "display": "none",
             });
         }
 
@@ -109,7 +109,6 @@ $( document ).ready(function() {
 
     // Careful, it places this on top of the pid stack
     TableMovable.prototype.set_parent_id = function(pid){
-        //console.log("Setting parent of "+this.id()+" to "+pid);
         if (this.parent_id() === pid)
             return
         // Remove from old parent dependents if possible
@@ -117,7 +116,6 @@ $( document ).ready(function() {
         if (obj_old_parent){
             array = obj_old_parent.dependent_ids
             array.splice( $.inArray(this.id(), array()), 1);
-            //console.log('removed '+this.id()+' from parent dependents');
         }
         // Set new parent
         this.parent_id( pid );
@@ -128,23 +126,12 @@ $( document ).ready(function() {
             obj_parent = get_apm_obj(pid);
             // If the parent doesn't exist yet, make it
             if (! obj_parent){
-                //console.log('Creating object '+pid+' as needed by dependent '+this.id());
                 obj_parent = createBasicTableMovable(pid);
-                //console.log('here');
             }
             // Add this to its dependents
             obj_parent.dependent_ids.push(this.id())
         }
     };
-
-    /*TableMovable.prototype.set_css_for_type = function(){
-        html_elem = $('#'+this.id());
-        if (this.type() == 'Card'){
-            html_elem.css({
-                "background": "white",
-            });
-        }
-    };*/
 
     function AppViewModel() {
         var self = this;
@@ -176,18 +163,13 @@ $( document ).ready(function() {
     }
 
     clicked_on = function(elem){
-        console.log('clicked on:');
-        console.log(elem.id);
         if ( $( '#'+elem.id ).hasClass('noclick') ){
             $( '#'+elem.id ).removeClass('noclick');
             return
         }
         // If we clicked on the same one again, hide the button
-        console.log(apm.show_action_buttons_for_id());
-        console.log(elem.id)
         if (apm.show_action_buttons_for_id() === elem.id){
 
-            console.log('here')
             apm.show_action_buttons_for_id(false)
             sync_action_buttons()
         }
@@ -197,10 +179,16 @@ $( document ).ready(function() {
             sync_action_buttons()
         }
     }
+    // If the user clicks on the background, take away the action buttons
+    $( '.content' ).on('click', function(e) {
+        if (e.target !== this)
+            return;
+        apm.show_action_buttons_for_id(false);
+        sync_action_buttons();
+    });
     pressed_shuffle_button = function(){
         id = apm.show_action_buttons_for_id();
         if (id){
-            console.log('emitting SHUFFLE...');
             socket.emit('SHUFFLE', {gameid:template_gameid, obj_id:id});
         }
     }
@@ -214,7 +202,6 @@ $( document ).ready(function() {
                 html_elem.css({'z-index':get_dragging_depth()});
                 apm_obj = get_apm_obj(elem.target.id);
                 // Start all of the dependents dragging as well
-                //console.log("Start move: "+apm_obj.dependent_ids());
                 apm_obj.dependent_ids().forEach(function (d_id){
                     apm_dep = get_apm_obj(d_id);
                     if (! apm_dep)
@@ -222,23 +209,18 @@ $( document ).ready(function() {
                     apm_dep.depth(get_dragging_depth());
                     apm_dep.sync_position(0);
                     try {
-                        //console.log('destroying draggability on '+d_id);
                         $( '#'+apm_dep.id() ).droppable("destroy");
                     } catch (err) {}
                 });
                 // Remove this object from its parents
                 apm_obj.set_parent_id(false);
-                /*pid = apm_obj.parent_id();
-                if (pid){
-                    p = get_apm_obj(pid);
-                    if (p === undefined){
-                        apm_obj.parent_id(false);
-                    } else {
-                        array = p.dependent_ids
-                        array.splice( $.inArray(pid, array()), 1);
-                    }
+                // Hide action buttons for duration of drag
+                sync_action_buttons(true)
+                // If the action buttons are on another element, switch them to this element
+                follow_id = apm.show_action_buttons_for_id();
+                if (follow_id && follow_id !== apm_obj.id()){
+                    apm.show_action_buttons_for_id(apm_obj.id());
                 }
-                apm_obj.parent_id(false);*/
             },
             drag: function(elem) {
                 html_elem = $('#'+elem.target.id);
@@ -248,7 +230,6 @@ $( document ).ready(function() {
                 pos[1] -= apm_obj.position_offset()[1];
                 apm_obj.position(pos)
                 // Move all the dependents as well
-                //console.log(apm_obj.dependent_ids());
                 apm_obj.dependent_ids().forEach(function (d_id){
                     apm_dep = get_apm_obj(d_id);
                     if (! apm_dep)
@@ -257,7 +238,7 @@ $( document ).ready(function() {
                     apm_dep.sync_position(0);
                 });
                 // Move the action buttons
-                sync_action_buttons()
+                // sync_action_buttons()
                 // Only send a server update if enough time has passed since the last
                 now = new Date().getTime()
                 if (now - time_of_drag_emit > 200){
@@ -268,7 +249,6 @@ $( document ).ready(function() {
             stop: function(elem) {
                 apm_obj = get_apm_obj(elem.target.id);
                 var now = new Date().getTime();
-                //console.log(now - apm_obj.drop_time);
                 if (now - apm_obj.drop_time > 200){
                     html_elem = $('#'+elem.target.id);
                     pos = get_position_array_from_html_pos(html_elem.position());
@@ -280,7 +260,7 @@ $( document ).ready(function() {
                         if (! apm_dep)
                             return
                         apm_dep.depth(get_dragging_depth());
-                        //console.log('stop syncing '+d_id);
+                        apm_dep.position(pos);
                         apm_dep.sync_position(0);
                         try {
                             $( '#'+apm_dep.id() ).droppable(droppable_settings);
@@ -305,7 +285,6 @@ $( document ).ready(function() {
             time_of_drop_emit = now
             top_id = ui.draggable.context.id;
             bottom_id = event.target.id;
-            //console.log(top_id + " dropped on " + bottom_id);
             // Line up the dropped object
             apm_top = get_apm_obj(top_id);
             apm_bottom = get_apm_obj(bottom_id);
@@ -326,6 +305,8 @@ $( document ).ready(function() {
                 } catch (err) {}
             });
             apm_top.sync_position();
+            // Move the action buttons
+            sync_action_buttons()
             // Tell the server to combine the two
             socket.emit('COMBINE', {gameid:template_gameid, top_id:top_id, bottom_id:bottom_id});
         }
@@ -404,7 +385,6 @@ $( document ).ready(function() {
                 });
                 // If the action buttons were attached to it, detach them
                 if (apm.show_action_buttons_for_id() == apm_obj.id()){
-                    console.log('here');
                     apm.show_action_buttons_for_id(false);
                     sync_action_buttons()
                 }
