@@ -75,7 +75,7 @@ input[type=text] {
     color: #020;
     min-width: 150px;
 }
-input[type=submit]{
+input[type=submit], button{
     background: #472;
     color: white;
     border: 2px solid #472;
@@ -84,9 +84,9 @@ input[type=submit]{
     margin: 5px;
     cursor: pointer;
     -webkit-transition-duration: .4s;
-    transition-duration: .4s;
+    transition: background .4s, color .4s;
 }
-input[type=submit]:hover{
+input[type=submit]:hover, button:hover{
     background: #9C8;
     color: #253;
 }
