@@ -94,13 +94,13 @@ $( document ).ready(function() {
         html_obj = $( '#'+apm.show_action_buttons_for_id());
         html_pos = html_obj.position()
         if (!should_hide && html_pos){
-            $( '#BUTTONSHUFFLE' ).css({
-                "left":html_pos.left - 90,
+            $( '#action-button-panel' ).css({
+                "left":html_pos.left - 100,
                 "top": html_pos.top,
                 "display": "inline",
             });
         } else {
-            $( '#BUTTONSHUFFLE' ).css({
+            $( '#action-button-panel' ).css({
                 "display": "none",
             });
         }
