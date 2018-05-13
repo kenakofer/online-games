@@ -59,6 +59,13 @@ $( document ).ready(function() {
             // Otherwise
             return [0,0];
         }, this);
+        self.dimension_offset = ko.computed(function() {
+            if (self.type() == 'Deck'){
+                return [25, 45];
+            }
+            // Otherwise
+            return [0,0];
+        }, this);
         self.get_index_in_parent = ko.computed(function(){
             p = get_apm_obj(self.parent_id());
             if (! p)
@@ -78,19 +85,23 @@ $( document ).ready(function() {
             time = 0
         }
         html_elem = $('#'+this.id());
-        html_elem.css({
-            "z-index": this.depth(),
-        });
-        if (time === 0){
+        //console.log("Syncing element "+this.id());
+
+        if (this.type() !== "ViewBlocker"){
             html_elem.css({
-                "left":this.position()[0]+this.position_offset()[0],
-                "top": this.position()[1]+this.position_offset()[1],
+                "z-index": this.depth(),
             });
+        }
+        css_obj = {
+            "left":this.position()[0]+this.position_offset()[0],
+            "top": this.position()[1]+this.position_offset()[1],
+            "width": this.dimensions()[0]+this.dimension_offset()[0],
+            "height": this.dimensions()[1]+this.dimension_offset()[1],
+        }
+        if (time === 0){
+            html_elem.css( css_obj );
         } else {
-            html_elem.animate({
-                "left":this.position()[0]+this.position_offset()[0],
-                "top": this.position()[1]+this.position_offset()[1],
-            },{duration:time});
+            html_elem.animate( css_obj,{duration:time} );
         }
     };
 
@@ -150,6 +161,8 @@ $( document ).ready(function() {
     apm = new AppViewModel()
         ko.applyBindings(apm);
     time_of_drag_emit = 0;
+    currently_dragging = false;
+    time_of_resize_emit = 0;
     time_of_drop_emit = 0;
     dragging_z = 10000000;
     get_dragging_depth = function(){
@@ -198,8 +211,12 @@ $( document ).ready(function() {
                 // This will prevent a click event being triggered at drop time
                 html_elem.addClass('noclick');
                 socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
-                html_elem.css({'z-index':get_dragging_depth()});
+                //apm_obj.depth(get_dragging_depth());
+                //apm_obj.sync_position(0);
                 apm_obj = get_apm_obj(elem.target.id);
+                if (apm_obj.type() !== 'ViewBlocker')
+                    html_elem.css({'z-index':get_dragging_depth()});
+                currently_dragging = apm_obj;
                 // Start all of the dependents dragging as well
                 apm_obj.dependent_ids().forEach(function (d_id){
                     apm_dep = get_apm_obj(d_id);
@@ -247,6 +264,7 @@ $( document ).ready(function() {
             },
             stop: function(elem) {
                 apm_obj = get_apm_obj(elem.target.id);
+                currently_dragging = false;
                 var now = new Date().getTime();
                 if (now - apm_obj.drop_time > 200){
                     html_elem = $('#'+elem.target.id);
@@ -287,6 +305,9 @@ $( document ).ready(function() {
             // Line up the dropped object
             apm_top = get_apm_obj(top_id);
             apm_bottom = get_apm_obj(bottom_id);
+            // If either is not a deck or card, ignore the drop
+            if (!['Deck','Card'].includes(apm_top.type()) || !['Deck','Card'].includes(apm_bottom.type()))
+                return
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now
             apm_top.position( apm_bottom.position() );
@@ -309,6 +330,18 @@ $( document ).ready(function() {
             // Tell the server to combine the two
             socket.emit('COMBINE', {gameid:template_gameid, top_id:top_id, bottom_id:bottom_id});
         }
+    };
+
+    resizable_settings = {
+            stop: function(elem, ui) {
+                html_elem = $('#'+elem.target.id);
+                apm_obj = get_apm_obj(elem.target.id);
+                dims = [html_elem.width(), html_elem.height()];
+                socket.emit('RESIZE', {gameid:template_gameid, obj_id:elem.target.id, dimensions:dims});
+                console.log('resize emit');
+                console.log(dims);
+            },
+
     };
 
     // Knockout helper functions
@@ -362,8 +395,6 @@ $( document ).ready(function() {
             //Update its info
             if ('display_name' in obj_data)
                 apm_obj.display_name( obj_data.display_name );
-            if ('dimensions' in obj_data)
-                apm_obj.dimensions( obj_data.dimensions );
             if ('dependents' in obj_data){
                 obj_data.dependents.forEach(function(did){
                     dep_obj = get_apm_obj(did);
@@ -398,6 +429,13 @@ $( document ).ready(function() {
             }
             if ('type' in obj_data){
                 apm_obj.type( obj_data.type );
+                if (apm_obj.type() == "ViewBlocker"){
+                    html_elem = $( '#'+apm_obj.id() );
+                    html_elem.resizable(resizable_settings);
+                    try {
+                        html_elem.droppable('destroy');
+                    } catch (err) {}
+                }
             }
             if ('front_image_url' in obj_data){
                 apm_obj.front_image_url( obj_data.front_image_url );
@@ -440,14 +478,26 @@ $( document ).ready(function() {
                     });
                 }
             }
-            if (apm_obj.player_moving_index() !== template_player_index){
+            if ('show_players' in obj_data){
+                // If show_players has us in it, put it low, otherwise high
+                html_elem = $( '#'+apm_obj.id() );
+                if (obj_data.show_players.includes(template_player_index)){
+                    html_elem.css({'z-index':0});
+                } else {
+                    html_elem.css({'z-index':apm_obj.depth()});
+                }
+            }
+            if (apm_obj.player_moving_index() !== template_player_index && apm_obj !== currently_dragging){
                 if ('depth' in obj_data) {
                     apm_obj.depth( obj_data.depth );
                     should_sync_position = true;
-                    // TODO fix depth issue after shuffle
                 }
                 if ('position' in obj_data) {
                     apm_obj.position( obj_data.position );
+                    should_sync_position = true;
+                }
+                if ('dimensions' in obj_data) {
+                    apm_obj.dimensions( obj_data.dimensions );
                     should_sync_position = true;
                 }
                 // Make changes to position visible in html
@@ -458,7 +508,7 @@ $( document ).ready(function() {
                         apm_obj.sync_position();
                 }
             } else {
-                //console.log("Not changing position because of player_moving_index");
+                //console.log("Not syncing position because of player_moving_index");
             }
 	});
     });

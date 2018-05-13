@@ -31,7 +31,7 @@ class FreeplayPlayer():
 
 class TableMovable:
 
-    # Sort in place a list of movables 
+    # Sort in place a list of movables
     def sort_movables_for_sending(movables_list):
         movables_list.sort(key=lambda obj:
             obj.get_index_in_parent() + (100000000 if isinstance(obj, Card) else 0)
@@ -103,7 +103,9 @@ class TableMovable:
             print("{} can't stop moving {}, because {} is moving it!".format(player, self.id, self.player_moving))
         self.position = new_position
         # Put the element on top of the stationary things
-        self.push_to_top(moving=False)
+        # Don't do this with blockers, as it will move them back
+        if not self.__class__.__name__ == "ViewBlocker":
+            self.push_to_top(moving=False)
         # Release the player's hold on the object
         self.player_moving = None
         for d in self.dependents:
@@ -133,6 +135,17 @@ class TableMovable:
         self.game.thread_lock.release()
         return data
 
+    def resize(self, player, new_dims):
+        self.dimensions = new_dims
+        self.game.thread_lock.acquire()
+        data = {
+            "movables_info":[{
+                "id":self.id,
+                "dimensions":self.dimensions,
+            }]}
+        with app.test_request_context('/'):
+            socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+        self.game.thread_lock.release()
 
 
     def get_info(self):
@@ -259,6 +272,32 @@ class Card(TableMovable):
         info['back_image_style'] = self.back_image_style
         return info
 
+class ViewBlocker(TableMovable):
+
+    def __init__(self, game, position, dimensions, show_players=None):
+        super().__init__(
+                'BLOCKER'+str(game.get_new_id()),
+                game,
+                position,
+                dimensions,
+                dependents=[],
+                )
+        self.push_to_top(moving=True);
+        self.show_players=show_players
+
+    def push_to_top(self, moving=True):
+        # Push it forward to the point that it is in front of all static objects 
+        super().push_to_top(moving=True);
+        # ...and moving objects
+        self.depth *=2
+        print('calling viewblocker push to top')
+
+
+    def get_info(self):
+        info = super().get_info()
+        info['show_players'] = [p.player_index for p in self.show_players]
+        return info
+
 class Deck(TableMovable):
 
     def __init__(self, game, position, dimensions, cards=None, text=""):
@@ -323,7 +362,7 @@ class Deck(TableMovable):
 
     def get_standard_deck(game):
         print('standard deck')
-        deck = Deck(game, (100,100), (100,100), text="mydeck")
+        deck = Deck(game, (100,100), (69,75), text="mydeck")
         for i in range(52):
             Card(game, deck, '/static/images/freeplay/standard_deck/card-{}.png'.format(i), alt_text=str(i))
         return deck
@@ -344,7 +383,7 @@ class FreeplayGame:
         self.game_over=False
         self.recent_messages = []
         self.thread_lock.release()
-        self.depth_counter= [-1, 100000000]
+        self.depth_counter= [1, 100000000]
         deck = Deck.get_standard_deck(self)
         self.send_update()
 
@@ -396,3 +435,6 @@ class FreeplayGame:
             self.game_over = True
             print("Stopping game {} due to inactivity".format(self.gameid))
             self.send_update()
+
+    def create_blocker_for(self,player):
+        ViewBlocker(self, (200,100), (300,200), show_players=[player])

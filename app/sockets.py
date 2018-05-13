@@ -156,6 +156,15 @@ def continue_move(data):
     obj.continue_move(player, data['position'])
     g.time_of_last_update = time()
 
+@socketio.on('RESIZE', namespace='/freeplay')
+def resize(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'RESIZE', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.resize(player, data['dimensions'])
+    g.time_of_last_update = time()
+
 @socketio.on('COMBINE', namespace='/freeplay')
 def combine(data):
     g = freeplay_games[data['gameid']]

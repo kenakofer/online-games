@@ -166,6 +166,7 @@ def freeplay(gameid):
     print("The users in the game already are {}".format([p.session_user for p in game.players]))
     # See if we are already in the player list
     # Otherwise, add to the end
+    # TODO change this
     index = -1
     for i,p in enumerate(game.players):
         if not p.session_user:
@@ -179,7 +180,9 @@ def freeplay(gameid):
             break
     if index==-1:
         index = len(game.players)
-        game.add_player(user)
+        player = game.add_player(user)
+        game.create_blocker_for(player)
+
 
     print("Taking {} player index".format(index)) #Put the user into the game room
     return render_template(
