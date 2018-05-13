@@ -26,8 +26,24 @@
     background: #600;
     border-radius: 9px;
     border: 2px solid #e88;
-    padding: 4px;
+    padding: 6px;
     display: none;
+}
+.action-button {
+    margin: 0px;
+}
+#deal-spinner {
+    width: 18px;
+}
+.ui-front {
+    z-index: 1000000001 !important;
+}
+.ui-selectmenu-button.ui-button {
+    width: 90px !important;
+    padding: 7px 0 7px 4px !important;
+}
+span.ui-selectmenu-text {
+    margin: 0px !important;
 }
 
 .noselect {

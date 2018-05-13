@@ -47,10 +47,14 @@
     </div>  Cards aren't real -->
     <div data-bind="foreach: movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type" onclick="clicked_on(this);">
-            <span data-bind="text: display_name"></span>
+            <span data-bind="if: is_face_up">
+                <span data-bind="text: display_name"></span>
+            </span>
         </div>
     </div>
     <div id="action-button-panel">
-        <button id="BUTTONSHUFFLE" class='action-button' onclick="pressed_shuffle_button();">Shuffle</button>
+        <button id="BUTTONSHUFFLE" class='action-button'>Shuffle</button>
+        <button id="flip-button" class='action-button'>Flip over</button><br>
+        <input id="deal-spinner" name="deal-spinner"></input><select id="deal-select"><option>face up</option><option>face down</option></select><br>
     </div>
 {% endblock %}

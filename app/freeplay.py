@@ -4,7 +4,7 @@ import threading
 from time import sleep, time
 from random import random, sample
 
-#The list to be filled with freeplay_games
+#The dict to be filled with freeplay_games
 freeplay_games = {}
 
 class FreeplayPlayer():
@@ -47,12 +47,13 @@ class TableMovable:
 
 
 
-    def __init__(self, id, game, position, dimensions, dependents=[], parent=None, display_name=""):
+    def __init__(self, id, game, position, dimensions, dependents=[], parent=None, display_name="", is_face_up=True):
         self.id = id
         self.game = game
         self.position = position
         self.dimensions = dimensions
         self.dependents = dependents
+        self.is_face_up = is_face_up
         self.parent = parent
         if self.parent:
             self.parent.dependents.append(self)
@@ -125,6 +126,7 @@ class TableMovable:
                 "depth":o.depth,
                 "parent":False if not o.parent else str(o.parent.id),
                 "dependents":[od.id for od in o.dependents],
+                "is_face_up":o.is_face_up,
             } for o in objects]}
         with app.test_request_context('/'):
             socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
@@ -144,6 +146,7 @@ class TableMovable:
             "display_name":self.display_name,
             "depth":self.depth,
             "type":self.__class__.__name__,
+            "is_face_up":self.is_face_up,
             }
         return d
 
@@ -230,7 +233,19 @@ class Card(TableMovable):
             print(other.position)
             self.game.send_update()
 
-
+    def flip(self, no_update=False):
+        self.is_face_up = not self.is_face_up
+        if not no_update:
+            self.game.thread_lock.acquire()
+            data = {
+                "movables_info":[{
+                    "id":self.id,
+                    "is_face_up":self.is_face_up,
+                    }]
+                }
+            with app.test_request_context('/'):
+                socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+            self.game.thread_lock.release()
 
 class Deck(TableMovable):
 
@@ -283,6 +298,16 @@ class Deck(TableMovable):
         # In any case, update everyone
         self.game.send_update()
 
+    def flip(self, no_update=False):
+        for d in self.dependents:
+            d.flip(no_update=True)
+        # Reverse dependents and put them at the proper height
+        self.dependents.reverse()
+        for d in self.dependents:
+            d.push_to_top(moving=False)
+        if not no_update:
+            self.game.send_update()
+            return
 
 class FreeplayGame:
 
@@ -337,7 +362,7 @@ class FreeplayGame:
         TableMovable.sort_movables_for_sending(which_movables)
         # Most of the info needed in the cards
         movables_info = [m.get_info() for m in which_movables]
-        player_names = [p.get_display_name() for p in self.players if p.session_user or p.AI]
+        player_names = [p.get_display_name() for p in self.players if p.session_user]
         all_data = {
             "movables_info":movables_info,
             "players":player_names,

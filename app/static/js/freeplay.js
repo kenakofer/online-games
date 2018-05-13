@@ -40,7 +40,8 @@ $( document ).ready(function() {
         self.parent_id = ko.observable(get_apm_obj(parent_id));
         self.set_parent_id(parent_id);
         self.player_moving_index = ko.observable(-1);
-        self.display_name = ko.observable(display_name = display_name);
+        self.display_name = ko.observable(display_name);
+        self.is_face_up = ko.observable(true);
         self.depth = ko.observable(0);
         self.type = ko.observable("");
         self.move_confirmed_by_server = false;
@@ -95,7 +96,7 @@ $( document ).ready(function() {
         html_pos = html_obj.position()
         if (!should_hide && html_pos){
             $( '#action-button-panel' ).css({
-                "left":html_pos.left - 100,
+                "left":html_pos.left - 170,
                 "top": html_pos.top,
                 "display": "inline",
             });
@@ -103,7 +104,7 @@ $( document ).ready(function() {
             $( '#action-button-panel' ).css({
                 "display": "none",
             });
-        }
+        } //TODO deal card functionality!!!
 
     }
 
@@ -186,12 +187,6 @@ $( document ).ready(function() {
         apm.show_action_buttons_for_id(false);
         sync_action_buttons();
     });
-    pressed_shuffle_button = function(){
-        id = apm.show_action_buttons_for_id();
-        if (id){
-            socket.emit('SHUFFLE', {gameid:template_gameid, obj_id:id});
-        }
-    }
 
     draggable_settings = {
             start: function(elem) {
@@ -399,9 +394,11 @@ $( document ).ready(function() {
             }
             if ('type' in obj_data){
                 apm_obj.type( obj_data.type );
-                //apm_obj.set_css_for_type();
             }
             if (apm_obj.player_moving_index() !== template_player_index){
+                if ('is_face_up' in obj_data){
+                    apm_obj.is_face_up( obj_data.is_face_up );
+                }
                 if ('depth' in obj_data) {
                     apm_obj.depth( obj_data.depth );
                     should_sync_position = true;
@@ -422,6 +419,22 @@ $( document ).ready(function() {
                 //console.log("Not changing position because of player_moving_index");
             }
 	});
+    });
+
+    $( "#deal-spinner" ).spinner({min:1,max:20,step:1,start:5,});
+    $( "#deal-select"  ).selectmenu();
+    $( "#flip-button"  ).click(function(){
+        console.log('flip button');
+        id = apm.show_action_buttons_for_id();
+        if (id){
+            socket.emit('FLIP', {gameid:template_gameid, obj_id:id});
+        }
+    });
+    $( "#BUTTONSHUFFLE" ).click(function(){
+        id = apm.show_action_buttons_for_id();
+        if (id){
+            socket.emit('SHUFFLE', {gameid:template_gameid, obj_id:id});
+        }
     });
 
     get_position_array_from_html_pos = function(html_pos){

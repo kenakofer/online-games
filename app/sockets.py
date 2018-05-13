@@ -119,6 +119,7 @@ def connect_freeplay():
 @socketio.on('UPDATE REQUEST', namespace='/freeplay')
 def update_request(data):
     print('Client UPDATE REQUEST: {}'.format(data))
+    print('The games are {}'.format(freeplay_games))
     g = freeplay_games[data['gameid']]
     g.send_update()
     g.time_of_last_update = time()
@@ -128,7 +129,6 @@ def join(data):
     join_room(data['room'])
     emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
 
-# The client tells us that they moved a card. We decide if it's legal and what the implications are
 @socketio.on('START MOVE', namespace='/freeplay')
 def start_move(data):
     g = freeplay_games[data['gameid']]
@@ -167,10 +167,19 @@ def combine(data):
     g.time_of_last_update = time()
 
 @socketio.on('SHUFFLE', namespace='/freeplay')
-def combine(data):
+def shuffle(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'shuffle', data))
     obj = g.all_movables[data['obj_id']]
     obj.shuffle_cards()
+    g.time_of_last_update = time()
+
+@socketio.on('FLIP', namespace='/freeplay')
+def flip(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'flip', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.flip()
     g.time_of_last_update = time()
