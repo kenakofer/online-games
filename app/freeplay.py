@@ -47,12 +47,12 @@ class TableMovable:
 
 
 
-    def __init__(self, id, game, position, dimensions, dependents=[], parent=None, display_name="", is_face_up=True):
+    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", is_face_up=True):
         self.id = id
         self.game = game
         self.position = position
         self.dimensions = dimensions
-        self.dependents = dependents
+        self.dependents = dependents or []
         self.is_face_up = is_face_up
         self.parent = parent
         if self.parent:
@@ -249,13 +249,13 @@ class Card(TableMovable):
 
 class Deck(TableMovable):
 
-    def __init__(self, game, position, dimensions, cards=[], text=""):
+    def __init__(self, game, position, dimensions, cards=None, text=""):
         super().__init__(
                 'DECK'+str(game.get_new_id()),
                 game,
                 position,
                 dimensions,
-                dependents=cards,
+                dependents=cards or [],
                 display_name=text,
                 )
         game.decks[self.id] = self
