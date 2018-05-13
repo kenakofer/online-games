@@ -44,6 +44,10 @@ $( document ).ready(function() {
         self.is_face_up = ko.observable(true);
         self.depth = ko.observable(0);
         self.type = ko.observable("");
+        self.front_image_url = ko.observable(false);
+        self.front_image_style = ko.observable("100% 100%");
+        self.back_image_url = ko.observable('/static/images/freeplay/red_back.png');
+        self.back_image_style = ko.observable("100% 100%");
         self.move_confirmed_by_server = false;
         self.position_offset = ko.computed(function() {
             if (self.type() == 'Deck'){
@@ -395,10 +399,48 @@ $( document ).ready(function() {
             if ('type' in obj_data){
                 apm_obj.type( obj_data.type );
             }
-            if (apm_obj.player_moving_index() !== template_player_index){
-                if ('is_face_up' in obj_data){
-                    apm_obj.is_face_up( obj_data.is_face_up );
+            if ('front_image_url' in obj_data){
+                apm_obj.front_image_url( obj_data.front_image_url );
+            }
+            if ('front_image_style' in obj_data){
+                apm_obj.front_image_style( obj_data.front_image_style );
+            }
+            if ('back_image_url' in obj_data){
+                apm_obj.back_image_url( obj_data.back_image_url );
+            }
+            if ('back_image_style' in obj_data){
+                apm_obj.back_image_style( obj_data.back_image_style );
+            }
+            if ('is_face_up' in obj_data){
+                apm_obj.is_face_up( obj_data.is_face_up );
+                html_elem = $( '#'+apm_obj.id() );
+                if (! apm_obj.is_face_up()){
+                    html_elem.addClass( 'back' )
+                } else if ( $( '#'+apm_obj.id() ).hasClass('back') ){
+                    html_elem.removeClass( 'back' )
                 }
+            }
+            if (apm_obj.is_face_up()){
+                // If the card has an image, show it
+                html_elem = $( '#'+apm_obj.id() );
+                if (apm_obj.front_image_url()){
+                    console.log('Setting background image');
+                    html_elem.css({
+                        'background-image': "url("+apm_obj.front_image_url()+")",
+                        'background-size': apm_obj.front_image_style(),
+                    });
+                }
+            } else {
+                html_elem = $( '#'+apm_obj.id() );
+                if (apm_obj.back_image_url()){
+                    console.log('Setting background image');
+                    html_elem.css({
+                        'background-image': "url("+apm_obj.back_image_url()+")",
+                        'background-size': apm_obj.back_image_style(),
+                    });
+                }
+            }
+            if (apm_obj.player_moving_index() !== template_player_index){
                 if ('depth' in obj_data) {
                     apm_obj.depth( obj_data.depth );
                     should_sync_position = true;

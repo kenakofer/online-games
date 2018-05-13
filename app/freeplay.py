@@ -179,7 +179,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, front_image_id, back_image_id, alt_text="", dimensions=[-1,-1]):
+    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dimensions=[-1,-1]):
         for i,c in enumerate(dimensions):
             if c<0:
                 dimensions[i] = deck.dimensions[i]
@@ -192,6 +192,10 @@ class Card(TableMovable):
                 parent=deck,
                 display_name=alt_text,
                 )
+        self.front_image_url = front_image_url
+        self.front_image_style = front_image_style
+        self.back_image_url = back_image_url
+        self.back_image_style = back_image_style
         game.cards[self.id] = self
 
     # This is called when one object in the client is dropped onto another
@@ -246,6 +250,14 @@ class Card(TableMovable):
             with app.test_request_context('/'):
                 socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
             self.game.thread_lock.release()
+
+    def get_info(self):
+        info = super().get_info()
+        info['front_image_url'] = self.front_image_url
+        info['front_image_style'] = self.front_image_style
+        info['back_image_url'] = self.back_image_url
+        info['back_image_style'] = self.back_image_style
+        return info
 
 class Deck(TableMovable):
 
@@ -309,6 +321,14 @@ class Deck(TableMovable):
             self.game.send_update()
             return
 
+    def get_standard_deck(game):
+        print('standard deck')
+        deck = Deck(game, (100,100), (100,100), text="mydeck")
+        for i in range(52):
+            Card(game, deck, '/static/images/freeplay/standard_deck/card-{}.png'.format(i), alt_text=str(i))
+        return deck
+
+
 class FreeplayGame:
 
     def __init__(self, gameid):
@@ -325,10 +345,7 @@ class FreeplayGame:
         self.recent_messages = []
         self.thread_lock.release()
         self.depth_counter= [-1, 100000000]
-        #For testing, create a deck with cards in it
-        deck = Deck(self, (100,100), (100,100), text="mydeck")
-        for i in range(52):
-            Card(self, deck, None, None, alt_text=str(i))
+        deck = Deck.get_standard_deck(self)
         self.send_update()
 
     def get_next_depth(self, moving):

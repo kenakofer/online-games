@@ -42,12 +42,9 @@
 
 {% block content %}
     <h1>Free Play</h1>
-    <!--<div data-bind="foreach: cards">
-        <div class="card noselect ui-widget-content" data-bind="attr: {'id': id}"> </div>
-    </div>  Cards aren't real -->
     <div data-bind="foreach: movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type" onclick="clicked_on(this);">
-            <span data-bind="if: is_face_up">
+            <span data-bind="if: is_face_up && !front_image_url">
                 <span data-bind="text: display_name"></span>
             </span>
         </div>

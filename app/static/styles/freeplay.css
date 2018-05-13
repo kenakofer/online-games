@@ -76,6 +76,9 @@ span.ui-selectmenu-text {
     font-size: 35px;
     font-weight: bold;
 }
+.ui-widget-content.card.back {
+    background-image: url("/static/images/freeplay/red_back.png");
+}
 /*.ui-draggable {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
 }*/
@@ -95,19 +98,6 @@ span.ui-selectmenu-text {
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
 }
-/*@keyframes drop_pile_dragging {
-    from {background-color: #8B6;}
-    to   {background-color: #5A3;}
-}
-.droppable.ui-state-active{
-    background: #5A3;
-    border: 2px solid #474;
-    animation-name: drop_pile_dragging;
-    animation-duration: .5s;
-    animation-direction: alternate;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-}*/
 .label {
     position: absolute;
     font-weight: bold;
