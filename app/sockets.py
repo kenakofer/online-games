@@ -192,3 +192,12 @@ def flip(data):
     obj = g.all_movables[data['obj_id']]
     obj.flip()
     g.time_of_last_update = time()
+
+@socketio.on('DEAL', namespace='/freeplay')
+def deal(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'DEAL', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.deal(int(data['how_many']), data['which_face'])
+    g.time_of_last_update = time()

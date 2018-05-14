@@ -367,6 +367,23 @@ class Deck(TableMovable):
             Card(game, deck, '/static/images/freeplay/standard_deck/card-{}.png'.format(i), alt_text=str(i))
         return deck
 
+    def deal(self, count, which_face):
+        new_position = self.position[:]
+        new_position[0] += self.dimensions[0]+40
+        new_deck = Deck(self.game, new_position, self.dimensions[:], cards=[], text="")
+        for i in range(count):
+            if len(self.dependents) == 0:
+                break
+            card = self.dependents.pop()
+            card.parent = new_deck
+            card.parent.dependents.append(card)
+            card.stop_move(None, new_position, no_check=True, no_update=True)
+            card.is_face_up = (which_face == 'face up')
+        self.game.send_update()
+        # If the deck has 1 or fewer cards, destroy it
+        new_deck.check_should_destroy()
+
+
 
 class FreeplayGame:
 

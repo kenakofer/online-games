@@ -513,8 +513,18 @@ $( document ).ready(function() {
 	});
     });
 
-    $( "#deal-spinner" ).spinner({min:1,max:20,step:1,start:5,});
+    $( "#deal-spinner" ).spinner({min:1,max:20,step:1});
     $( "#deal-select"  ).selectmenu();
+    $( "#deal-button" ).click(function(){
+        var id = apm.show_action_buttons_for_id();
+        var which_face = $("#deal-select")[0].value;
+        var how_many = $("#deal-spinner")[0].value || 1
+        if (id){
+            socket.emit('DEAL', {gameid:template_gameid, obj_id:id, which_face:which_face, how_many:how_many});
+            console.log("deal "+how_many+" "+which_face);
+
+        }
+    });
     $( "#flip-button"  ).click(function(){
         console.log('flip button');
         id = apm.show_action_buttons_for_id();
