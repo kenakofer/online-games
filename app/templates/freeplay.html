@@ -43,7 +43,7 @@
 {% block content %}
     <h1>Free Play</h1>
     <div data-bind="foreach: movables">
-        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type" onclick="clicked_on(this);">
+        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
             <span data-bind="if: is_face_up && !front_image_url">
                 <span data-bind="text: display_name"></span>
             </span>
@@ -52,7 +52,7 @@
     <div id="action-button-panel">
         <button id="BUTTONSHUFFLE" class='action-button'>Shuffle</button>
         <button id="flip-button" class='action-button'>Flip over</button><br>
-        <input id="deal-spinner" name="deal-spinner" value=5></input><select id="deal-select"><option>face up</option><option>face down</option></select><br>
+        <input id="deal-spinner" name="deal-spinner" value=5></input><select id="deal-select"><option>same face</option><option>face up</option><option>face down</option></select><br>
         <button id="deal-button" class='action-button'>Deal</button>
     </div>
 {% endblock %}

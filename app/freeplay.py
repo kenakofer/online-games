@@ -63,7 +63,6 @@ class TableMovable:
         self.display_name = display_name
         self.game.all_movables[self.id] = self
         self.push_to_top(moving=False)
-        print("Created TableMovable {}".format(self))
 
     def push_to_top(self, moving=True):
         self.depth = self.game.get_next_depth(moving)
@@ -300,7 +299,7 @@ class ViewBlocker(TableMovable):
 
 class Deck(TableMovable):
 
-    def __init__(self, game, position, dimensions, cards=None, text=""):
+    def __init__(self, game, position, dimensions, cards=None, text="", offset_per_dependent=None):
         super().__init__(
                 'DECK'+str(game.get_new_id()),
                 game,
@@ -309,6 +308,7 @@ class Deck(TableMovable):
                 dependents=cards or [],
                 display_name=text,
                 )
+        self.offset_per_dependent = offset_per_dependent or [.5,.5]
         game.decks[self.id] = self
 
     def shuffle_cards(self):
@@ -370,19 +370,26 @@ class Deck(TableMovable):
     def deal(self, count, which_face):
         new_position = self.position[:]
         new_position[0] += self.dimensions[0]+40
-        new_deck = Deck(self.game, new_position, self.dimensions[:], cards=[], text="")
+        new_deck = Deck(self.game, new_position, self.dimensions[:], cards=[], text="", offset_per_dependent=[30,0])
         for i in range(count):
             if len(self.dependents) == 0:
                 break
-            card = self.dependents.pop()
+            card = self.dependents[-1]
+            self.dependents = self.dependents[:-1]
             card.parent = new_deck
             card.parent.dependents.append(card)
             card.stop_move(None, new_position, no_check=True, no_update=True)
-            card.is_face_up = (which_face == 'face up')
+            # If 'same face' keep the same direction, otherwise set face up or down
+            if not which_face == "same face":
+                card.is_face_up = (which_face == 'face up')
         self.game.send_update()
         # If the deck has 1 or fewer cards, destroy it
         new_deck.check_should_destroy()
 
+    def get_info(self):
+        info = super().get_info()
+        info['offset_per_dependent'] = self.offset_per_dependent
+        return info
 
 
 class FreeplayGame:
@@ -430,17 +437,24 @@ class FreeplayGame:
 
     def send_update(self, which_movables=None):
         print("sending update")
-        self.thread_lock.acquire()
+        # Passing the False makes it try to acquire the lock. If it can't it enters the if
+        if not self.thread_lock.acquire(False):
+            print("blocked...")
+            self.thread_lock.acquire()
+        print("running...")
         which_movables = list(which_movables or self.all_movables.values())
         TableMovable.sort_movables_for_sending(which_movables)
         # Most of the info needed in the cards
         movables_info = [m.get_info() for m in which_movables]
         player_names = [p.get_display_name() for p in self.players if p.session_user]
         all_data = {
-            "movables_info":movables_info,
+            "fake_movables_info":movables_info, #correct
             "players":player_names,
             'recent_messages':self.recent_messages,
             }
+        all_data['movables_info'] = all_data['fake_movables_info'] #WRONG!!!!
+        all_data['check2']        = all_data['fake_movables_info'] #correct
+        # This seems to be a strong indicator that the issue is in JS, and is specific to data['movables_info']
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
