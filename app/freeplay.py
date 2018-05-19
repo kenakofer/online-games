@@ -308,7 +308,9 @@ class Deck(TableMovable):
                 dependents=cards or [],
                 display_name=text,
                 )
-        self.offset_per_dependent = offset_per_dependent or [.5,.5]
+        self.offset_per_dependent = offset_per_dependent or [3,2]
+
+
         game.decks[self.id] = self
 
     def shuffle_cards(self):

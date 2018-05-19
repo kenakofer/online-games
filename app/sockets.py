@@ -207,7 +207,7 @@ def pco_set(data):
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'PCO SET', data))
     obj = g.all_movables[data['obj_id']]
-    obj.offset_per_dependent = [int(data['pco_x'])/2, int(data['pco_y'])/2]
+    obj.offset_per_dependent = [int(data['pco_x']), int(data['pco_y'])]
     return_data = {'movables_info':[{'id':obj.id, 'offset_per_dependent':obj.offset_per_dependent}]}
     socketio.emit('UPDATE', return_data, broadcast=True, room=data['gameid'], namespace='/freeplay')
     g.time_of_last_update = time()

@@ -117,6 +117,7 @@ $( document ).ready(function() {
     var sync_action_buttons = function(should_hide){
         // If the option buttons are attached to this object, move it too.
         var html_obj = $( '#'+apm.show_action_buttons_for_id());
+        var apm_obj = get_apm_obj(apm.show_action_buttons_for_id());
         var html_pos = html_obj.position()
         if (!should_hide && html_pos){
             $( '#action-button-panel' ).css({
@@ -124,6 +125,10 @@ $( document ).ready(function() {
                 "top": html_pos.top,
                 "display": "inline",
             });
+            // Set the PCO dials to the correct values
+            var a = apm_obj.offset_per_dependent();
+            $( "#pco-x-spinner" ).spinner( 'value', Math.abs(a[0]) ** .5 * 4 * Math.sign(a[0]) );
+            $( "#pco-y-spinner" ).spinner( 'value', Math.abs(a[1]) ** .5 * 4 * Math.sign(a[0]) );
         } else {
             $( '#action-button-panel' ).css({
                 "display": "none",
@@ -457,7 +462,10 @@ $( document ).ready(function() {
                 }
             }
             if ('offset_per_dependent' in obj_data){
-                apm_obj.offset_per_dependent( obj_data.offset_per_dependent );
+                var a = obj_data.offset_per_dependent.slice();
+                a[0] = Math.abs(a[0] / 4) ** 2 * Math.sign(a[0]);
+                a[1] = Math.abs(a[1] / 4) ** 2 * Math.sign(a[1]);
+                apm_obj.offset_per_dependent(a);
                 // Move all the dependents
                 apm_obj.dependent_ids().forEach(function (d_id){
                     var apm_dep = get_apm_obj(d_id);
@@ -520,7 +528,9 @@ $( document ).ready(function() {
     });
 
     var pco_spinner_settings = {
-        min:-200, max:200, step:1,
+        min:-50, max:50, step:1,
+
+
         stop: function( event, ui ) {
             var id = apm.show_action_buttons_for_id();
             var pco_x = $("#pco-x-spinner")[0].value || 1;
