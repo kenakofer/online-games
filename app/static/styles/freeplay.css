@@ -32,8 +32,11 @@
 .action-button {
     margin: 0px;
 }
-#deal-spinner {
+.two-digit-action-spinner {
     width: 18px;
+}
+.four-digit-action-spinner {
+    width: 36px;
 }
 .ui-front {
     z-index: 1000000001 !important;

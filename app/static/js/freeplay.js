@@ -458,6 +458,13 @@ $( document ).ready(function() {
             }
             if ('offset_per_dependent' in obj_data){
                 apm_obj.offset_per_dependent( obj_data.offset_per_dependent );
+                // Move all the dependents
+                apm_obj.dependent_ids().forEach(function (d_id){
+                    var apm_dep = get_apm_obj(d_id);
+                    if (! apm_dep)
+                        return
+                    apm_dep.sync_position(0);
+                });
             }
             if (apm_obj.is_face_up()){
                 // If the card has an image, show it
@@ -512,7 +519,20 @@ $( document ).ready(function() {
 	});
     });
 
+    var pco_spinner_settings = {
+        min:-200, max:200, step:1,
+        stop: function( event, ui ) {
+            var id = apm.show_action_buttons_for_id();
+            var pco_x = $("#pco-x-spinner")[0].value || 1;
+            var pco_y = $("#pco-y-spinner")[0].value || 1;
+            if (id){
+                socket.emit('PCO SET', {gameid:template_gameid, obj_id:id, pco_x:pco_x, pco_y:pco_y});
+            }
+        }
+    };
     $( "#deal-spinner" ).spinner({min:1,max:20,step:1});
+    $( "#pco-x-spinner" ).spinner(pco_spinner_settings);
+    $( "#pco-y-spinner" ).spinner(pco_spinner_settings);
     $( "#deal-select"  ).selectmenu();
     $( "#deal-button" ).click(function(){
         var id = apm.show_action_buttons_for_id();
@@ -520,7 +540,6 @@ $( document ).ready(function() {
         var how_many = $("#deal-spinner")[0].value || 1
         if (id){
             socket.emit('DEAL', {gameid:template_gameid, obj_id:id, which_face:which_face, how_many:how_many});
-
         }
     });
     $( "#flip-button"  ).click(function(){
