@@ -3,6 +3,7 @@ from app import app, db, socketio
 import threading
 from time import sleep, time
 from random import random, sample
+from json import load
 
 #The dict to be filled with freeplay_games
 freeplay_games = {}
@@ -191,7 +192,8 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dimensions=[-1,-1]):
+    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dims=[-1,-1], is_face_up=True):
+        dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
                 dimensions[i] = deck.dimensions[i]
@@ -203,6 +205,7 @@ class Card(TableMovable):
                 dependents=[],
                 parent=deck,
                 display_name=alt_text,
+                is_face_up=is_face_up
                 )
         self.front_image_url = front_image_url
         self.front_image_style = front_image_style
@@ -313,13 +316,14 @@ class Deck(TableMovable):
 
         game.decks[self.id] = self
 
-    def shuffle_cards(self):
+    def shuffle_cards(self, no_update=False):
         # In place shuffle
         shuffle(self.dependents)
         for d in self.dependents:
             d.push_to_top(moving=False)
         # Update all clients
-        self.game.send_update()
+        if not no_update:
+            self.game.send_update()
 
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position
@@ -369,6 +373,49 @@ class Deck(TableMovable):
             Card(game, deck, '/static/images/freeplay/standard_deck/card-{}.png'.format(i), alt_text=str(i))
         return deck
 
+    def get_decks_from_json(game, path_to_json):
+        print(path_to_json)
+        with open(path_to_json) as f:
+            data = load(f) #json.load
+        x = 0
+        y = 100
+        for deck_name in data['decks']:
+            x += 250
+            # Get general deck info with defaults
+            deck_data = data['decks'][deck_name]
+            w = deck_data['width'] if 'width' in deck_data else 69
+            h = deck_data['height'] if 'height' in deck_data else 75
+            shuffle = deck_data['shuffle'] if 'shuffle' in deck_data else False
+            x = deck_data['x'] if 'x' in deck_data else x
+            y = deck_data['y'] if 'y' in deck_data else y
+            opd = deck_data['offset_per_dependent'] if 'offset_per_dependent' in deck_data else [3,2]
+            face_up = deck_data['face_up'] if 'face_up' in deck_data else True
+            deck = Deck(game, [x,y], [w,h], text=deck_name, offset_per_dependent=opd)
+            # Get the card info for this deck
+            for card_data in deck_data['cards']:
+                # Defaults
+                biu = card_data['back_image_url'] if 'back_image_url' in card_data else '/static/images/freeplay/red_back.png'
+                bis = card_data['back_image_style'] if 'back_image_style' in card_data else 'initial'
+                at = card_data['alt_text'] if 'alt_text' in card_data else ""
+                reps = card_data['repetitions'] if 'repetitions' in card_data else 1
+                # Create the card
+                for i in range(reps):
+                    card = Card(
+                            game,
+                            deck,
+                            card_data['front_image_url'],
+                            back_image_url = biu,
+                            back_image_style = bis,
+                            alt_text = at,
+                            is_face_up = face_up
+                            )
+            if shuffle:
+                deck.shuffle_cards(no_update=True)
+
+        return True
+
+
+
     def deal(self, count, which_face):
         new_position = self.position[:]
         new_position[0] += self.dimensions[0]+40
@@ -410,7 +457,9 @@ class FreeplayGame:
         self.recent_messages = []
         self.thread_lock.release()
         self.depth_counter= [1, 100000000]
-        deck = Deck.get_standard_deck(self)
+        Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
+        #Deck.get_san_juan_decks(self)
+        #Deck.get_standard_deck(self)
         self.send_update()
 
     def get_next_depth(self, moving):
@@ -450,12 +499,11 @@ class FreeplayGame:
         movables_info = [m.get_info() for m in which_movables]
         player_names = [p.get_display_name() for p in self.players if p.session_user]
         all_data = {
-            "fake_movables_info":movables_info, #correct
+            "movables_info":movables_info, #correct
             "players":player_names,
             'recent_messages':self.recent_messages,
             }
-        all_data['movables_info'] = all_data['fake_movables_info'] #WRONG!!!!
-        all_data['check2']        = all_data['fake_movables_info'] #correct
+        #print(movables_info)
         # This seems to be a strong indicator that the issue is in JS, and is specific to data['movables_info']
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')

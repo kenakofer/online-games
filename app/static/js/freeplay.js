@@ -511,7 +511,7 @@ $( document ).ready(function() {
                     should_sync_position = true;
                 }
                 if ('dimensions' in obj_data) {
-                    apm_obj.dimensions( obj_data.dimensions );
+                    apm_obj.dimensions( obj_data.dimensions.slice() );
                     should_sync_position = true;
                 }
                 // Make changes to position visible in html

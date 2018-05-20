@@ -1,0 +1,372 @@
+{
+    "decks": {
+        "main_deck":{
+            "width":110,
+            "height":175,
+            "face_up":false,
+            "shuffle":true,
+            "cards":[
+                {
+                    "alt_text":"indigo",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/001.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":11
+                },
+                {
+                    "alt_text":"sugar",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/002.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":9
+                },
+                {
+                    "alt_text":"tobacco",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/003.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":9
+                },
+                {
+                    "alt_text":"coffee",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/004.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":9
+                },
+                {
+                    "alt_text":"silver",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/005.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":9
+                },
+                {
+                    "alt_text":"hut",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/006.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"guard_room",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/007.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"office building",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/008.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"gold mine",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/009.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"archive",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/010.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"smithy",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/011.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"tavern",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/012.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"poor house",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/013.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"crane",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/014.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"trading post",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/015.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"market stand",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/016.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"black market",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/017.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"well",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/018.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"bank",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/019.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"park",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/020.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"customs office",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/021.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"statue",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/022.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"carpenter",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/023.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"aqueduct",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/024.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"tower",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/025.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"chapel",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/026.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"quarry",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/027.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"prefecture",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/028.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"harbor",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/029.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"market hall",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/030.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"victory column",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/031.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"residence",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/032.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"guild hall",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/033.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"triumphal arch",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/034.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"palace",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/035.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"city hall",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/036.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"goldsmith",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/037.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"hero",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/038.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"library",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/039.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                }
+            ]
+        },
+        "cathedral":{
+            "width":110,
+            "height":175,
+            "face_up":true,
+            "cards": [
+                {
+                    "alt_text":"cathedral",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/040.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/040.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                }
+            ]
+        },
+        "roles":{
+            "width":86,
+            "height":137,
+            "face_up":true,
+            "offset_per_dependent":[41,0],
+            "cards":[
+                {
+                    "alt_text":"governor",
+                    "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/000.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/000.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"builder",
+                    "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/001.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"councillor",
+                    "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/002.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/002.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"producer",
+                    "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/003.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/003.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"prospector",
+                    "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/004.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/004.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"trader",
+                    "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/005.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/005.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "trades":{
+            "width":33,
+            "height":137,
+            "face_up":true,
+            "shuffle":true,
+            "offset_per_dependent":[8,4],
+            "cards":[
+                {
+                    "alt_text":"12233",
+                    "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/000.jpg"
+                },
+                {
+                    "alt_text":"12223",
+                    "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/001.jpg"
+                },
+                {
+                    "alt_text":"11223",
+                    "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/002.jpg"
+                },
+                {
+                    "alt_text":"11222",
+                    "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/003.jpg"
+                },
+                {
+                    "alt_text":"11122",
+                    "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/004.jpg"
+                }
+            ]
+        }
+    }
+}
