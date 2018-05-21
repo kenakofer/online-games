@@ -87,10 +87,10 @@ def card_move(data):
     g = blitz_games[data['gameid']]
     player = g.get_blitz_player(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'CARD MOVE', data))
-    if not data['card_id'] in g.cards:
+    if not data['card_id'] in g.all_cards:
         print("No such card on the server side: {}".format(data['card_id']))
     else:
-        card = g.cards[data['card_id']]
+        card = g.all_cards[data['card_id']]
         if data['deck']:
             card.move_to(data['deck'])
         else:
