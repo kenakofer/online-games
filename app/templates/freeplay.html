@@ -44,7 +44,7 @@
     <h1>Free Play</h1>
     <div data-bind="foreach: movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
-            <span data-bind="if: is_face_up && !front_image_url">
+            <span data-bind="if: type()!='Card'">
                 <span data-bind="text: display_name"></span>
             </span>
         </div>

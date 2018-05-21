@@ -1,6 +1,7 @@
 // Any varibles preceded by "template_" are inserted into the html's inline js
 'use strict';
 var get_apm_obj;
+var resizable_settings;
 $( document ).ready(function() {
     'use strict';
     // For IE, which doesn't have includes
@@ -194,17 +195,16 @@ $( document ).ready(function() {
         // Make it draggable and droppable
         $( '#'+apm_obj.id() ).draggable(draggable_settings);
         $( '#'+apm_obj.id() ).droppable(droppable_settings);
-        $( '#'+apm_obj.id() ).on('click', function(elem){
-            elem = elem.target;
+        $( '#'+apm_obj.id() ).on('click', function(){
             // If we clicked on the same one again, hide the button
-            if (apm.show_action_buttons_for_id() === elem.id){
+            if (apm.show_action_buttons_for_id() === this.id){
 
                 apm.show_action_buttons_for_id(false)
                 sync_action_buttons()
             }
             else {
-                var apm_obj = get_apm_obj(elem.id);
-                apm.show_action_buttons_for_id(elem.id);
+                var apm_obj = get_apm_obj(this.id);
+                apm.show_action_buttons_for_id(this.id);
                 sync_action_buttons()
             }
         });
@@ -337,14 +337,13 @@ $( document ).ready(function() {
         }
     };
 
-    var resizable_settings = {
+    resizable_settings = {
             stop: function(elem, ui) {
                 var html_elem = $('#'+elem.target.id);
                 var apm_obj = get_apm_obj(elem.target.id);
                 var dims = [html_elem.width(), html_elem.height()];
                 socket.emit('RESIZE', {gameid:template_gameid, obj_id:elem.target.id, dimensions:dims});
             },
-
     };
 
     // Knockout helper functions
@@ -395,10 +394,9 @@ $( document ).ready(function() {
                 is_new = true;
                 should_sync_position = true;
             }
+            var html_obj = $('#'+apm_obj.id());
 
             //Update its info
-            if ('display_name' in obj_data)
-                apm_obj.display_name( obj_data.display_name );
             if ('dependents' in obj_data){
                 obj_data.dependents.forEach(function(did){
                     var dep_obj = get_apm_obj(did);
@@ -433,12 +431,16 @@ $( document ).ready(function() {
             if ('type' in obj_data){
                 apm_obj.type( obj_data.type );
                 if (apm_obj.type() == "ViewBlocker"){
-                    var html_elem = $( '#'+apm_obj.id() );
-                    html_elem.resizable(resizable_settings);
+                    html_obj.resizable(resizable_settings);
                     try {
-                        html_elem.droppable('destroy');
+                        html_obj.droppable('destroy');
                     } catch (err) {}
                 }
+            }
+            if ('display_name' in obj_data){
+                apm_obj.display_name( obj_data.display_name );
+                // Redirect clicks on the text to the parent
+                $("#"+apm_obj.id()+" span").click(function(){html_obj.trigger('click'); console.log('click');});
             }
             if ('front_image_url' in obj_data){
                 apm_obj.front_image_url( obj_data.front_image_url );
@@ -454,11 +456,10 @@ $( document ).ready(function() {
             }
             if ('is_face_up' in obj_data){
                 apm_obj.is_face_up( obj_data.is_face_up );
-                var html_elem = $( '#'+apm_obj.id() );
                 if (! apm_obj.is_face_up()){
-                    html_elem.addClass( 'back' )
+                    html_obj.addClass( 'back' )
                 } else if ( $( '#'+apm_obj.id() ).hasClass('back') ){
-                    html_elem.removeClass( 'back' )
+                    html_obj.removeClass( 'back' )
                 }
             }
             if ('offset_per_dependent' in obj_data){
@@ -476,17 +477,15 @@ $( document ).ready(function() {
             }
             if (apm_obj.is_face_up()){
                 // If the card has an image, show it
-                var html_elem = $( '#'+apm_obj.id() );
                 if (apm_obj.front_image_url()){
-                    html_elem.css({
+                    html_obj.css({
                         'background-image': "url("+apm_obj.front_image_url()+")",
                         'background-size': apm_obj.front_image_style(),
                     });
                 }
             } else {
-                var html_elem = $( '#'+apm_obj.id() );
                 if (apm_obj.back_image_url()){
-                    html_elem.css({
+                    html_obj.css({
                         'background-image': "url("+apm_obj.back_image_url()+")",
                         'background-size': apm_obj.back_image_style(),
                     });
@@ -494,11 +493,10 @@ $( document ).ready(function() {
             }
             if ('show_players' in obj_data){
                 // If show_players has us in it, put it low, otherwise high
-                var html_elem = $( '#'+apm_obj.id() );
                 if (obj_data.show_players.includes(template_player_index)){
-                    html_elem.css({'z-index':0});
+                    html_obj.css({'z-index':0});
                 } else {
-                    html_elem.css({'z-index':apm_obj.depth()});
+                    html_obj.css({'z-index':apm_obj.depth()});
                 }
             }
             if (apm_obj.player_moving_index() !== template_player_index && apm_obj !== currently_dragging){

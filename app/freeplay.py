@@ -25,7 +25,7 @@ class FreeplayPlayer():
         return None
 
     def __repr__(self):
-        return self.session_user.__repr__()
+        return self.session_user.fullname
 
     def __eq__(self,other):
         return other and self.session_user and other.session_user and self.session_user.id == other.session_user.id
@@ -277,12 +277,14 @@ class Card(TableMovable):
 class ViewBlocker(TableMovable):
 
     def __init__(self, game, position, dimensions, show_players=None):
+        self.show_players = show_players or []
         super().__init__(
                 'BLOCKER'+str(game.get_new_id()),
                 game,
                 position,
                 dimensions,
                 dependents=[],
+                display_name = str(show_players)[1:-1]
                 )
         self.push_to_top(moving=True);
         self.show_players=show_players
