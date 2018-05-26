@@ -1,0 +1,362 @@
+{
+    "decks": {
+        "main deck":{
+            "width":110,
+            "height":175,
+            "face_up":false,
+            "shuffle":true,
+            "cards":[
+                {
+                    "alt_text":"rook",
+                    "front_image_url":"/static/images/freeplay/rook/000.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"13 black",
+                    "front_image_url":"/static/images/freeplay/rook/002.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"13 brown",
+                    "front_image_url":"/static/images/freeplay/rook/003.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"13 green",
+                    "front_image_url":"/static/images/freeplay/rook/004.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"13 red",
+                    "front_image_url":"/static/images/freeplay/rook/005.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"14 black",
+                    "front_image_url":"/static/images/freeplay/rook/006.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"14 brown",
+                    "front_image_url":"/static/images/freeplay/rook/007.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"14 green",
+                    "front_image_url":"/static/images/freeplay/rook/008.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"14 red",
+                    "front_image_url":"/static/images/freeplay/rook/009.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"10 black",
+                    "front_image_url":"/static/images/freeplay/rook/010.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"10 brown",
+                    "front_image_url":"/static/images/freeplay/rook/011.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"10 green",
+                    "front_image_url":"/static/images/freeplay/rook/012.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"10 red",
+                    "front_image_url":"/static/images/freeplay/rook/013.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"11 black",
+                    "front_image_url":"/static/images/freeplay/rook/014.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"11 brown",
+                    "front_image_url":"/static/images/freeplay/rook/015.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"11 green",
+                    "front_image_url":"/static/images/freeplay/rook/016.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"11 red",
+                    "front_image_url":"/static/images/freeplay/rook/017.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"12 black",
+                    "front_image_url":"/static/images/freeplay/rook/018.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"12 brown",
+                    "front_image_url":"/static/images/freeplay/rook/019.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"12 green",
+                    "front_image_url":"/static/images/freeplay/rook/020.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"12 red",
+                    "front_image_url":"/static/images/freeplay/rook/021.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"7 black",
+                    "front_image_url":"/static/images/freeplay/rook/022.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"7 brown",
+                    "front_image_url":"/static/images/freeplay/rook/023.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"7 green",
+                    "front_image_url":"/static/images/freeplay/rook/024.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"7 red",
+                    "front_image_url":"/static/images/freeplay/rook/025.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"8 black",
+                    "front_image_url":"/static/images/freeplay/rook/026.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"8 brown",
+                    "front_image_url":"/static/images/freeplay/rook/027.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"8 green",
+                    "front_image_url":"/static/images/freeplay/rook/028.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"8 red",
+                    "front_image_url":"/static/images/freeplay/rook/029.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"9 black",
+                    "front_image_url":"/static/images/freeplay/rook/030.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"9 brown",
+                    "front_image_url":"/static/images/freeplay/rook/031.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"9 green",
+                    "front_image_url":"/static/images/freeplay/rook/032.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"9 red",
+                    "front_image_url":"/static/images/freeplay/rook/033.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"5 black",
+                    "front_image_url":"/static/images/freeplay/rook/038.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"5 brown",
+                    "front_image_url":"/static/images/freeplay/rook/039.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"5 green",
+                    "front_image_url":"/static/images/freeplay/rook/040.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"5 red",
+                    "front_image_url":"/static/images/freeplay/rook/041.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"6 black",
+                    "front_image_url":"/static/images/freeplay/rook/042.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"6 brown",
+                    "front_image_url":"/static/images/freeplay/rook/043.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"6 green",
+                    "front_image_url":"/static/images/freeplay/rook/044.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"6 red",
+                    "front_image_url":"/static/images/freeplay/rook/045.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"1 black",
+                    "front_image_url":"/static/images/freeplay/rook/046.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"1 brown",
+                    "front_image_url":"/static/images/freeplay/rook/047.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"1 green",
+                    "front_image_url":"/static/images/freeplay/rook/048.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"1 red",
+                    "front_image_url":"/static/images/freeplay/rook/049.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "2s,3s,4s":{
+            "width":110,
+            "height":175,
+            "face_up":false,
+            "shuffle":false,
+            "cards":[
+                {
+                    "alt_text":"2 black",
+                    "front_image_url":"/static/images/freeplay/rook/050.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"2 brown",
+                    "front_image_url":"/static/images/freeplay/rook/051.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"2 green",
+                    "front_image_url":"/static/images/freeplay/rook/052.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"2 red",
+                    "front_image_url":"/static/images/freeplay/rook/053.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"3 black",
+                    "front_image_url":"/static/images/freeplay/rook/054.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"3 brown",
+                    "front_image_url":"/static/images/freeplay/rook/055.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"3 green",
+                    "front_image_url":"/static/images/freeplay/rook/056.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"3 red",
+                    "front_image_url":"/static/images/freeplay/rook/057.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"4 black",
+                    "front_image_url":"/static/images/freeplay/rook/034.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"4 brown",
+                    "front_image_url":"/static/images/freeplay/rook/035.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"4 green",
+                    "front_image_url":"/static/images/freeplay/rook/036.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"4 red",
+                    "front_image_url":"/static/images/freeplay/rook/037.jpg",
+                    "back_image_url":"/static/images/freeplay/rook/001.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        }
+    }
+}

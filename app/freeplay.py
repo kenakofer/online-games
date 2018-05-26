@@ -459,9 +459,8 @@ class FreeplayGame:
         self.recent_messages = []
         self.thread_lock.release()
         self.depth_counter= [1, 100000000]
-        Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
-        #Deck.get_san_juan_decks(self)
-        #Deck.get_standard_deck(self)
+        #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
+        Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
         self.send_update()
 
     def get_next_depth(self, moving):
