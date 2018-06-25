@@ -144,7 +144,8 @@ def stop_move(data):
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'STOP MOVE', data))
     obj = g.all_movables[data['obj_id']]
-    obj.stop_move(player, data['position'])
+    privacy = data['privacy'] if 'privacy' in data else None
+    obj.stop_move(player, data['position'], privacy=privacy)
     g.time_of_last_update = time()
 
 @socketio.on('CONTINUE MOVE', namespace='/freeplay')

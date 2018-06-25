@@ -64,6 +64,7 @@ class TableMovable:
         self.display_name = display_name
         self.game.all_movables[self.id] = self
         self.push_to_top(moving=False)
+        self.privacy = -1
 
     def push_to_top(self, moving=True):
         self.depth = self.game.get_next_depth(moving)
@@ -98,7 +99,7 @@ class TableMovable:
         if not no_update:
             self.update_move()
 
-    def stop_move(self, player, new_position, no_check=False, no_update=False):
+    def stop_move(self, player, new_position, privacy=None, no_check=False, no_update=False):
         if (not self.player_moving == player) and (not no_check):
             print("{} can't stop moving {}, because {} is moving it!".format(player, self.id, self.player_moving))
         self.position = new_position
@@ -109,7 +110,10 @@ class TableMovable:
         # Release the player's hold on the object
         self.player_moving = None
         for d in self.dependents:
-            d.stop_move(player, new_position, no_update=True, no_check=no_check)
+            d.stop_move(player, new_position, privacy=privacy, no_update=True, no_check=no_check)
+        # If the privacy flag is set, change the privacy of object (and dependents)
+        if privacy != None:
+            self.privacy = privacy
         # Update all users
         if not no_update:
             self.update_move()
@@ -121,19 +125,28 @@ class TableMovable:
             objects.append(self.parent)
         data = {
             "movables_info":[{
-                "id":o.id,
-                "player_moving_index":False if not o.player_moving else o.player_moving.player_index,
-                "position":o.position,
-                "dimensions":o.dimensions,
-                "depth":o.depth,
-                "parent":False if not o.parent else str(o.parent.id),
-                "dependents":[od.id for od in o.dependents],
-                "is_face_up":o.is_face_up,
+                "id":                   o.id,
+                "player_moving_index":  False if not o.player_moving else o.player_moving.player_index,
+                "position":             o.position,
+                "dimensions":           o.dimensions,
+                "depth":                o.depth,
+                "parent":               False if not o.parent else str(o.parent.id),
+                "dependents":           [od.id for od in o.dependents],
+                "is_face_up":           o.is_face_up,
+                "privacy":              o.privacy, 
             } for o in objects]}
         with app.test_request_context('/'):
             socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
         self.game.thread_lock.release()
         return data
+
+    def recursive_set_privacy(self, privacy, recursive=False):
+        self.privacy = privacy
+        for d in self.dependents:
+            d.recursive_set_privacy(privacy, recursive=True)
+        if not recursive:
+            self.update_move()
+
 
     def resize(self, player, new_dims):
         self.dimensions = new_dims
@@ -150,16 +163,17 @@ class TableMovable:
 
     def get_info(self):
         d = {
-            "id":self.id,
-            "player_moving_index":False if not self.player_moving else self.player_moving.player_index,
-            "position":self.position,
-            "dimensions":self.dimensions,
-            "parent":False if not self.parent else str(self.parent.id),
-            "dependents":[o.id for o in self.dependents],
-            "display_name":self.display_name,
-            "depth":self.depth,
-            "type":self.__class__.__name__,
-            "is_face_up":self.is_face_up,
+            "id":                   self.id,
+            "player_moving_index":  False if not self.player_moving else self.player_moving.player_index,
+            "position":             self.position,
+            "dimensions":           self.dimensions,
+            "parent":               False if not self.parent else str(self.parent.id),
+            "dependents":           [o.id for o in self.dependents],
+            "display_name":         self.display_name,
+            "depth":                self.depth,
+            "type":                 self.__class__.__name__,
+            "is_face_up":           self.is_face_up,
+            "privacy":              self.privacy, 
             }
         return d
 
@@ -216,6 +230,7 @@ class Card(TableMovable):
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position
     def incorporate(self, other):
+        other.privacy = self.privacy
         # If the thing dropped onto has a parent, incorporate with that instead
         if (self.parent):
             print("calling the parent's combine...")
@@ -224,6 +239,8 @@ class Card(TableMovable):
         # Deck dropped onto single card
         elif type(other) is Deck:
             print("Dropping Deck on single Card...")
+            # Set the privacy of all the cards in the dropped deck
+            other.recursive_set_privacy(self.privacy)
             # Make sure the card is not already in the deck
             if self in other.dependents:
                 print("{} is already a dependent of {}".format(self,other))
@@ -245,6 +262,7 @@ class Card(TableMovable):
             assert not self.parent and not other.parent
             print("Dropping single Card on single Card...")
             new_deck = Deck(self.game, self.position, self.dimensions, cards=[self, other], text="")
+            new_deck.privacy = self.privacy
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -330,11 +348,13 @@ class Deck(TableMovable):
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position
     def incorporate(self, other):
+        other.privacy = self.privacy
         if self==other:
             print("You're trying to combine the same thing?")
         # Deck dropped onto deck
         elif type(other) is Deck:
             print("Dropping Deck on Deck...")
+            other.recursive_set_privacy(self.privacy)
             # For each card in other, add it to self deck and align its position
             while len(other.dependents) > 0:
                 card = other.dependents.pop(0)

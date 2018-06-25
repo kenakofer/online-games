@@ -1,7 +1,24 @@
+/* Height of elements (z-index)
+ *
+ *  HIGHEST:    Action panel (invisible while I'm dragging)
+ *              Stuff I'm dragging
+ *
+ *              Stuff that was just dropped in my private hand
+ *              Stuff that was dropped earlier in my private hand
+ *              ------- Floor of the private hand --------
+ *
+ *              Stuff that was just dropped on the main content
+ *              Stuff that was dropped earlier on the main content
+ *              ------- Floor of the main content --------
+ *
+ */
 // Any varibles preceded by "template_" are inserted into the html's inline js
 'use strict';
-var get_apm_obj;
+var draggable_settings;
+var droppable_settings;
 var resizable_settings;
+var clickable_settings;
+var get_apm_obj;
 $( document ).ready(function() {
     'use strict';
     // For IE, which doesn't have includes
@@ -50,6 +67,7 @@ $( document ).ready(function() {
         self.is_face_up = ko.observable(true);
         self.depth = ko.observable(0);
         self.type = ko.observable("");
+        self.privacy = ko.observable(-1); //Index of player it is privately visible, -1 for public
         self.front_image_url = ko.observable(false);
         self.front_image_style = ko.observable("100% 100%");
         self.back_image_url = ko.observable('/static/images/freeplay/red_back.png');
@@ -89,8 +107,12 @@ $( document ).ready(function() {
         self.has_synced_once = false;
     }
     TableMovable.prototype.sync_position = function(time){
-        if (time === undefined)
+        if (time === undefined) {
             time = 200;
+        }
+        if (time === 200 && window.test)
+            snthaoeusnth;
+        console.log("Calling sync position:"+time);
         if (this.has_synced_once === false){
             this.has_synced_once = true;
             time = 0
@@ -115,16 +137,60 @@ $( document ).ready(function() {
         }
     };
 
+    TableMovable.prototype.sync_image = function(){
+        var html_obj = $('#'+this.id());
+        if (this.is_face_up()){
+            html_obj.removeClass( 'back' )
+            // If the card has an image, show it
+            if (this.front_image_url()){
+                html_obj.css({
+                    'background-image': "url("+this.front_image_url()+")",
+                    'background-size': this.front_image_style(),
+                });
+            }
+        } else {
+            html_obj.addClass( 'back' )
+            if (this.back_image_url()){
+                html_obj.css({
+                    'background-image': "url("+this.back_image_url()+")",
+                    'background-size': this.back_image_style(),
+                });
+            }
+        }
+    }
+    TableMovable.prototype.change_privacy = function(privacy_index){
+        if (privacy_index === this.privacy())
+            return
+        this.privacy(privacy_index);
+
+        // If it is changing to a state visible to this user, it will need to have it's features reset
+        if ( [-1, template_player_index].includes(this.privacy()) ) {
+            this.sync_position(0);
+            this.sync_image();
+            // The changes need to reach the html before we can reference the object.
+            ko.tasks.runEarly();
+            var html_obj = $('#'+this.id());
+            html_obj.draggable(draggable_settings);
+            html_obj.droppable(droppable_settings);
+            html_obj.click(clickable_settings);
+        }
+    };
+
+    var private_hand_vertical_offset = function() {
+        return $('.content').offset().top - $('#private-hand').offset().top;
+    };
+
     var sync_action_buttons = function(should_hide){
         // If the option buttons are attached to this object, move it too.
         var html_obj = $( '#'+apm.show_action_buttons_for_id());
         var apm_obj = get_apm_obj(apm.show_action_buttons_for_id());
-        var html_pos = html_obj.position()
+        var html_pos = html_obj.position();
         if (!should_hide && html_pos){
             $( '#action-button-panel' ).css({
                 "left":html_pos.left - 170,
                 "top": html_pos.top,
                 "display": "inline",
+
             });
             // Set the PCO dials to the correct values
             var a = apm_obj.offset_per_dependent();
@@ -135,13 +201,12 @@ $( document ).ready(function() {
                 "display": "none",
             });
         }
-
-    }
+    };
 
     // Careful, it places this on top of the pid stack
     TableMovable.prototype.set_parent_id = function(pid){
         if (this.parent_id() === pid)
-            return
+            return;
         // Remove from old parent dependents if possible
         var obj_old_parent = get_apm_obj( this.parent_id() );
         if (obj_old_parent){
@@ -170,12 +235,19 @@ $( document ).ready(function() {
     function AppViewModel() {
         var self = this;
         self.movables = ko.observableArray([]);
+        self.my_player_index = template_player_index;
+        self.public_movables = ko.computed(function() {
+            return ko.utils.arrayFilter(self.movables(), function(m){return m.privacy() === -1});
+        });
+        self.my_private_movables = ko.computed(function() {
+            return ko.utils.arrayFilter(self.movables(), function(m){return m.privacy() === self.my_player_index});
+        });
         self.show_action_buttons_for_id = ko.observable(false);
         // No need for these to be observable
-        self.my_player_index = template_player_index;
     }
 
     // Activates knockout.js
+    ko.options.deferUpdates = true;
     var apm = new AppViewModel()
         ko.applyBindings(apm);
     var time_of_drag_emit = 0;
@@ -192,28 +264,31 @@ $( document ).ready(function() {
         var apm_obj = new TableMovable(id, [0,0], [0,0], [], false, undefined);
         // Add it to the html
         apm.movables.push(apm_obj);
+        // To do things with the html object, we have to run ko notifications now
+        ko.tasks.runEarly();
         // Make it draggable and droppable
         $( '#'+apm_obj.id() ).draggable(draggable_settings);
         $( '#'+apm_obj.id() ).droppable(droppable_settings);
-        $( '#'+apm_obj.id() ).on('click', function(){
-            // If we clicked on the same one again, hide the button
-            if (apm.show_action_buttons_for_id() === this.id){
+        $( '#'+apm_obj.id() ).click(clickable_settings);
 
-                apm.show_action_buttons_for_id(false)
-                sync_action_buttons()
-            }
-            else {
-                var apm_obj = get_apm_obj(this.id);
-                apm.show_action_buttons_for_id(this.id);
-                sync_action_buttons()
-            }
-        });
-
-        return apm_obj
+        return apm_obj;
     }
 
+    clickable_settings =  function(){
+        console.log('click');
+        // If we clicked on the same one again, hide the button
+        if (apm.show_action_buttons_for_id() === this.id){
+            apm.show_action_buttons_for_id(false)
+            sync_action_buttons()
+        }
+        else {
+            var apm_obj = get_apm_obj(this.id);
+            apm.show_action_buttons_for_id(this.id);
+            sync_action_buttons();
+        }
+    };
 
-    var draggable_settings = {
+    draggable_settings = {
             start: function(elem) {
                 var html_elem = $('#'+elem.target.id);
                 // This will prevent a click event being triggered at drop time
@@ -276,6 +351,10 @@ $( document ).ready(function() {
                     var pos = get_position_array_from_html_pos(html_elem.position());
                     pos[0] -= apm_obj.position_offset()[0];
                     pos[1] -= apm_obj.position_offset()[1];
+                    // If the object was private, we need to do a position offset
+                    if (apm_obj.privacy() !== -1) {
+                        pos[1] -= private_hand_vertical_offset();
+                    }
                     // Move all the dependents as well
                     apm_obj.dependent_ids().forEach(function (d_id){
                         var apm_dep = get_apm_obj(d_id);
@@ -291,11 +370,18 @@ $( document ).ready(function() {
                     // Move the action buttons
                     sync_action_buttons()
                     // Tell the server about the stop move
-                    socket.emit('STOP MOVE', {gameid:template_gameid, obj_id:elem.target.id, position:pos});
+                    socket.emit('STOP MOVE', {
+                        gameid:template_gameid,
+                        obj_id:elem.target.id,
+                        position:pos,
+                        privacy: -1, //If this stop is being called rather than the other, must be public
+                    });
+                    //apm_obj.position(pos);
+                    //apm_obj.change_privacy(-1);
                 }
             },
         };
-    var droppable_settings ={
+   droppable_settings ={
         classes: {
             "ui-droppable-active": "ui-state-active",
             "ui-droppable-hover": "ui-state-hover",
@@ -386,12 +472,12 @@ $( document ).ready(function() {
 	data.movables_info.forEach(function(obj_data) {
             //console.log('Processing object changes for '+obj_data.id);
             var apm_obj = get_apm_obj(obj_data.id);
-            var is_new = false;
+            var position_sync_time = 200;
             var should_sync_position = false
 	    if (!apm_obj){
                 //Create the obj if it doesn't exist yet.
                 apm_obj = createBasicTableMovable(obj_data.id)
-                is_new = true;
+                position_sync_time = 0;
                 should_sync_position = true;
             }
             var html_obj = $('#'+apm_obj.id());
@@ -417,7 +503,7 @@ $( document ).ready(function() {
                 // If the action buttons were attached to it, detach them
                 if (apm.show_action_buttons_for_id() == apm_obj.id()){
                     apm.show_action_buttons_for_id(false);
-                    sync_action_buttons()
+                    sync_action_buttons();
                 }
                 // Remove from the movables array
                 apm.movables.splice( $.inArray(apm_obj, apm.movables()), 1);
@@ -427,6 +513,13 @@ $( document ).ready(function() {
                 apm_obj.set_parent_id( obj_data.parent );
             if ('player_moving_index' in obj_data){
                 apm_obj.player_moving_index( parseInt(obj_data.player_moving_index) );
+            }
+            if ('privacy' in obj_data) {
+                if (obj_data.privacy != apm_obj.privacy())
+                    position_sync_time = 0;
+                apm_obj.change_privacy(obj_data.privacy);
+                // The html_obj has changed
+                html_obj = $('#'+apm_obj.id());
             }
             if ('type' in obj_data){
                 apm_obj.type( obj_data.type );
@@ -442,6 +535,7 @@ $( document ).ready(function() {
                 // Redirect clicks on the text to the parent
                 $("#"+apm_obj.id()+" span").click(function(){html_obj.trigger('click'); console.log('click');});
             }
+            // Update card image
             if ('front_image_url' in obj_data){
                 apm_obj.front_image_url( obj_data.front_image_url );
             }
@@ -456,12 +550,10 @@ $( document ).ready(function() {
             }
             if ('is_face_up' in obj_data){
                 apm_obj.is_face_up( obj_data.is_face_up );
-                if (! apm_obj.is_face_up()){
-                    html_obj.addClass( 'back' )
-                } else if ( $( '#'+apm_obj.id() ).hasClass('back') ){
-                    html_obj.removeClass( 'back' )
-                }
             }
+            // Sync card image changes
+            apm_obj.sync_image();
+
             if ('offset_per_dependent' in obj_data){
                 var a = obj_data.offset_per_dependent.slice();
                 a[0] = Math.abs(a[0] / 4) ** 2 * Math.sign(a[0]);
@@ -474,22 +566,6 @@ $( document ).ready(function() {
                         return
                     apm_dep.sync_position(0);
                 });
-            }
-            if (apm_obj.is_face_up()){
-                // If the card has an image, show it
-                if (apm_obj.front_image_url()){
-                    html_obj.css({
-                        'background-image': "url("+apm_obj.front_image_url()+")",
-                        'background-size': apm_obj.front_image_style(),
-                    });
-                }
-            } else {
-                if (apm_obj.back_image_url()){
-                    html_obj.css({
-                        'background-image': "url("+apm_obj.back_image_url()+")",
-                        'background-size': apm_obj.back_image_style(),
-                    });
-                }
             }
             if ('show_players' in obj_data){
                 // If show_players has us in it, put it low, otherwise high
@@ -514,10 +590,7 @@ $( document ).ready(function() {
                 }
                 // Make changes to position visible in html
                 if (should_sync_position){
-                    if (is_new)
-                        apm_obj.sync_position(0);
-                    else
-                        apm_obj.sync_position();
+                    apm_obj.sync_position(position_sync_time);
                 }
             } else {
                 //console.log("Not syncing position because of player_moving_index");
@@ -568,6 +641,44 @@ $( document ).ready(function() {
             return;
         apm.show_action_buttons_for_id(false);
         sync_action_buttons();
+    });
+    $( '#private-hand' ).droppable({
+        classes: {
+            "ui-droppable-active": "ui-state-active",
+            "ui-droppable-hover": "ui-state-hover",
+        },
+        drop: function( elem, ui ) {
+            var top_id = ui.draggable.context.id;
+            var apm_top = get_apm_obj(top_id);
+            var now = new Date().getTime()
+            if (now - time_of_drop_emit < 200)
+                return
+            time_of_drop_emit = now
+
+            // We want to prevent emitting the stop event after this
+            apm_top.drop_time = now
+            // TODO make position where the person dropped it
+            //apm_top.position( apm_bottom.position() );
+            var temp_depth = 5000000;
+            apm_top.depth(temp_depth);
+            temp_depth += 1;
+            // Move the action buttons
+            sync_action_buttons()
+            var private_pos = apm_top.position();
+            // If the object was public, we need to do a position offset
+            if (apm_top.privacy() === -1) {
+                private_pos[1] += private_hand_vertical_offset();
+            }
+            socket.emit('STOP MOVE', {
+                gameid:template_gameid,
+                obj_id:apm_top.id(),
+                position:private_pos,
+                privacy:template_player_index
+            });
+            //// Remove an awkward transition by syncing the new privacy/pos now
+            //apm_top.position(private_pos);
+            //apm_top.change_privacy(template_player_index);
+        }
     });
     var get_position_array_from_html_pos = function(html_pos){
         var x = html_pos.left;

@@ -29,6 +29,15 @@
     padding: 6px;
     display: none;
 }
+#private-hand {
+    position: fixed;
+    bottom: -5;
+    left: -5;
+    width: 110%;
+    height: 200;
+    background: #778;
+    border: 4px solid #555;
+}
 .action-button {
     margin: 0px;
 }

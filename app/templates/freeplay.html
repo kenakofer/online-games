@@ -42,7 +42,7 @@
 
 {% block content %}
     <h1>Free Play</h1>
-    <div data-bind="foreach: movables">
+    <div data-bind="foreach: public_movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
             <span data-bind="if: type()!='Card'">
                 <span data-bind="text: display_name"></span>
@@ -51,10 +51,25 @@
     </div>
     <div id="action-button-panel">
         <button id="BUTTONSHUFFLE" class='action-button'>Shuffle</button>
-        <button id="flip-button" class='action-button'>Flip over</button><br>
-        <input id="deal-spinner" class='two-digit-action-spinner' value=5></input><select id="deal-select"><option>same face</option><option>face up</option><option>face down</option></select><br>
+        <button id="flip-button" class='action-button'>Flip over</button>
+        <br>
+        <input id="deal-spinner" class='two-digit-action-spinner' value=5></input>
+        <select id="deal-select"><option>same face</option><option>face up</option><option>face down</option></select>
+        <br>
         <button id="deal-button" class='action-button'>Deal</button><br>
         <input id="pco-x-spinner" class='four-digit-action-spinner' value=3></input>
         <input id="pco-y-spinner" class='four-digit-action-spinner' value=2></input>
     </div>
+{% endblock %}
+
+{% block footer %}
+<div id="private-hand">
+    <div data-bind="foreach: my_private_movables">
+        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
+            <span data-bind="if: type()!='Card'">
+                <span data-bind="text: display_name"></span>
+            </span>
+        </div>
+    </div>
+</div>
 {% endblock %}
