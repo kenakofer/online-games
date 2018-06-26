@@ -104,6 +104,9 @@ $( document ).ready(function() {
             return Math.max(0, i)
         }, this);
 
+        // Drop time works like this:
+        // Dropping a card anywhere inhibits the stop drag event, and disallows another immediate general drop event
+        // Dropping a card in the private area inhibits the stop drag event as well, but allows the general drop event to fire
         self.drop_time = 0;
         self.has_synced_once = false;
     }
@@ -649,13 +652,9 @@ $( document ).ready(function() {
             var top_id = ui.draggable.context.id;
             var apm_top = get_apm_obj(top_id);
             var now = new Date().getTime()
-            if (now - time_of_drop_emit < 200)
-                return
-            time_of_drop_emit = now
 
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now
-            // TODO make position where the person dropped it
             //apm_top.position( apm_bottom.position() );
             var temp_depth = 5000000;
             apm_top.depth(temp_depth);
