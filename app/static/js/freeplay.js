@@ -1,11 +1,11 @@
 /* Height of elements (z-index)
  *
- *  HIGHEST:    Action panel (invisible while I'm dragging)
- *              Stuff I'm dragging
+ *  HIGHEST:    Action panel (invisible while I'm dragging)     z-index: 1000000000;
+ *              Stuff that's dragging                                   //150000000+
  *
- *              Stuff that was just dropped in my private hand
+ *              Stuff that was just dropped in my private hand          //100000001+
  *              Stuff that was dropped earlier in my private hand
- *              ------- Floor of the private hand --------
+ *              ------- Floor of the private hand --------                100000000
  *
  *              Stuff that was just dropped on the main content
  *              Stuff that was dropped earlier on the main content
@@ -16,9 +16,10 @@
 'use strict';
 var draggable_settings;
 var droppable_settings;
-var resizable_settings;
+var resizable_settings; //TODO not used anymore without view blockers? But will probably be useful again for another feature
 var clickable_settings;
 var get_apm_obj;
+var apm;
 $( document ).ready(function() {
     'use strict';
     // For IE, which doesn't have includes
@@ -119,11 +120,9 @@ $( document ).ready(function() {
         }
         var html_elem = $('#'+this.id());
 
-        if (this.type() !== "ViewBlocker"){
-            html_elem.css({
-                "z-index": this.depth(),
-            });
-        }
+        html_elem.css({
+            "z-index": this.depth(),
+        });
         var css_obj = {
             "left":this.position()[0]+this.position_offset()[0],
             "top": this.position()[1]+this.position_offset()[1],
@@ -186,10 +185,16 @@ $( document ).ready(function() {
         var apm_obj = get_apm_obj(apm.show_action_buttons_for_id());
         var html_pos = html_obj.position();
         if (!should_hide && html_pos){
+            var position_type = 'absolute';
+            if (apm_obj.privacy() !== -1){
+                position_type = 'fixed';
+                html_pos = html_obj.offset();
+            }
             $( '#action-button-panel' ).css({
                 "left":html_pos.left - 170,
                 "top": html_pos.top,
                 "display": "inline",
+                "position": position_type,
 
             });
             // Set the PCO dials to the correct values
@@ -248,13 +253,13 @@ $( document ).ready(function() {
 
     // Activates knockout.js
     ko.options.deferUpdates = true;
-    var apm = new AppViewModel()
+    apm = new AppViewModel()
         ko.applyBindings(apm);
     var time_of_drag_emit = 0;
     var currently_dragging = false;
     var time_of_resize_emit = 0;
     var time_of_drop_emit = 0;
-    var dragging_z = 10000000;
+    var dragging_z = 150000000;
     var get_dragging_depth = function(){
         dragging_z += 1;
         return dragging_z;
@@ -294,8 +299,7 @@ $( document ).ready(function() {
                 // This will prevent a click event being triggered at drop time
                 socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
                 var apm_obj = get_apm_obj(elem.target.id);
-                if (apm_obj.type() !== 'ViewBlocker')
-                    html_elem.css({'z-index':get_dragging_depth()});
+                html_elem.css({'z-index':get_dragging_depth()});
                 currently_dragging = apm_obj;
                 // Start all of the dependents dragging as well
                 apm_obj.dependent_ids().forEach(function (d_id){
@@ -523,12 +527,6 @@ $( document ).ready(function() {
             }
             if ('type' in obj_data){
                 apm_obj.type( obj_data.type );
-                if (apm_obj.type() == "ViewBlocker"){
-                    html_obj.resizable(resizable_settings);
-                    try {
-                        html_obj.droppable('destroy');
-                    } catch (err) {}
-                }
             }
             if ('display_name' in obj_data){
                 apm_obj.display_name( obj_data.display_name );

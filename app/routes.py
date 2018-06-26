@@ -181,7 +181,6 @@ def freeplay(gameid):
     if index==-1:
         index = len(game.players)
         player = game.add_player(user)
-        game.create_blocker_for(player)
 
 
     print("Taking {} player index".format(index)) #Put the user into the game room
@@ -200,10 +199,13 @@ def freeplay(gameid):
 def login():
     if current_user.is_authenticated:
         return redirect('/')
+    print("Sending to google: "+google_login.authorization_url())
     return redirect(google_login.authorization_url())
 
+@app.route('/login/google')
 @google_login.login_success
-def login_success(token, profile):
+def login_success(token, profile, **params):
+    print("login_success")
     user = User.query.filter_by(email=profile['email']).first()
     print(user)
     # If there is not an entry for the user, create one
