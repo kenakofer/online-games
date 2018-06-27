@@ -345,7 +345,7 @@ class Deck(TableMovable):
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
             other.parent = self
-            #self.stop_move(None, self.position, no_check=True, no_update=True)
+            other.stop_move(None, self.position, no_check=True, no_update=True)
             self.game.send_update(which_movables = [self, other] + other.dependents)
 
 
@@ -414,6 +414,7 @@ class Deck(TableMovable):
         new_position = self.position[:]
         new_position[0] += self.dimensions[0]+40
         new_deck = Deck(self.game, new_position, self.dimensions[:], cards=[], text="", offset_per_dependent=[30,0])
+        new_deck.privacy = self.privacy
         for i in range(count):
             if len(self.dependents) == 0:
                 break
@@ -425,7 +426,7 @@ class Deck(TableMovable):
             # If 'same face' keep the same direction, otherwise set face up or down
             if not which_face == "same face":
                 card.is_face_up = (which_face == 'face up')
-        self.game.send_update()
+        self.game.send_update(which_movables = [new_deck] + new_deck.dependents)
         # If the deck has 1 or fewer cards, destroy it
         new_deck.check_should_destroy()
 

@@ -124,7 +124,7 @@ $( document ).ready(function() {
         }
         if (time === 200 && window.test)
             snthaoeusnth;
-        console.log("Calling sync position:"+time);
+        console.log("Calling sync position on "+this.id()+': '+time);
         if (this.has_synced_once === false){
             this.has_synced_once = true;
             time = 0
@@ -189,6 +189,9 @@ $( document ).ready(function() {
 
     var private_hand_vertical_offset = function() {
         return $('.content').offset().top - $('#private-hand').offset().top;
+    };
+    var private_hand_horizontal_offset = function() {
+        return $('.content').offset().left - $('#private-hand').offset().left;
     };
 
     var sync_action_buttons = function(should_hide){
@@ -369,6 +372,7 @@ $( document ).ready(function() {
                     pos[1] -= apm_obj.position_offset()[1];
                     // If the object was private, we need to do a position offset
                     if (apm_obj.privacy() !== -1) {
+                        pos[0] -= private_hand_horizontal_offset();
                         pos[1] -= private_hand_vertical_offset();
                     }
                     // Move all the dependents as well
@@ -402,11 +406,14 @@ $( document ).ready(function() {
         },
         drop: function( event, ui ) {
             var now = new Date().getTime()
-            if (now - time_of_drop_emit < 200)
+            if (now - time_of_drop_emit < 200) {
+                console.log('too soon since last drop event');
                 return
+            }
             time_of_drop_emit = now
             var top_id = ui.draggable.context.id;
             var bottom_id = event.target.id;
+            console.log('droped '+top_id+' on '+bottom_id);
             // Line up the dropped object
             var apm_top = get_apm_obj(top_id);
             var apm_bottom = get_apm_obj(bottom_id);
@@ -667,9 +674,11 @@ $( document ).ready(function() {
             temp_depth += 1;
             // Move the action buttons
             sync_action_buttons()
-            var private_pos = apm_top.position();
+            var html_elem = $('#'+top_id);
+            var private_pos = get_position_array_from_html_pos(html_elem.position());
             // If the object was public, we need to do a position offset
             if (apm_top.privacy() === -1) {
+                private_pos[0] += private_hand_horizontal_offset();
                 private_pos[1] += private_hand_vertical_offset();
             }
             socket.emit('STOP MOVE', {
