@@ -131,7 +131,7 @@ class TableMovable:
                 "parent":               False if not o.parent else str(o.parent.id),
                 "dependents":           [od.id for od in o.dependents],
                 "is_face_up":           o.is_face_up,
-                "privacy":              o.privacy, 
+                "privacy":              o.privacy,
             } for o in objects]}
         with app.test_request_context('/'):
             socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
@@ -179,7 +179,7 @@ class TableMovable:
         if not self.display_name and len(self.dependents) < 2:
             self.destroy()
 
-    def destroy(self, destroy_dependents=True, no_update=False):
+    def destroy(self):
         print('destroying {}...'.format(self.id))
         if self.parent:
             self.parent.dependents.remove(self)
@@ -196,8 +196,8 @@ class TableMovable:
         with app.test_request_context('/'):
             socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
         self.game.thread_lock.release()
-        if not no_update:
-            self.game.send_update()
+        #if not no_update:
+        #    self.game.send_update()
 
     def __repr__(self):
         return str(self.id)
@@ -253,7 +253,7 @@ class Card(TableMovable):
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
-            self.game.send_update()
+            self.game.send_update(which_movables = [self, other] + other.dependents)
 
         # Single Card dropped onto single card
         elif type(other) is Card:
@@ -266,7 +266,7 @@ class Card(TableMovable):
             other.stop_move(None, self.position, no_check=True, no_update=True)
             print(self.position)
             print(other.position)
-            self.game.send_update()
+            self.game.send_update(which_movables = [self, other, new_deck])
 
     def flip(self, no_update=False):
         self.is_face_up = not self.is_face_up
@@ -325,27 +325,29 @@ class Deck(TableMovable):
         elif type(other) is Deck:
             print("Dropping Deck on Deck...")
             other.recursive_set_privacy(self.privacy)
+            # Save which dependents are new
+            other_deps = other.dependents[:]
             # For each card in other, add it to self deck and align its position
             while len(other.dependents) > 0:
                 card = other.dependents.pop(0)
                 self.dependents.append(card)
                 card.parent = self
             # Delete the other deck
-            other.destroy(no_update=True)
-            # Set the deck's position to be the same as the card, and stop any movement on the two
-            self.stop_move(None, self.position, no_check=True, no_update=True)
+            other.destroy()
+            for o in other_deps:
+                o.stop_move(None, self.position, no_check=True, no_update=True)
+            # Update only the new parent deck and those cards which were added to it
+            self.game.send_update(which_movables = [self] + other_deps)
 
         # Single Card dropped onto Deck
         elif type(other) is Card:
             assert not other.parent
             print("Dropping single Card on Deck...")
-            # Set the deck's position to be the same as the card, and stop any movement on the two
             self.dependents.append(other)
             other.parent = self
-            self.stop_move(None, self.position, no_check=True, no_update=True)
+            #self.stop_move(None, self.position, no_check=True, no_update=True)
+            self.game.send_update(which_movables = [self, other] + other.dependents)
 
-        # In any case, update everyone
-        self.game.send_update()
 
     def flip(self, no_update=False):
         for d in self.dependents:
@@ -483,8 +485,8 @@ class FreeplayGame:
         if not self.thread_lock.acquire(False):
             print("blocked...")
             self.thread_lock.acquire()
-        print("running...")
-        which_movables = list(which_movables or self.all_movables.values())
+        which_movables = list(set(which_movables or self.all_movables.values()))
+        print("updating {} objects".format(len(which_movables)))
         TableMovable.sort_movables_for_sending(which_movables)
         # Most of the info needed in the cards
         movables_info = [m.get_info() for m in which_movables]

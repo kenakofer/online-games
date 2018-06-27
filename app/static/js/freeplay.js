@@ -65,6 +65,14 @@ $( document ).ready(function() {
         self.set_parent_id(parent_id);
         self.player_moving_index = ko.observable(-1);
         self.display_name = ko.observable(display_name);
+        self.full_display_name = ko.computed(function() {
+            var l = self.dependent_ids().length;
+            if (l < 2) {
+                return self.display_name();
+            } else {
+                return self.display_name()+" ("+l+")";
+            }
+        });
         self.is_face_up = ko.observable(true);
         self.depth = ko.observable(0);
         self.type = ko.observable("");
@@ -129,7 +137,7 @@ $( document ).ready(function() {
         var css_obj = {
             "left":this.position()[0]+this.position_offset()[0],
             "top": this.position()[1]+this.position_offset()[1],
-            "width": this.dimensions()[0]+this.dimension_offset()[0],
+            "min-width": this.dimensions()[0]+this.dimension_offset()[0],
             "height": this.dimensions()[1]+this.dimension_offset()[1],
         }
         if (time === 0){
@@ -161,6 +169,7 @@ $( document ).ready(function() {
         }
     }
     TableMovable.prototype.change_privacy = function(privacy_index){
+        console.log('change_privacy of '+this.id()+' to '+privacy_index);
         if (privacy_index === this.privacy())
             return
         this.privacy(privacy_index);
@@ -283,7 +292,7 @@ $( document ).ready(function() {
     }
 
     clickable_settings =  function(){
-        console.log('click');
+        console.log('clicked on: '+this.id);
         // If we clicked on the same one again, hide the button
         if (apm.show_action_buttons_for_id() === this.id){
             apm.show_action_buttons_for_id(false)
@@ -383,8 +392,6 @@ $( document ).ready(function() {
                         position:pos,
                         privacy: -1, //If this stop is being called rather than the other, must be public
                     });
-                    //apm_obj.position(pos);
-                    //apm_obj.change_privacy(-1);
                 }
             },
         };
@@ -473,8 +480,6 @@ $( document ).ready(function() {
             else
                 data.recent_messages[mi] = data.recent_messages[mi].replace('['+i+']', data.players[i]);
         }
-        // Game over status
-        apm.game_over = data.game_over == 1
         //Movables changes
 	data.movables_info.forEach(function(obj_data) {
             //console.log('Processing object changes for '+obj_data.id);
@@ -499,7 +504,7 @@ $( document ).ready(function() {
                 // Make sure the order is right:
                 apm_obj.dependent_ids(obj_data.dependents.slice());
             }
-            if ('destroy' in obj_data){
+            if ('destroy' in obj_data && obj_data.destroy == true){
                 console.log('destroying '+apm_obj.id());
                 // Make all the dependents orphans
                 apm_obj.dependent_ids().forEach(function(did){
@@ -519,12 +524,13 @@ $( document ).ready(function() {
             if ('parent' in obj_data)
                 apm_obj.set_parent_id( obj_data.parent );
             if ('player_moving_index' in obj_data){
-                apm_obj.player_moving_index( parseInt(obj_data.player_moving_index) );
+                apm_obj.player_moving_index( obj_data.player_moving_index );
             }
             if ('privacy' in obj_data) {
                 if (obj_data.privacy != apm_obj.privacy())
                     position_sync_time = 0;
                 apm_obj.change_privacy(obj_data.privacy);
+                console.log('done changing privacy');
                 // The html_obj has changed
                 html_obj = $('#'+apm_obj.id());
             }
@@ -534,7 +540,7 @@ $( document ).ready(function() {
             if ('display_name' in obj_data){
                 apm_obj.display_name( obj_data.display_name );
                 // Redirect clicks on the text to the parent
-                $("#"+apm_obj.id()+" span").click(function(){html_obj.trigger('click'); console.log('click');});
+                $("#"+apm_obj.id()+" span").click(function(){html_obj.trigger('click'); console.log('click redirect:');});
             }
             // Update card image
             if ('front_image_url' in obj_data){
@@ -672,9 +678,6 @@ $( document ).ready(function() {
                 position:private_pos,
                 privacy:template_player_index
             });
-            //// Remove an awkward transition by syncing the new privacy/pos now
-            //apm_top.position(private_pos);
-            //apm_top.change_privacy(template_player_index);
         }
     });
     var get_position_array_from_html_pos = function(html_pos){

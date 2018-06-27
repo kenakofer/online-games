@@ -45,7 +45,7 @@
     <div data-bind="foreach: public_movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
             <span data-bind="if: type()!='Card'">
-                <span data-bind="text: display_name"></span>
+                <span data-bind="text: full_display_name()"></span>
             </span>
         </div>
     </div>
@@ -67,7 +67,7 @@
     <div data-bind="foreach: my_private_movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
             <span data-bind="if: type()!='Card'">
-                <span data-bind="text: display_name"></span>
+                <span data-bind="text: full_display_name()"></span>
             </span>
         </div>
     </div>
