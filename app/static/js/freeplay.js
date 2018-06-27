@@ -694,4 +694,9 @@ $( document ).ready(function() {
         var y = html_pos.top;
         return [x, y];
     }
+    $(".resizable").resizable({
+        handles: {
+            'n':'#handle'
+        }
+    });
 });
