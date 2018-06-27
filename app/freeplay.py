@@ -387,6 +387,9 @@ class Deck(TableMovable):
             deck = Deck(game, [x,y], [w,h], text=deck_name, offset_per_dependent=opd)
             # Get the card info for this deck
             for card_data in deck_data['cards']:
+                # Add global "all_cards" settings
+                for k in data['all_cards']:
+                    card_data[k] = data['all_cards'][k]
                 # Defaults
                 biu = card_data['back_image_url'] if 'back_image_url' in card_data else '/static/images/freeplay/red_back.png'
                 bis = card_data['back_image_style'] if 'back_image_style' in card_data else 'initial'
