@@ -9,7 +9,7 @@
  *
  *              Stuff that was just dropped on the main content
  *              Stuff that was dropped earlier on the main content
- *              ------- Floor of the main content --------
+ *              ------- Floor of the main content --------                 
  *
  */
 // Any varibles preceded by "template_" are inserted into the html's inline js
@@ -301,7 +301,7 @@ $( document ).ready(function() {
         return dropped_private_z;
     }
 
-    var dropped_public_z = 100;
+    var dropped_public_z = 50000001;
     var get_dropped_public_depth = function(){
         dropped_public_z += 1;
         return dropped_public_z;
@@ -404,6 +404,9 @@ $( document ).ready(function() {
                         pos[1] -= private_hand_vertical_offset();
                     }
                     // Move all the dependents as well
+                    apm_obj.depth(get_dropped_public_depth());
+                    apm_obj.position(pos);
+                    apm_obj.sync_position(0);
                     apm_obj.dependent_ids().forEach(function (d_id){
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
@@ -718,6 +721,8 @@ $( document ).ready(function() {
                 private_pos[0] += private_hand_horizontal_offset();
                 private_pos[1] += private_hand_vertical_offset();
             }
+            private_pos[0] -= apm_top.position_offset()[0];
+            private_pos[1] -= apm_top.position_offset()[1];
             socket.emit('STOP MOVE', {
                 gameid:template_gameid,
                 obj_id:apm_top.id(),
