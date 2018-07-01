@@ -63,11 +63,11 @@ class TableMovable:
         self.player_moving = None
         self.display_name = display_name
         self.game.all_movables[self.id] = self
-        self.push_to_top(moving=False)
         self.privacy = -1
+        self.push_to_top(moving=False)
 
     def push_to_top(self, moving=True):
-        self.depth = self.game.get_next_depth(moving)
+        self.depth = self.get_next_depth(moving)
 
     # Calling this locks movement to only this player until stop_move is called.
     def start_move(self, player, recursive=False):
@@ -124,7 +124,7 @@ class TableMovable:
         data = {
             "movables_info":[{
                 "id":                   o.id,
-                "player_moving_index":  False if not o.player_moving else o.player_moving.player_index,
+                "player_moving_index":  -1 if not o.player_moving else o.player_moving.player_index,
                 "position":             o.position,
                 "dimensions":           o.dimensions,
                 "depth":                o.depth,
@@ -162,7 +162,7 @@ class TableMovable:
     def get_info(self):
         d = {
             "id":                   self.id,
-            "player_moving_index":  False if not self.player_moving else self.player_moving.player_index,
+            "player_moving_index":  -1 if not self.player_moving else self.player_moving.player_index,
             "position":             self.position,
             "dimensions":           self.dimensions,
             "parent":               False if not self.parent else str(self.parent.id),
@@ -178,6 +178,16 @@ class TableMovable:
     def check_should_destroy(self):
         if not self.display_name and len(self.dependents) < 2:
             self.destroy()
+
+    def get_next_depth(self, moving):
+        if moving:
+            i = 2
+        elif self.privacy != -1:
+            i = 1
+        else:
+            i = 0
+        self.game.depth_counter[i] += 1
+        return self.game.depth_counter[i]
 
     def destroy(self):
         print('destroying {}...'.format(self.id))
@@ -454,15 +464,11 @@ class FreeplayGame:
         self.game_over=False
         self.recent_messages = []
         self.thread_lock.release()
-        self.depth_counter= [1, 100000000]
+        self.depth_counter= [100, 50000000, 100000000]
+
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
         Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
         self.send_update()
-
-    def get_next_depth(self, moving):
-        i = 1 if moving else 0
-        self.depth_counter[i] += 1
-        return self.depth_counter[i]
 
     def add_player(self, session_user):
         if (self.get_player_from_session(session_user)):

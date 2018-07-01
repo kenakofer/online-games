@@ -124,7 +124,7 @@ $( document ).ready(function() {
         }
         if (time === 200 && window.test)
             snthaoeusnth;
-        console.log("Calling sync position on "+this.id()+': '+time);
+        //console.log("Calling sync position on "+this.id()+': '+time);
         if (this.has_synced_once === false){
             this.has_synced_once = true;
             time = 0
@@ -169,7 +169,7 @@ $( document ).ready(function() {
         }
     }
     TableMovable.prototype.change_privacy = function(privacy_index){
-        console.log('change_privacy of '+this.id()+' to '+privacy_index);
+        //console.log('change_privacy of '+this.id()+' to '+privacy_index);
         if (privacy_index === this.privacy())
             return
         this.privacy(privacy_index);
@@ -182,8 +182,8 @@ $( document ).ready(function() {
             ko.tasks.runEarly();
             var html_obj = $('#'+this.id());
             html_obj.draggable(draggable_settings);
-            html_obj.droppable(droppable_settings);
             html_obj.click(clickable_settings);
+            this.set_droppability();
         }
     };
 
@@ -250,7 +250,21 @@ $( document ).ready(function() {
             if (! obj_parent.dependent_ids().includes(this.id()) )
                 obj_parent.dependent_ids.push(this.id());
         }
+        this.set_droppability();
     };
+
+    /* If the object has no parent, give it droppability. Otherwise take it away.
+     */
+    TableMovable.prototype.set_droppability = function(){
+        var html_obj = $('#'+this.id());
+        if ( this.parent_id() === false || this.parent_id() === undefined ) {
+            html_obj.droppable(droppable_settings);
+        } else {
+            try {
+                html_obj.droppable("destroy");
+            } catch (err) {}
+        }
+    }
 
     function AppViewModel() {
         var self = this;
@@ -274,10 +288,23 @@ $( document ).ready(function() {
     var currently_dragging = false;
     var time_of_resize_emit = 0;
     var time_of_drop_emit = 0;
+
     var dragging_z = 150000000;
     var get_dragging_depth = function(){
         dragging_z += 1;
         return dragging_z;
+    }
+
+    var dropped_private_z = 100000001;
+    var get_dropped_private_depth = function(){
+        dropped_private_z += 1;
+        return dropped_private_z;
+    }
+
+    var dropped_public_z = 100;
+    var get_dropped_public_depth = function(){
+        dropped_public_z += 1;
+        return dropped_public_z;
     }
 
     function createBasicTableMovable(id){
@@ -290,6 +317,7 @@ $( document ).ready(function() {
         $( '#'+apm_obj.id() ).draggable(draggable_settings);
         $( '#'+apm_obj.id() ).droppable(droppable_settings);
         $( '#'+apm_obj.id() ).click(clickable_settings);
+        apm_obj.set_droppability();
 
         return apm_obj;
     }
@@ -323,9 +351,9 @@ $( document ).ready(function() {
                         return
                     apm_dep.depth(get_dragging_depth());
                     apm_dep.sync_position(0);
-                    try {
+                    /*try {
                         $( '#'+apm_dep.id() ).droppable("destroy");
-                    } catch (err) {}
+                    } catch (err) {}*/
                 });
                 // Remove this object from its parents
                 apm_obj.set_parent_id(false);
@@ -380,12 +408,12 @@ $( document ).ready(function() {
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
                             return
-                        apm_dep.depth(get_dragging_depth());
+                        apm_dep.depth(get_dropped_public_depth());
                         apm_dep.position(pos);
                         apm_dep.sync_position(0);
-                        try {
+                        /*try {
                             $( '#'+apm_dep.id() ).droppable(droppable_settings);
-                        } catch (err) {}
+                        } catch (err) {console.log(err);}*/
                     });
                     // Move the action buttons
                     sync_action_buttons()
@@ -406,35 +434,46 @@ $( document ).ready(function() {
         },
         drop: function( event, ui ) {
             var now = new Date().getTime()
+            var top_id = ui.draggable.context.id;
+            var top_html = $('#'+top_id);
+            var top_middle_y = top_html.offset().top + top_html.height()/2;
+            var bottom_id = event.target.id;
+            var apm_bottom = get_apm_obj(bottom_id);
+            var apm_top = get_apm_obj(top_id);
+            if (apm_bottom.privacy() === -1 && top_middle_y > $('#private-hand').offset().top){
+                console.log('elem is below private hand line, won\'t trigger public drop');
+                return;
+            }
+            if (apm_top.dependent_ids().includes(bottom_id)) {
+                console.log('You cannot drop '+top_id+' onto one of its dependents');
+                return;
+            }
             if (now - time_of_drop_emit < 200) {
                 console.log('too soon since last drop event');
-                return
+                return;
             }
+            console.log("Dropping "+top_id+' on '+bottom_id);
             time_of_drop_emit = now
-            var top_id = ui.draggable.context.id;
-            var bottom_id = event.target.id;
             console.log('droped '+top_id+' on '+bottom_id);
             // Line up the dropped object
-            var apm_top = get_apm_obj(top_id);
-            var apm_bottom = get_apm_obj(bottom_id);
             // If either is not a deck or card, ignore the drop
             if (!['Deck','Card'].includes(apm_top.type()) || !['Deck','Card'].includes(apm_bottom.type()))
                 return
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now
             apm_top.position( apm_bottom.position() );
-            var temp_depth = 5000000;
-            apm_top.depth(temp_depth);
-            temp_depth += 1;
+            apm_top.depth(get_dragging_depth());
             apm_top.dependent_ids().forEach(function (d_id){
                 var apm_dep = get_apm_obj(d_id);
                 if (! apm_dep)
                     return
-                apm_dep.depth(get_dragging_depth);
+                apm_dep.depth(get_dragging_depth());
                 apm_dep.sync_position(0);
-                try {
+                /*try {
                     $( '#'+apm_dep.id() ).droppable(droppable_settings);
-                } catch (err) {}
+                } catch (err) {
+                    console.log(err);
+                } */
             });
             apm_top.sync_position();
             // Move the action buttons
@@ -537,7 +576,7 @@ $( document ).ready(function() {
                 if (obj_data.privacy != apm_obj.privacy())
                     position_sync_time = 0;
                 apm_obj.change_privacy(obj_data.privacy);
-                console.log('done changing privacy');
+                //console.log('done changing privacy');
                 // The html_obj has changed
                 html_obj = $('#'+apm_obj.id());
             }
@@ -669,9 +708,7 @@ $( document ).ready(function() {
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now
             //apm_top.position( apm_bottom.position() );
-            var temp_depth = 5000000;
-            apm_top.depth(temp_depth);
-            temp_depth += 1;
+            apm_top.depth(get_dropped_public_depth());
             // Move the action buttons
             sync_action_buttons()
             var html_elem = $('#'+top_id);
