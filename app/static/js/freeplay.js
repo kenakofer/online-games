@@ -188,10 +188,10 @@ $( document ).ready(function() {
     };
 
     var private_hand_vertical_offset = function() {
-        return $('.content').offset().top - $('#private-hand').offset().top;
+        return $('.content').offset().top - $('#private-hand').offset().top + 2;
     };
     var private_hand_horizontal_offset = function() {
-        return $('.content').offset().left - $('#private-hand').offset().left;
+        return $('.content').offset().left - $('#private-hand').offset().left + 2;
     };
 
     var sync_action_buttons = function(should_hide){
@@ -398,11 +398,6 @@ $( document ).ready(function() {
                     var pos = get_position_array_from_html_pos(html_elem.position());
                     pos[0] -= apm_obj.position_offset()[0];
                     pos[1] -= apm_obj.position_offset()[1];
-                    // If the object was private, we need to do a position offset
-                    if (apm_obj.privacy() !== -1) {
-                        pos[0] -= private_hand_horizontal_offset();
-                        pos[1] -= private_hand_vertical_offset();
-                    }
                     // Move all the dependents as well
                     apm_obj.depth(get_dropped_public_depth());
                     apm_obj.position(pos);
@@ -420,6 +415,11 @@ $( document ).ready(function() {
                     });
                     // Move the action buttons
                     sync_action_buttons()
+                    // If the object was private, we need to do a position offset
+                    if (apm_obj.privacy() !== -1) {
+                        pos[0] -= private_hand_horizontal_offset();
+                        pos[1] -= private_hand_vertical_offset();
+                    }
                     // Tell the server about the stop move
                     socket.emit('STOP MOVE', {
                         gameid:template_gameid,
@@ -699,10 +699,6 @@ $( document ).ready(function() {
         sync_action_buttons();
     });
     $( '#private-hand' ).droppable({
-        classes: {
-            "ui-droppable-active": "ui-state-active",
-            "ui-droppable-hover": "ui-state-hover",
-        },
         drop: function( elem, ui ) {
             var top_id = ui.draggable.context.id;
             var apm_top = get_apm_obj(top_id);
