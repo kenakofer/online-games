@@ -330,7 +330,7 @@ class Deck(TableMovable):
             d.push_to_top(moving=False)
         # Update all clients
         if not no_update:
-            self.game.send_update()
+            self.game.send_update([self]+self.dependents)
 
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position
@@ -376,7 +376,7 @@ class Deck(TableMovable):
         for d in self.dependents:
             d.push_to_top(moving=False)
         if not no_update:
-            self.game.send_update()
+            self.game.send_update([self]+self.dependents)
             return
 
     def get_standard_deck(game):
