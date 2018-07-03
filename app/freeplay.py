@@ -262,6 +262,8 @@ class Card(TableMovable):
                 self.parent = None
             self.parent = other
             other.dependents.insert(0,self)
+            for d in other.dependents:
+                d.is_face_up = self.is_face_up
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -273,6 +275,7 @@ class Card(TableMovable):
             print("Dropping single Card on single Card...")
             new_deck = Deck(self.game, self.position, self.dimensions, cards=[self, other], text="")
             new_deck.privacy = self.privacy
+            other.is_face_up = self.is_face_up
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -345,6 +348,7 @@ class Deck(TableMovable):
             while len(other.dependents) > 0:
                 card = other.dependents.pop(0)
                 self.dependents.append(card)
+                card.is_face_up = self.dependents[0].is_face_up
                 card.parent = self
             # Delete the other deck
             other.destroy()
@@ -358,6 +362,7 @@ class Deck(TableMovable):
             assert not other.parent
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
+            other.is_face_up = self.dependents[0].is_face_up
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
             self.game.send_update(which_movables = [self, other] + other.dependents)
