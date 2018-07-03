@@ -1,8 +1,8 @@
 {
     "all_cards": {
         "back_image_style":"100% 100%",
-        "default_front_facing_offset":[23,0],
-        "default_back_facing_offset":[5,3],
+        "default_face_up_offset":[23,0],
+        "default_face_down_offset":[3,2],
         "back_image_url":"/static/images/freeplay/rook/001.jpg"
     },
     "decks": {

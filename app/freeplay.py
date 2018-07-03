@@ -214,7 +214,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dims=[-1,-1], is_face_up=True):
+    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dims=[-1,-1], is_face_up=True, dfuo=None, dfdo=None):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -233,6 +233,8 @@ class Card(TableMovable):
         self.front_image_style = front_image_style
         self.back_image_url = back_image_url
         self.back_image_style = back_image_style
+        self.dfuo = dfuo or [25,0]
+        self.dfdo = dfdo or [3,2]
         game.cards[self.id] = self
 
     # This is called when one object in the client is dropped onto another
@@ -298,6 +300,8 @@ class Card(TableMovable):
         info['front_image_style'] = self.front_image_style
         info['back_image_url'] = self.back_image_url
         info['back_image_style'] = self.back_image_style
+        info['default_face_up_offset'] = self.dfuo
+        info['default_face_down_offset'] = self.dfdo
         return info
 
 class Deck(TableMovable):
@@ -405,6 +409,8 @@ class Deck(TableMovable):
                 bis = card_data['back_image_style'] if 'back_image_style' in card_data else 'initial'
                 at = card_data['alt_text'] if 'alt_text' in card_data else ""
                 reps = card_data['repetitions'] if 'repetitions' in card_data else 1
+                dfuo = card_data['default_face_up_offset'] if 'default_face_up_offset' in card_data else [24,0]
+                dfdo = card_data['default_face_down_offset'] if 'default_face_down_offset' in card_data else [3,2]
                 # Create the card
                 for i in range(reps):
                     card = Card(
@@ -414,7 +420,9 @@ class Deck(TableMovable):
                             back_image_url = biu,
                             back_image_style = bis,
                             alt_text = at,
-                            is_face_up = face_up
+                            is_face_up = face_up,
+                            dfuo = dfuo,
+                            dfdo = dfdo,
                             )
             if shuffle:
                 deck.shuffle_cards(no_update=True)

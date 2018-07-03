@@ -81,8 +81,22 @@ $( document ).ready(function() {
         self.front_image_style = ko.observable("100% 100%");
         self.back_image_url = ko.observable('/static/images/freeplay/red_back.png');
         self.back_image_style = ko.observable("100% 100%");
+        self.dfuo = ko.observableArray();
+        self.dfdo = ko.observableArray();
         self.move_confirmed_by_server = false;
-        self.offset_per_dependent = ko.observableArray([.5, .5]);
+        //self.offset_per_dependent = ko.observableArray([.5, .5]);
+        self.offset_per_dependent = ko.computed(function() {
+            if (self.dependent_ids().length === 0)
+                return;
+            var first_dep = get_apm_obj(self.dependent_ids()[0]);
+            if (! first_dep)
+                return;
+            if (first_dep.is_face_up()) {
+                return first_dep.dfuo();
+            } else {
+                return first_dep.dfdo();
+            }
+        }, this);
         self.position_offset = ko.computed(function() {
             if (self.type() == 'Deck'){
                 return [-10, -27];
@@ -90,8 +104,11 @@ $( document ).ready(function() {
                 var i = self.get_index_in_parent();
                 var p = get_apm_obj(self.parent_id());
                 var opd = [.5,.5];
-                if (p)
-                    opd = p.offset_per_dependent();
+                if (p && p.offset_per_dependent()) {
+                    opd = p.offset_per_dependent().slice();
+                    opd[0] = Math.abs(opd[0] / 4) ** 2 * Math.sign(opd[0]);
+                    opd[1] = Math.abs(opd[1] / 4) ** 2 * Math.sign(opd[1]);
+                }
                 return [i * opd[0], i * opd[1]]
             }
             // Otherwise
@@ -213,9 +230,9 @@ $( document ).ready(function() {
 
             });
             // Set the PCO dials to the correct values
-            var a = apm_obj.offset_per_dependent();
+            /*var a = apm_obj.offset_per_dependent();
             $( "#pco-x-spinner" ).spinner( 'value', Math.abs(a[0]) ** .5 * 4 * Math.sign(a[0]) );
-            $( "#pco-y-spinner" ).spinner( 'value', Math.abs(a[1]) ** .5 * 4 * Math.sign(a[0]) );
+            $( "#pco-y-spinner" ).spinner( 'value', Math.abs(a[1]) ** .5 * 4 * Math.sign(a[0]) );*/
         } else {
             $( '#action-button-panel' ).css({
                 "display": "none",
@@ -323,7 +340,7 @@ $( document ).ready(function() {
     }
 
     clickable_settings =  function(){
-        console.log('clicked on: '+this.id);
+        //console.log('clicked on: '+this.id);
         // If we clicked on the same one again, hide the button
         if (apm.show_action_buttons_for_id() === this.id){
             apm.show_action_buttons_for_id(false)
@@ -604,16 +621,20 @@ $( document ).ready(function() {
             if ('back_image_style' in obj_data){
                 apm_obj.back_image_style( obj_data.back_image_style );
             }
+            if ('default_face_up_offset' in obj_data){
+                apm_obj.dfuo( obj_data.default_face_up_offset.slice() );
+            }
+            if ('default_face_down_offset' in obj_data){
+                apm_obj.dfdo( obj_data.default_face_down_offset.slice() );
+            }
             if ('is_face_up' in obj_data){
                 apm_obj.is_face_up( obj_data.is_face_up );
             }
             // Sync card image changes
             apm_obj.sync_image();
 
-            if ('offset_per_dependent' in obj_data){
+            /*if ('offset_per_dependent' in obj_data){
                 var a = obj_data.offset_per_dependent.slice();
-                a[0] = Math.abs(a[0] / 4) ** 2 * Math.sign(a[0]);
-                a[1] = Math.abs(a[1] / 4) ** 2 * Math.sign(a[1]);
                 apm_obj.offset_per_dependent(a);
                 // Move all the dependents
                 apm_obj.dependent_ids().forEach(function (d_id){
@@ -622,7 +643,7 @@ $( document ).ready(function() {
                         return
                     apm_dep.sync_position(0);
                 });
-            }
+            }*/
             if ('show_players' in obj_data){
                 // If show_players has us in it, put it low, otherwise high
                 if (obj_data.show_players.includes(template_player_index)){
