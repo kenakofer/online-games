@@ -84,6 +84,7 @@ class TableMovable:
         # If it was inside something, take it out (only if the user if moving the dependent and not the container)
         if self.parent and not recursive:
             self.parent.dependents.remove(self)
+            self.game.send_update([self, self.parent] + self.parent.dependents)
             p = self.parent
             self.parent = None
             p.check_should_destroy()
