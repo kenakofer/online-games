@@ -189,25 +189,28 @@ class TableMovable:
         self.game.depth_counter[i] += 1
         return self.game.depth_counter[i]
 
-    def destroy(self):
+    def destroy(self, destroy_dependents=False, update=True, data=None):
+        if (update):
+            self.game.thread_lock.acquire()
+
         print('destroying {}...'.format(self.id))
+
+        data = data or {'movables_info':[]}
+        data['movables_info'].append({
+            "id":self.id,
+            "destroy":True,
+        })
         if self.parent:
             self.parent.dependents.remove(self)
         for d in self.dependents:
             d.parent = None
+            if destroy_dependents:
+                d.destroy(destroy_dependents=True, update=False, data=data)
         del self.game.all_movables[self.id]
-        self.game.thread_lock.acquire()
-        data = {
-            "movables_info":[{
-                "id":self.id,
-                "destroy":True,
-                }]
-            }
-        with app.test_request_context('/'):
-            socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
-        self.game.thread_lock.release()
-        #if not no_update:
-        #    self.game.send_update()
+        if (update):
+            with app.test_request_context('/'):
+                socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+            self.game.thread_lock.release()
 
     def __repr__(self):
         return str(self.id)

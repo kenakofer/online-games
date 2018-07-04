@@ -202,6 +202,14 @@ def deal(data):
     obj = g.all_movables[data['obj_id']]
     obj.deal(int(data['how_many']), data['which_face'])
     g.time_of_last_update = time()
+@socketio.on('DESTROY', namespace='/freeplay')
+def destroy(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'DESTROY', data))
+    obj = g.all_movables[data['obj_id']]
+    obj.destroy(destroy_dependents=True)
+    g.time_of_last_update = time()
 @socketio.on('PCO SET', namespace='/freeplay')
 def pco_set(data):
     g = freeplay_games[data['gameid']]

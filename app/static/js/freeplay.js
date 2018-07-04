@@ -70,7 +70,7 @@ $( document ).ready(function() {
             if (l < 2) {
                 return self.display_name();
             } else {
-                return self.display_name()+" ("+l+")";
+                return "("+l+") "+self.display_name();
             }
         });
         self.is_face_up = ko.observable(true);
@@ -698,6 +698,12 @@ $( document ).ready(function() {
         var how_many = $("#deal-spinner")[0].value || 1
         if (id){
             socket.emit('DEAL', {gameid:template_gameid, obj_id:id, which_face:which_face, how_many:how_many});
+        }
+    });
+    $( "#destroy-button" ).click(function(){
+        var id = apm.show_action_buttons_for_id();
+        if (id){
+            socket.emit('DESTROY', {gameid:template_gameid, obj_id:id});
         }
     });
     $( "#flip-button"  ).click(function(){
