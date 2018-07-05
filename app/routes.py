@@ -151,16 +151,16 @@ def blitz_lobby():
 #############
 # Free Play #
 #############
-@app.route('/freeplay/<gameid>')
+@app.route('/freeplay/<game_name>/<gameid>')
 @login_required
-def freeplay(gameid):
+def freeplay(game_name, gameid):
     # Current_user now will be the same object as current_user, so we get user here
     user = get_stable_user()
     print("{} is requesting to join freeplay gameid {}".format(user, gameid))
     gameid = str(gameid)
     # If the game doesn't already exist, create it!
     if not gameid in freeplay_games:
-        freeplay_games[gameid] = FreeplayGame(gameid)
+        freeplay_games[gameid] = FreeplayGame(gameid, game_name)
         print("Created gameid {}".format(gameid))
     game = freeplay_games[gameid]
     print("The users in the game already are {}".format([p.session_user for p in game.players]))

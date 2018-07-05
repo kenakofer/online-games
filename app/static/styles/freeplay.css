@@ -88,8 +88,8 @@ span.ui-selectmenu-text {
     display: inline-block;
     border: 2px solid #565;
     text-align: left;
-    height: 75px;
-    width: 69px;
+    /*height: 75px;
+    width: 69px;*/
     margin: 0px;
     background: white;
     /* Add shadows to create the "card" effect */
@@ -100,7 +100,7 @@ span.ui-selectmenu-text {
     transform-origin: top left;
     float: left;
     color: #555;
-    padding: 10px 0 0 10px;
+    /*padding: 10px 0 0 10px;*/
     font-size: 35px;
     font-weight: bold;
 }

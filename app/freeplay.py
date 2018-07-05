@@ -410,10 +410,21 @@ class Deck(TableMovable):
             deck = Deck(game, [x,y], [w,h], text=deck_name, offset_per_dependent=opd)
             # Get the card info for this deck
             for card_data in deck_data['cards']:
+                card_data_copy = card_data.copy()
+
                 # Add global "all_cards" settings
-                for k in data['all_cards']:
-                    card_data[k] = data['all_cards'][k]
-                # Defaults
+                if 'all_cards' in data:
+                    for k in data['all_cards']:
+                        card_data[k] = data['all_cards'][k]
+                # Add deck wide settings to cards
+                for k in deck_data:
+                    if k != 'cards':
+                        card_data[k] = deck_data[k]
+                # Allow specific card settings to take precedence
+                for k in card_data_copy:
+                    card_data[k] = card_data_copy[k]
+
+                # Defaults if nothing specified
                 biu = card_data['back_image_url'] if 'back_image_url' in card_data else '/static/images/freeplay/red_back.png'
                 bis = card_data['back_image_style'] if 'back_image_style' in card_data else 'initial'
                 at = card_data['alt_text'] if 'alt_text' in card_data else ""
@@ -468,7 +479,7 @@ class Deck(TableMovable):
 
 class FreeplayGame:
 
-    def __init__(self, gameid):
+    def __init__(self, gameid, deck_name='rook'):
         self.thread_lock = threading.Lock()
         self.thread_lock.acquire()
         self.players = []
@@ -484,7 +495,8 @@ class FreeplayGame:
         self.depth_counter= [100, 50000000, 100000000]
 
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
-        Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
+        #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
+        Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/'+deck_name+'/game.json')
         self.send_update()
 
     def add_player(self, session_user):

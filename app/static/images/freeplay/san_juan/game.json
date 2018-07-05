@@ -4,6 +4,8 @@
             "width":110,
             "height":175,
             "face_up":false,
+            "default_face_up_offset":[37,0],
+            "default_face_down_offset":[2,1],
             "shuffle":true,
             "cards":[
                 {
@@ -299,7 +301,8 @@
             "width":86,
             "height":137,
             "face_up":true,
-            "offset_per_dependent":[41,0],
+            "default_face_up_offset":[37,0],
+            "default_face_down_offset":[37,0],
             "cards":[
                 {
                     "alt_text":"governor",
@@ -344,7 +347,8 @@
             "height":137,
             "face_up":true,
             "shuffle":true,
-            "offset_per_dependent":[8,4],
+            "default_face_up_offset":[21,0],
+            "default_face_down_offset":[3,2],
             "cards":[
                 {
                     "alt_text":"12233",
