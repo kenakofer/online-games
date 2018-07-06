@@ -86,16 +86,27 @@ $( document ).ready(function() {
         self.move_confirmed_by_server = false;
         //self.offset_per_dependent = ko.observableArray([.5, .5]);
         self.offset_per_dependent = ko.computed(function() {
-            if (self.dependent_ids().length === 0)
+            if (self.dependent_ids().length === 0) {
                 return;
-            var first_dep = get_apm_obj(self.dependent_ids()[0]);
-            if (! first_dep)
-                return;
-            if (first_dep.is_face_up()) {
-                return first_dep.dfuo();
-            } else {
-                return first_dep.dfdo();
             }
+            var first_dep = get_apm_obj(self.dependent_ids()[0]);
+            if (! first_dep) {
+                return;
+            }
+            var result;
+            if (first_dep.is_face_up()) {
+                result = first_dep.dfuo();
+            } else {
+                result = first_dep.dfdo();
+            }
+            if (!(result instanceof Array)){
+                // Result is actually a dict
+                if (first_dep.privacy() === -1)
+                    result = result['public'];
+                else
+                    result = result['private'];
+            }
+            return result
         }, this);
         self.position_offset = ko.computed(function() {
             if (self.type() == 'Deck'){
@@ -622,10 +633,10 @@ $( document ).ready(function() {
                 apm_obj.back_image_style( obj_data.back_image_style );
             }
             if ('default_face_up_offset' in obj_data){
-                apm_obj.dfuo( obj_data.default_face_up_offset.slice() );
+                apm_obj.dfuo( obj_data.default_face_up_offset );
             }
             if ('default_face_down_offset' in obj_data){
-                apm_obj.dfdo( obj_data.default_face_down_offset.slice() );
+                apm_obj.dfdo( obj_data.default_face_down_offset );
             }
             if ('is_face_up' in obj_data){
                 apm_obj.is_face_up( obj_data.is_face_up );
