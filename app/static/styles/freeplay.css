@@ -33,7 +33,7 @@
 #private-hand {
     position: fixed;
     bottom: -100px;
-    top: auto;
+    top: auto !important; /* the "important" prevents the resizing operation from setting top */
     left: -5px;
     width: 110%;
     height: 300px;
