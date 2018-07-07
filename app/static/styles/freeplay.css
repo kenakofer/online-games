@@ -24,10 +24,6 @@
 #action-button-panel {
     position: absolute;
     z-index: 1000000000;
-    background: #600;
-    border-radius: 9px;
-    border: 2px solid #e88;
-    padding: 6px;
     display: none;
 }
 #private-hand {
@@ -70,10 +66,18 @@
     white-space: nowrap;
 }
 .action-button {
-    margin: 0px;
+    margin: 2px;
+    font-family: "SymbolaRegular";
+    font-size: 28px;
+    padding: 0px;
+    background: #242;
+    border: 2px solid #242;
 }
-.two-digit-action-spinner {
-    width: 18px;
+.ui-spinner.ui-widget.ui-widget-content {
+    font-size: 14px;
+    width: 53px;
+    height: 28px;
+    margin: -5px 1px 1px 1px;
 }
 .four-digit-action-spinner {
     width: 36px;
@@ -155,4 +159,16 @@ span.ui-selectmenu-text {
     font-weight: bold;
     color: white;
     font-size: 20px;
+}
+.rotate {
+    /* Safari */
+    -webkit-transform: rotate(90deg);
+    /* Firefox */
+    -moz-transform: rotate(90deg);
+    /* IE */
+    -ms-transform: rotate(90deg);
+    /* Opera */
+    -o-transform: rotate(90deg);
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }

@@ -230,11 +230,14 @@ $( document ).ready(function() {
             var position_type = 'absolute';
             if (apm_obj.privacy() !== -1){
                 position_type = 'fixed';
+                // Since it's private, get the position relative to the screen
                 html_pos = html_obj.offset();
+                html_pos.top -= $(window).scrollTop();
+                html_pos.left -= $(window).scrollLeft();
             }
             $( '#action-button-panel' ).css({
-                "left":html_pos.left - 170,
-                "top": html_pos.top,
+                "left":html_pos.left+4,
+                "top": html_pos.top-74,
                 "display": "inline",
                 "position": position_type,
 
@@ -457,10 +460,10 @@ $( document ).ready(function() {
                     var pos = get_position_array_from_html_pos(html_elem.position());
                     pos[0] -= apm_obj.position_offset()[0];
                     pos[1] -= apm_obj.position_offset()[1];
-                    // Move all the dependents as well
                     apm_obj.depth(get_dropped_public_depth());
                     apm_obj.position(pos);
                     apm_obj.sync_position(0);
+                    // Move all the dependents as well
                     apm_obj.dependent_ids().forEach(function (d_id){
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
@@ -472,13 +475,13 @@ $( document ).ready(function() {
                             $( '#'+apm_dep.id() ).droppable(droppable_settings);
                         } catch (err) {console.log(err);}*/
                     });
-                    // Move the action buttons
-                    sync_action_buttons()
                     // If the object was private, we need to do a position offset
                     if (apm_obj.privacy() !== -1) {
                         pos[0] -= private_hand_horizontal_offset();
                         pos[1] -= private_hand_vertical_offset();
                     }
+                    // Move the action buttons
+                    sync_action_buttons() //This really should wait until the object has synced position
                     // Tell the server about the stop move
                     socket.emit('STOP MOVE', {
                         gameid:template_gameid,
@@ -729,7 +732,7 @@ $( document ).ready(function() {
     $( "#deal-select"  ).selectmenu();
     $( "#deal-button" ).click(function(){
         var id = apm.show_action_buttons_for_id();
-        var which_face = $("#deal-select")[0].value;
+        var which_face = "same face"; //$("#deal-select")[0].value;
         var how_many = $("#deal-spinner")[0].value || 1
         if (id){
             socket.emit('DEAL', {gameid:template_gameid, obj_id:id, which_face:which_face, how_many:how_many});
