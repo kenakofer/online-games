@@ -66,12 +66,11 @@ $( document ).ready(function() {
         self.player_moving_index = ko.observable(-1);
         self.display_name = ko.observable(display_name);
         self.full_display_name = ko.computed(function() {
+            var text = self.display_name();
             var l = self.dependent_ids().length;
-            if (l < 2) {
-                return self.display_name();
-            } else {
-                return "("+l+") "+self.display_name();
-            }
+            if (l > 0)
+                text += " ("+l+")";
+            return text;
         });
         self.is_face_up = ko.observable(true);
         self.depth = ko.observable(0);
@@ -298,14 +297,21 @@ $( document ).ready(function() {
         var self = this;
         self.movables = ko.observableArray([]);
         self.my_player_index = template_player_index;
+        self.show_action_buttons_for_id = ko.observable(false);
         self.public_movables = ko.computed(function() {
             return ko.utils.arrayFilter(self.movables(), function(m){return m.privacy() === -1});
         });
         self.my_private_movables = ko.computed(function() {
             return ko.utils.arrayFilter(self.movables(), function(m){return m.privacy() === self.my_player_index});
         });
-        self.show_action_buttons_for_id = ko.observable(false);
-        // No need for these to be observable
+        self.private_hand_label_text = ko.computed(function() {
+            var text = "Your private hand";
+            var private_deps = self.my_private_movables();
+            var num_cards = private_deps.filter(function(apm_obj){return apm_obj.type() === 'Card';}).length;
+            if (num_cards > 0)
+                text += " ("+num_cards+")";
+            return text;
+        });
     }
 
     // Activates knockout.js
@@ -617,7 +623,11 @@ $( document ).ready(function() {
             if ('display_name' in obj_data){
                 apm_obj.display_name( obj_data.display_name );
                 // Redirect clicks on the text to the parent
-                $("#"+apm_obj.id()+" span").click(function(){html_obj.trigger('click'); console.log('click redirect:');});
+                $("#"+apm_obj.id()+" span").off('click');
+                $("#"+apm_obj.id()+" span").on('click', function(){
+                    html_obj.trigger('click');
+                    //console.log('click redirect:');
+                });
             }
             // Update card image
             if ('front_image_url' in obj_data){
