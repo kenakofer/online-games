@@ -65,6 +65,7 @@
 
 {% block footer %}
 <div id="private-hand" class='resizable'>
+    <div id='other-players-info' data-bind="text: other_players_info_text()"></div>
     <div id='handle' class="ui-resizable-handle ui-resizable-n"></div>
     <div id='private-label' data-bind="text: private_hand_label_text()"></div>
     <div data-bind="foreach: my_private_movables">

@@ -295,6 +295,7 @@ $( document ).ready(function() {
 
     function AppViewModel() {
         var self = this;
+        self.players = ko.observableArray([]);
         self.movables = ko.observableArray([]);
         self.my_player_index = template_player_index;
         self.show_action_buttons_for_id = ko.observable(false);
@@ -304,12 +305,36 @@ $( document ).ready(function() {
         self.my_private_movables = ko.computed(function() {
             return ko.utils.arrayFilter(self.movables(), function(m){return m.privacy() === self.my_player_index});
         });
+        self.private_card_count = function(player_index) {
+            return ko.utils.arrayFilter(self.movables(), function(m){
+                return m.privacy() == player_index && m.type() === 'Card'
+            }).length;
+        }
         self.private_hand_label_text = ko.computed(function() {
             var text = "Your private hand";
-            var private_deps = self.my_private_movables();
-            var num_cards = private_deps.filter(function(apm_obj){return apm_obj.type() === 'Card';}).length;
+            var num_cards = self.private_card_count(template_player_index);
             if (num_cards > 0)
                 text += " ("+num_cards+")";
+            return text;
+        });
+        self.other_players_info_text = ko.computed(function() {
+            var text = ""
+            var no_one = true;
+            for (var i in self.players()){
+                if (i == template_player_index)
+                    continue;
+                no_one = false;
+                text += ", "; // We remove the first of these after
+                text += self.players()[i];
+                var num_cards = self.private_card_count(i);
+                console.log(num_cards);
+                if (num_cards > 0)
+                    text += " ("+num_cards+")";
+            }
+            text = text.substring(2); // Remove first ", "
+            text = "Other players: "+text;
+            if (no_one)
+                text = "No one else has joined your game yet. Have you given them your url?"
             return text;
         });
     }
@@ -557,11 +582,8 @@ $( document ).ready(function() {
         const data = d;
         deepFreeze(data);
         // Swap out player indexes for names and pronouns
-        if (data.players) for (var i in data.players) for (var mi in data.recent_messages){
-            if (i == template_player_index)
-                data.recent_messages[mi] = data.recent_messages[mi].replace('['+i+']', 'you');
-            else
-                data.recent_messages[mi] = data.recent_messages[mi].replace('['+i+']', data.players[i]);
+        if (data.players) {
+            apm.players(data.players.slice());
         }
         //Movables changes
 	data.movables_info.forEach(function(obj_data) {
@@ -665,14 +687,6 @@ $( document ).ready(function() {
                     apm_dep.sync_position(0);
                 });
             }*/
-            if ('show_players' in obj_data){
-                // If show_players has us in it, put it low, otherwise high
-                if (obj_data.show_players.includes(template_player_index)){
-                    html_obj.css({'z-index':0});
-                } else {
-                    html_obj.css({'z-index':apm_obj.depth()});
-                }
-            }
             if (apm_obj.player_moving_index() !== template_player_index && apm_obj !== currently_dragging){
                 if ('depth' in obj_data) {
                     apm_obj.depth( obj_data.depth );
