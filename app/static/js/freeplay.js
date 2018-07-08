@@ -20,6 +20,7 @@ var resizable_settings; //TODO not used anymore without view blockers? But will 
 var clickable_settings;
 var get_apm_obj;
 var apm;
+var send_message;
 $( document ).ready(function() {
     'use strict';
     // For IE, which doesn't have includes
@@ -299,6 +300,8 @@ $( document ).ready(function() {
     function AppViewModel() {
         var self = this;
         self.players = ko.observableArray([]);
+        self.quick_messages = ko.observableArray(["I win!","Good game","Your turn"]);
+        self.messages = ko.observableArray([]);
         self.movables = ko.observableArray([]);
         self.my_player_index = template_player_index;
         self.show_action_buttons_for_id = ko.observable(false);
@@ -588,7 +591,35 @@ $( document ).ready(function() {
         if (data.players) {
             apm.players(data.players.slice());
         }
+        //Messages update
+        if (data.messages){
+            apm.messages(data.messages);
+            var html_string = "";
+            data.messages.forEach(function(m){
+                var date = new Date(m['timestamp']*1000);
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var seconds = date.getSeconds();
+                if(minutes<10)
+                  minutes= ""+0+minutes;
+                else
+                  minutes = minutes;
+                if(seconds<10)
+                  seconds = ""+0+seconds;
+                else
+                  seconds = seconds;
+                html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
+                html_string += '<span class="message-name">'+apm.players()[m['player_index']]+':</span><br>';
+                html_string += '<span class="message-text">'+m['text']+'</span><br>';
+            });
+            $('#message-box').html(html_string);
+            // Scroll to the bottom:
+            $('#message-box').animate({scrollTop:$('#message-box')[0].scrollHeight}, 500);
+
+        }
         //Movables changes
+        if (! data.movables_info)
+            return
 	data.movables_info.forEach(function(obj_data) {
             //console.log('Processing object changes for '+obj_data.id);
             var apm_obj = get_apm_obj(obj_data.id);
@@ -802,4 +833,11 @@ $( document ).ready(function() {
             'n':'#handle'
         }
     });
+    $('#chat-window').draggable();
+    send_message = function(text) {
+        socket.emit('SEND MESSAGE', {
+            gameid: template_gameid,
+            text:   text,
+        });
+    }
 });

@@ -1,4 +1,18 @@
 {
+    "quick_messages":[
+        "Uno!",
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "What color?",
+        "Red",
+        "Yellow",
+        "Green",
+        "Blue",
+        "I win!",
+        "Good game",
+        "Rematch?"
+    ],
     "all_cards": {
         "default_face_up_offset": {
             "public":[2,1],

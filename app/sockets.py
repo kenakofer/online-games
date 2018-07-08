@@ -220,3 +220,11 @@ def pco_set(data):
     return_data = {'movables_info':[{'id':obj.id, 'offset_per_dependent':obj.offset_per_dependent}]}
     socketio.emit('UPDATE', return_data, broadcast=True, room=data['gameid'], namespace='/freeplay')
     g.time_of_last_update = time()
+@socketio.on('SEND MESSAGE', namespace='/freeplay')
+def send_message(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'SEND MESSAGE', data))
+    g.add_message(player, data['text'])
+    g.send_messages()
+    g.time_of_last_update = time()

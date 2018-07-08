@@ -490,7 +490,7 @@ class FreeplayGame:
         self.id_counter = 0
         self.time_of_last_update = time()
         self.game_over=False
-        self.recent_messages = []
+        self.messages = []
         self.thread_lock.release()
         self.depth_counter= [100, 50000000, 100000000]
 
@@ -506,6 +506,13 @@ class FreeplayGame:
         new_player = FreeplayPlayer(session_user, self)
         return new_player
 
+    def add_message(self, player, text):
+        self.messages.append({
+            'timestamp':    time(),
+            'player_index': player.player_index,
+            'text':         text,
+        })
+
     def get_new_id(self):
         self.id_counter += 1
         return str(self.id_counter).zfill(3)
@@ -517,6 +524,18 @@ class FreeplayGame:
             return None
         else:
             return player_list[0]
+
+    def send_messages(self):
+        print("sending message update")
+        # Passing the False makes it try to acquire the lock. If it can't it enters the if
+        if not self.thread_lock.acquire(False):
+            print("blocked...")
+            self.thread_lock.acquire()
+        all_data = {'messages':self.messages}
+        with app.test_request_context('/'):
+            socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
+        self.thread_lock.release()
+        return all_data
 
     def send_update(self, which_movables=None):
         print("sending update")
@@ -531,12 +550,10 @@ class FreeplayGame:
         movables_info = [m.get_info() for m in which_movables]
         player_names = [p.get_display_name() for p in self.players if p.session_user]
         all_data = {
-            "movables_info":movables_info, #correct
+            "movables_info":movables_info,
             "players":player_names,
-            'recent_messages':self.recent_messages,
+            'messages':self.messages,
             }
-        #print(movables_info)
-        # This seems to be a strong indicator that the issue is in JS, and is specific to data['movables_info']
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
