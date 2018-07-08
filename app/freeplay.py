@@ -396,6 +396,8 @@ class Deck(TableMovable):
             data = load(f) #json.load
         x = 0
         y = 100
+        if data['quick_messages']:
+            game.quick_messages = data['quick_messages'];
         for deck_name in data['decks']:
             x += 250
             # Get general deck info with defaults
@@ -491,6 +493,7 @@ class FreeplayGame:
         self.time_of_last_update = time()
         self.game_over=False
         self.messages = []
+        self.quick_messages = ['Who\'s turn?', 'My turn', 'Your turn', 'Good game', 'I win!', 'Play again?']
         self.thread_lock.release()
         self.depth_counter= [100, 50000000, 100000000]
 
@@ -553,6 +556,7 @@ class FreeplayGame:
             "movables_info":movables_info,
             "players":player_names,
             'messages':self.messages,
+            'quick_messages':self.quick_messages
             }
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')

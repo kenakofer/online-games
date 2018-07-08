@@ -591,6 +591,9 @@ $( document ).ready(function() {
         if (data.players) {
             apm.players(data.players.slice());
         }
+        // quick_messages update
+        if (data.quick_messages)
+            apm.quick_messages(data.quick_messages);
         //Messages update
         if (data.messages){
             apm.messages(data.messages);
