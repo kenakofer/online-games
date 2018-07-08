@@ -78,6 +78,7 @@
     <div id='chat-window' class='ui-widget-content'>
         <div id='message-box'></div>
         <div data-bind="foreach: quick_messages"><button class='quick-message-button' data-bind="text: $data, click: function(data, event){send_message(data)}"></button></div>
+        <input type="text" id="custom-text" placeholder="Type here, then press Enter to send"/>
     </div>
 </div>
 {% endblock %}

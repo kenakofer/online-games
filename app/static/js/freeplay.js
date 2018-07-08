@@ -55,6 +55,22 @@ $( document ).ready(function() {
         //Freeze self (no-op if already frozen)
         return Object.freeze(obj);
     }
+    var entityMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+      '/': '&#x2F;',
+      '`': '&#x60;',
+      '=': '&#x3D;'
+    };
+
+    function escapeHtml (string) {
+      return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+	return entityMap[s];
+      });
+    }
 
     function TableMovable(id, position, dimensions, dependent_ids, parent_id, display_name){
 	var self = this;
@@ -613,7 +629,8 @@ $( document ).ready(function() {
                   seconds = seconds;
                 html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
                 html_string += '<span class="message-name">'+apm.players()[m['player_index']]+':</span><br>';
-                html_string += '<span class="message-text">'+m['text']+'</span><br>';
+                // Escape the html to keep everyone safe from nasties ;)
+                html_string += '<span class="message-text">'+escapeHtml(m['text'])+'</span><br>';
             });
             $('#message-box').html(html_string);
             // Scroll to the bottom:
@@ -842,5 +859,16 @@ $( document ).ready(function() {
             gameid: template_gameid,
             text:   text,
         });
-    }
+    };
+
+    $('#custom-text').on("keypress", function(e) {
+        if (e.keyCode == 13){
+            var elem = $('#custom-text');
+            if (elem.val().length == 0)
+                return false;
+            send_message(elem.val());
+            elem.val("");
+            return false;
+        }
+    });
 });

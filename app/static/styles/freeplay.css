@@ -212,3 +212,6 @@ span.ui-selectmenu-text {
     color: black;
     font-size: 15px;
 }
+#custom-text {
+    width: 100%
+}
