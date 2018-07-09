@@ -74,6 +74,7 @@
     padding: 0px;
     background: #242;
     border: 2px solid #242;
+    transition: opacity 0s;
 }
 .ui-spinner.ui-widget.ui-widget-content {
     font-size: 14px;

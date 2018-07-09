@@ -252,6 +252,12 @@ $( document ).ready(function() {
                 html_pos.top -= $(window).scrollTop();
                 html_pos.left -= $(window).scrollLeft();
             }
+            var opacity = '0';
+            if (apm_obj.type() == "Deck")
+                opacity = '1';
+            $('#BUTTONSHUFFLE').css('opacity', opacity);
+            $('#deal-spinner').parent().css('opacity', opacity);
+            $('#deal-button').css('opacity', opacity);
             $( '#action-button-panel' ).css({
                 "left":html_pos.left+4,
                 "top": html_pos.top-74,
