@@ -178,6 +178,10 @@ span.ui-selectmenu-text {
 #chat-window {
     width: 255px;
     height: 255px;
+    z-index: 100000000;
+    position: fixed;
+    right: 0px;
+    top: 70px;
     background: #ffa;
     padding: 10px;
     border: 2px solid #663;
