@@ -516,6 +516,9 @@ $( document ).ready(function() {
             "ui-droppable-active": "ui-state-active",
             "ui-droppable-hover": "ui-state-hover",
         },
+        accept: function(el) {
+            return el.hasClass('Card') || el.hasClass('Deck');
+        },
         drop: function( event, ui ) {
             var now = new Date().getTime()
             var top_id = ui.draggable.context.id;
@@ -821,6 +824,9 @@ $( document ).ready(function() {
         sync_action_buttons();
     });
     $( '#private-hand' ).droppable({
+        accept: function(el) {
+            return el.hasClass('Card') || el.hasClass('Deck');
+        },
         drop: function( elem, ui ) {
             var top_id = ui.draggable.context.id;
             var apm_top = get_apm_obj(top_id);

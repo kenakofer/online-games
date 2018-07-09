@@ -215,7 +215,7 @@ span.ui-selectmenu-text {
 }
 .message-text {
     margin-left: 20px;
-    color: black;
+    color: #000;
     font-size: 15px;
 }
 #custom-text {
