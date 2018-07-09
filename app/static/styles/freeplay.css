@@ -177,20 +177,22 @@ span.ui-selectmenu-text {
 
 #chat-window {
     width: 255px;
-    height: 400px;
+    height: 255px;
     background: #ffa;
     padding: 10px;
     border: 2px solid #663;
-    border-radius: 7px
+    border-radius: 7px;
+    display: flex;
+    flex-flow: column;
 }
 #message-box {
-    height: 300px;
     background: #dfc;
     border: 2px inset #afa;
     border-radius: 3px;
     overflow-y: scroll;
     width: auto;
     font-size: 12px;
+    flex-grow: 1;
 }
 .quick-message-button {
     padding: 2px;

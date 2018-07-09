@@ -860,6 +860,7 @@ $( document ).ready(function() {
             text:   text,
         });
     };
+    $('#chat-window').resizable();
 
     $('#custom-text').on("keypress", function(e) {
         if (e.keyCode == 13){
