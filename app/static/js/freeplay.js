@@ -608,13 +608,17 @@ $( document ).ready(function() {
     socket.on('UPDATE', function(d) {
         const data = d;
         deepFreeze(data);
-        // Swap out player indexes for names and pronouns
         if (data.players) {
             apm.players(data.players.slice());
         }
         // quick_messages update
-        if (data.quick_messages)
-            apm.quick_messages(data.quick_messages);
+        if (data.quick_messages) {
+            var qms = [];
+            for (var i in apm.players())
+                qms.push('@'+apm.players()[i]);
+            qms = qms.concat(data.quick_messages);
+            apm.quick_messages(qms);
+        }
         //Messages update
         if (data.messages){
             apm.messages(data.messages);
