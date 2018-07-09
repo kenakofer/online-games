@@ -614,21 +614,27 @@ $( document ).ready(function() {
         if (data.messages){
             apm.messages(data.messages);
             var html_string = "";
+            var last_time = 0;
+            var last_player_index = -1;
             data.messages.forEach(function(m){
-                var date = new Date(m['timestamp']*1000);
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var seconds = date.getSeconds();
-                if(minutes<10)
-                  minutes= ""+0+minutes;
-                else
-                  minutes = minutes;
-                if(seconds<10)
-                  seconds = ""+0+seconds;
-                else
-                  seconds = seconds;
-                html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
-                html_string += '<span class="message-name">'+apm.players()[m['player_index']]+':</span><br>';
+                if (m['timestamp'] - last_time > 15 || last_player_index != m['player_index']){
+                    var date = new Date(m['timestamp']*1000);
+                    var hours = date.getHours();
+                    var minutes = date.getMinutes();
+                    var seconds = date.getSeconds();
+                    if(minutes<10)
+                      minutes= ""+0+minutes;
+                    else
+                      minutes = minutes;
+                    if(seconds<10)
+                      seconds = ""+0+seconds;
+                    else
+                      seconds = seconds;
+                    html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
+                    html_string += '<span class="message-name">'+apm.players()[m['player_index']]+':</span><br>';
+                }
+                last_time = m['timestamp'];
+                last_player_index = m['player_index'];
                 // Escape the html to keep everyone safe from nasties ;)
                 html_string += '<span class="message-text">'+escapeHtml(m['text'])+'</span><br>';
             });
