@@ -551,7 +551,9 @@ class FreeplayGame:
         TableMovable.sort_movables_for_sending(which_movables)
         # Most of the info needed in the cards
         movables_info = [m.get_info() for m in which_movables]
-        player_names = [p.get_display_name() for p in self.players if p.session_user]
+        # Only send first names
+        player_names = [p.get_display_name().split()[0] for p in self.players if p.session_user]
+
         all_data = {
             "movables_info":movables_info,
             "players":player_names,
