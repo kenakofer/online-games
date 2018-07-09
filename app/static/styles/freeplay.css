@@ -212,6 +212,7 @@ span.ui-selectmenu-text {
 .message-name {
     color: #f9f;
     font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
 }
 .message-text {
     margin-left: 20px;
@@ -220,4 +221,19 @@ span.ui-selectmenu-text {
 }
 #custom-text {
     width: 100%
+}
+.player-color-0 {
+    color: #88f;
+}
+.player-color-1 {
+    color: #d90;
+}
+.player-color-2 {
+    color: #7f7;
+}
+.player-color-3 {
+    color: red;
+}
+.player-color-4 {
+    color: #a0a;
 }

@@ -347,8 +347,10 @@ $( document ).ready(function() {
                     continue;
                 no_one = false;
                 text += ", "; // We remove the first of these after
+                text += '<span class="player-color-'+i+'">';
                 text += self.players()[i];
                 var num_cards = self.private_card_count(i);
+                text += '</span>';
                 console.log(num_cards);
                 if (num_cards > 0)
                     text += " ("+num_cards+")";
@@ -634,7 +636,8 @@ $( document ).ready(function() {
                     else
                       seconds = seconds;
                     html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
-                    html_string += '<span class="message-name">'+apm.players()[m['player_index']]+':</span><br>';
+                    var i = m['player_index'];
+                    html_string += '<span class="message-name player-color-'+(i%5)+'">'+apm.players()[m['player_index']]+':</span><br>';
                 }
                 last_time = m['timestamp'];
                 last_player_index = m['player_index'];
