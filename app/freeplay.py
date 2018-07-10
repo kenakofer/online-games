@@ -396,7 +396,7 @@ class Deck(TableMovable):
             data = load(f) #json.load
         x = 0
         y = 100
-        if data['quick_messages']:
+        if 'quick_messages' in data:
             game.quick_messages = data['quick_messages'];
         for deck_name in data['decks']:
             x += 250
