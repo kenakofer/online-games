@@ -29,6 +29,7 @@ def handle_needs_login(e):
 
 @app.route("/")
 @app.route("/index")
+@app.route("/index/")
 def index():
     return render_template('index.html', title='Card and Board Games Online')
 
@@ -48,6 +49,7 @@ def pagecount():
     return render_template('pagecount.html', title='Pagecount', message=message,  messages=messages)
 
 @app.route('/hanabi/<player_num>/<gameid>')
+@app.route('/hanabi/<player_num>/<gameid>/')
 @login_required
 def hanabi(player_num, gameid):
     # Current_user now will be the same object as current_user, so we get user here
@@ -85,6 +87,7 @@ def hanabi(player_num, gameid):
             )
 
 @app.route('/hanabi')
+@app.route('/hanabi/')
 @login_required
 def hanabi_lobby():
     return render_template(
@@ -96,6 +99,7 @@ def hanabi_lobby():
 # Dutch Blitz #
 ###############
 @app.route('/blitz/<gameid>')
+@app.route('/blitz/<gameid>/')
 @login_required
 def blitz(gameid):
     player_num = int(request.args.get('num') or 2)
@@ -141,6 +145,7 @@ def blitz(gameid):
             )
 
 @app.route('/blitz')
+@app.route('/blitz/')
 @login_required
 def blitz_lobby():
     return render_template(
@@ -151,7 +156,17 @@ def blitz_lobby():
 #############
 # Free Play #
 #############
+@app.route('/freeplay')
+@app.route('/freeplay/')
+@login_required
+def freeplay_lobby():
+    return render_template(
+                'freeplay_lobby.html',
+                title='Freeplay Lobby',
+            )
+
 @app.route('/freeplay/<game_name>/<gameid>')
+@app.route('/freeplay/<game_name>/<gameid>/')
 @login_required
 def freeplay(game_name, gameid):
     # Current_user now will be the same object as current_user, so we get user here
@@ -196,6 +211,7 @@ def freeplay(game_name, gameid):
 # Login #
 #########
 @app.route('/login')
+@app.route('/login/')
 def login():
     if current_user.is_authenticated:
         return redirect('/')

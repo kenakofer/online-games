@@ -1,0 +1,23 @@
+{% extends "header_footer.html" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+    <p>
+    {{ message }}
+    </p>
+    <h1>Freeplay Tabletop Games</h1>
+    <h2>We give you the pieces, you call the shots!</h2>
+    <p>Freeplay gives you the cards needed to play an infinite variety of card games with your human friends, near or far. Like in real life, you, the humans, decide what rules you play by, and move the pieces according to those rules. This flexibility in Freeplay makes it easy for anyone to put together a deck of cards from a set of images, and use it on Freeplay without worrying about programming all the rules for the computer to understand.</p>
+    <p>You can create or join a freeplay game from here. Choose one of the game types and a game room name. You can make up a game room, but you and your friends must use the same game room to play with each other. Powerusers will note that you can bypass this webpage by directly visiting a url in the format below.</p>
+    <div align="center">
+    <form onSubmit="this.action='https://games.gc.my/freeplay/'+this.gametype.value+'/'+this.gameid.value">
+        <b>games.gc.my/freeplay /
+            <select id="gametype" placeholder="Game type">
+                <option value="uno">Uno</option>
+                <option value="standard_deck">standard_deck</option>
+            </select>
+            / <input type="text" id="gameid" placeholder="game room"></b><br>
+        <input type="submit" value="Go to game">
+    </form>
+    </div>
+{% endblock %}
