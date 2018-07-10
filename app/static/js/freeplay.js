@@ -651,8 +651,12 @@ $( document ).ready(function() {
                 }
                 last_time = m['timestamp'];
                 last_player_index = m['player_index'];
+                var text = m['text'];
                 // Escape the html to keep everyone safe from nasties ;)
-                html_string += '<span class="message-text">'+escapeHtml(m['text'])+'</span><br>';
+                text = escapeHtml(m['text']);
+                // decode utf8 stuff so emojis and stuff are right (this has to come after)
+                text = decodeURIComponent(escape(text));
+                html_string += '<span class="message-text">'+text+'</span><br>';
             });
             $('#message-box').html(html_string);
             // Scroll to the bottom:
