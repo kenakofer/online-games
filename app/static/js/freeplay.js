@@ -20,7 +20,19 @@ var resizable_settings; //TODO not used anymore without view blockers? But will 
 var clickable_settings;
 var get_apm_obj;
 var apm;
-var send_message;
+var send_message = function(){};
+
+var nocolor = function(qm) {
+    if (qm.startsWith("$*"))
+        return qm.substring(3);
+    return qm;
+}
+var get_color_class = function(qm) {
+    if (qm.startsWith("$*"))
+        return 'player-color-'+qm.substring(2,3);
+    return "";
+}
+
 $( document ).ready(function() {
     'use strict';
     // For IE, which doesn't have includes
@@ -657,7 +669,13 @@ $( document ).ready(function() {
                 text = escapeHtml(m['text']);
                 // decode utf8 stuff so emojis and stuff are right (this has to come after)
                 text = decodeURIComponent(escape(text));
-                html_string += '<span class="message-text">'+text+'</span><br>';
+                // If there is a color prefix, add that class
+                var class_string = "message-text";
+                if (text.startsWith("$*")) {
+                    class_string += ' player-color-'+text.substring(2,3);
+                    text = text.substring(3);
+                }
+                html_string += '<span class="'+class_string+'">'+text+'</span><br>';
             });
             $('#message-box').html(html_string);
             // Scroll to the bottom:
@@ -891,6 +909,7 @@ $( document ).ready(function() {
     });
     $('#chat-window').draggable();
     send_message = function(text) {
+        console.log(text);
         socket.emit('SEND MESSAGE', {
             gameid: template_gameid,
             text:   text,
