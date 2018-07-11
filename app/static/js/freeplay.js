@@ -258,6 +258,7 @@ $( document ).ready(function() {
             $('#BUTTONSHUFFLE').css('opacity', opacity);
             $('#deal-spinner').parent().css('opacity', opacity);
             $('#deal-button').css('opacity', opacity);
+            $('#sort-button').css('opacity', opacity);
             $( '#action-button-panel' ).css({
                 "left":html_pos.left+4,
                 "top": html_pos.top-74,
@@ -831,6 +832,12 @@ $( document ).ready(function() {
         var id = apm.show_action_buttons_for_id();
         if (id){
             socket.emit('SHUFFLE', {gameid:template_gameid, obj_id:id});
+        }
+    });
+    $( "#sort-button" ).click(function(){
+        var id = apm.show_action_buttons_for_id();
+        if (id){
+            socket.emit('SORT', {gameid:template_gameid, obj_id:id});
         }
     });
     // If the user clicks on the background, take away the action buttons

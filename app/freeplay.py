@@ -50,6 +50,7 @@ class TableMovable:
 
     def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", is_face_up=True):
         self.id = id
+        self.sort_index = game.get_sort_index()
         self.game = game
         self.position = position
         self.dimensions = dimensions
@@ -327,6 +328,15 @@ class Deck(TableMovable):
 
         game.decks[self.id] = self
 
+    def sort_cards(self, no_update=False):
+        # In place shuffle
+        self.dependents.sort(key=lambda card: card.sort_index)
+        for d in self.dependents:
+            d.push_to_top(moving=False)
+        # Update all clients
+        if not no_update:
+            self.game.send_update([self]+self.dependents)
+
     def shuffle_cards(self, no_update=False):
         # In place shuffle
         shuffle(self.dependents)
@@ -496,11 +506,16 @@ class FreeplayGame:
         self.quick_messages = ['Who\'s turn?', 'My turn', 'Your turn', 'Good game', 'I win!', 'Play again?']
         self.thread_lock.release()
         self.depth_counter= [100, 50000000, 100000000]
+        self.sort_index = 0
 
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
         Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/'+deck_name+'/game.json')
         self.send_update()
+
+    def get_sort_index(self):
+        self.sort_index += 1
+        return self.sort_index
 
     def add_player(self, session_user):
         if (self.get_player_from_session(session_user)):
