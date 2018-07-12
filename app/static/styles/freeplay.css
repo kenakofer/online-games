@@ -66,11 +66,11 @@
     white-space: nowrap;
 }
 .action-button {
-    margin: 2px;
-    min-width: 24px;
-    min-height: 24px;
+    margin: 1px;
+    width: 33px;
+    height: 33px;
     font-family: "SymbolaRegular";
-    font-size: 28px;
+    font-size: 24px;
     padding: 0px;
     background: #242;
     border: 2px solid #242;
@@ -78,7 +78,7 @@
 }
 .ui-spinner.ui-widget.ui-widget-content {
     font-size: 14px;
-    width: 53px;
+    width: 100px;
     height: 28px;
     margin: -5px 1px 1px 1px;
 }
@@ -224,17 +224,22 @@ span.ui-selectmenu-text {
     width: 100%
 }
 .player-color-0 {
+    font-weight: bold;
     color: #88f;
 }
 .player-color-1 {
+    font-weight: bold;
     color: #d90;
 }
 .player-color-2 {
-    color: #7f7;
+    font-weight: bold;
+    color: #0b0;
 }
 .player-color-3 {
+    font-weight: bold;
     color: red;
 }
 .player-color-4 {
+    font-weight: bold;
     color: #a0a;
 }
