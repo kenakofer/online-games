@@ -38,15 +38,15 @@ $( document ).ready(function() {
     // For IE, which doesn't have includes
     if (!String.prototype.includes) {
       String.prototype.includes = function(search, start) {
-	if (typeof start !== 'number') {
-	  start = 0;
-	}
+        if (typeof start !== 'number') {
+          start = 0;
+        }
 
-	if (start + search.length > this.length) {
-	  return false;
-	} else {
-	  return this.indexOf(search, start) !== -1;
-	}
+        if (start + search.length > this.length) {
+          return false;
+        } else {
+          return this.indexOf(search, start) !== -1;
+        }
       };
     }
 
@@ -80,12 +80,12 @@ $( document ).ready(function() {
 
     function escapeHtml (string) {
       return String(string).replace(/[&<>"'`=\/]/g, function (s) {
-	return entityMap[s];
+        return entityMap[s];
       });
     }
 
     function TableMovable(id, position, dimensions, dependent_ids, parent_id, display_name){
-	var self = this;
+        var self = this;
         self.id = ko.observable(id);
         self.position = ko.observable(position);
         self.dimensions = ko.observable(dimensions);
@@ -602,12 +602,12 @@ $( document ).ready(function() {
 
     // Knockout helper functions
     get_apm_obj = function(oid) {
-	var poss = apm.movables().filter(function(apm_p){return apm_p.id() == oid});
-	if (poss.length > 0) {
-	    return poss[0]
-	} else {
-	    //console.log("No such movable: "+oid);
-	}
+        var poss = apm.movables().filter(function(apm_p){return apm_p.id() == oid});
+        if (poss.length > 0) {
+            return poss[0]
+        } else {
+            //console.log("No such movable: "+oid);
+        }
     };
 
     // Socketio functions
@@ -616,12 +616,12 @@ $( document ).ready(function() {
     });
 
     var request_update = function(){
-	socket.emit('UPDATE REQUEST', {gameid:template_gameid});
+        socket.emit('UPDATE REQUEST', {gameid:template_gameid});
     };
 
     socket.on('connect', function() {
         socket.emit('JOIN ROOM', {room:template_gameid});
-	request_update();
+        request_update();
     });
 
     socket.on('UPDATE', function(d) {
@@ -634,7 +634,7 @@ $( document ).ready(function() {
         if (data.quick_messages) {
             var qms = [];
             for (var i in apm.players())
-                qms.push('@'+apm.players()[i]);
+                qms.push('$*'+i+'@'+apm.players()[i]);
             qms = qms.concat(data.quick_messages);
             apm.quick_messages(qms);
         }
@@ -685,12 +685,12 @@ $( document ).ready(function() {
         //Movables changes
         if (! data.movables_info)
             return
-	data.movables_info.forEach(function(obj_data) {
+        data.movables_info.forEach(function(obj_data) {
             //console.log('Processing object changes for '+obj_data.id);
             var apm_obj = get_apm_obj(obj_data.id);
             var position_sync_time = 200;
             var should_sync_position = false
-	    if (!apm_obj){
+            if (!apm_obj){
                 //Create the obj if it doesn't exist yet.
                 apm_obj = createBasicTableMovable(obj_data.id)
                 position_sync_time = 0;
@@ -806,9 +806,8 @@ $( document ).ready(function() {
             } else {
                 //console.log("Not syncing position because of player_moving_index");
             }
-	});
+        });
     });
-
     var pco_spinner_settings = {
         min:-50, max:50, step:1,
 
