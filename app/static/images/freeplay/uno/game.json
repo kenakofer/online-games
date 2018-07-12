@@ -19,9 +19,9 @@
             "private":[20,0]
         },
         "default_face_down_offset":[2,1],
-        "back_image_url":"/static/images/freeplay/red_back.png",
+        "back_image_url":"/static/images/freeplay/uno/back.png",
         "front_image_style":"100% 100%",
-        "back_image_style":"initial"
+        "back_image_style":"100% 100%"
     },
     "decks": {
         "deck":{

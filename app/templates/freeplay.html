@@ -2,8 +2,6 @@
 
 {% block head %}
     <link rel='stylesheet' href='{{ url_for("static",filename="styles/freeplay.css") }}'>
-    <!-- for symbola font -->
-    <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/symbola" type="text/css"/> 
     <!-- For jquery and jquery ui-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -53,11 +51,11 @@
     </div>
     <div id="action-button-panel"><!--
         --><input id="deal-spinner" class='two-digit-action-spinner' title="How many cards to deal" value=5></input><!--
-        --><button id="deal-button" title="Deal out cards" class='action-button'>➡</button><br><!--
-        --><button id="destroy-button" title="Permanently delete" class='action-button'>🚫</button><!--
-        --><button id="flip-button" title="Flip over" class='action-button rotate'>↩</button><!--
-        --><button id="BUTTONSHUFFLE" title="Shuffle" class='action-button'>🔀</button><!--
-        --><button id="sort-button" title="Sort" class='action-button'>🔢</button><!--
+        --><button id="deal-button" title="Deal out cards" class='action-button'><img src='{{ url_for("static",filename="images/freeplay/actionicons/rightarrow.png") }}' /></button><br><!--
+        --><button id="destroy-button" title="Permanently delete" class='action-button'><img src='{{ url_for("static",filename="images/freeplay/actionicons/delete.png") }}' /></button><!--
+        --><button id="flip-button" title="Flip over" class='action-button rotate'><img src='{{ url_for("static",filename="images/freeplay/actionicons/flipover.png") }}' /></button><!--
+        --><button id="BUTTONSHUFFLE" title="Shuffle" class='action-button'><img src='{{ url_for("static",filename="images/freeplay/actionicons/shuffle.png") }}' /></button><!--
+        --><button id="sort-button" title="Sort" class='action-button'><img src='{{ url_for("static",filename="images/freeplay/actionicons/sort.png") }}' /></button>
         <!-- <select id="deal-select"><option>same face</option><option>face up</option><option>face down</option></select> -->
         <!-- <input id="pco-x-spinner" class='four-digit-action-spinner' value=3></input> -->
         <!-- <input id="pco-y-spinner" class='four-digit-action-spinner' value=2></input> -->
