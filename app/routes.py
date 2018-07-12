@@ -172,7 +172,7 @@ def freeplay(game_name, gameid):
     # Current_user now will be the same object as current_user, so we get user here
     user = get_stable_user()
     print("{} is requesting to join freeplay gameid {}".format(user, gameid))
-    gameid = str(gameid)
+    gameid = str(game_name+'/'+gameid)
     # If the game doesn't already exist, create it!
     if not gameid in freeplay_games:
         freeplay_games[gameid] = FreeplayGame(gameid, game_name)
