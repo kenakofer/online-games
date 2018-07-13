@@ -105,15 +105,15 @@ class TableMovable:
         if (not self.player_moving == player) and (not no_check):
             print("{} can't stop moving {}, because {} is moving it!".format(player, self.id, self.player_moving))
         self.position = new_position
+        # If the privacy flag is set, change the privacy of object (and dependents)
+        if privacy != None:
+            self.privacy = privacy
         # Put the element on top of the stationary things
         self.push_to_top(moving=False)
         # Release the player's hold on the object
         self.player_moving = None
         for d in self.dependents:
             d.stop_move(player, new_position, privacy=privacy, no_update=True, no_check=no_check)
-        # If the privacy flag is set, change the privacy of object (and dependents)
-        if privacy != None:
-            self.privacy = privacy
         # Update all users
         if not no_update:
             self.update_move()
@@ -183,11 +183,11 @@ class TableMovable:
 
     def get_next_depth(self, moving):
         if moving:
-            i = 2
+            i = 'dragging'
         elif self.privacy != -1:
-            i = 1
+            i = 'private'
         else:
-            i = 0
+            i = 'public'
         self.game.depth_counter[i] += 1
         return self.game.depth_counter[i]
 
@@ -505,7 +505,7 @@ class FreeplayGame:
         self.messages = []
         self.quick_messages = ['Who\'s turn?', 'My turn', 'Your turn', 'Good game', 'I win!', 'Play again?']
         self.thread_lock.release()
-        self.depth_counter= [100, 50000000, 100000000]
+        self.depth_counter= {'public':100, 'private':50000000, 'dragging':100000000}
         self.sort_index = 0
 
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
