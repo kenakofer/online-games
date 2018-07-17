@@ -679,7 +679,9 @@ $( document ).ready(function() {
             });
             $('#message-box').html(html_string);
             // Scroll to the bottom:
-            $('#message-box').animate({scrollTop:$('#message-box')[0].scrollHeight}, 500);
+            $('#message-box').animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
+            // Remove the bar on sending more messages
+            message_waiting_to_send = false;
 
         }
         //Movables changes
@@ -907,17 +909,28 @@ $( document ).ready(function() {
         }
     });
     $('#chat-window').draggable();
+    var message_waiting_to_send = false;
+    var add_message_spinner = function() {
+        if (message_waiting_to_send){
+            $('#message-box').animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
+            $('#message-box').append('<div class="loader"></div>');
+        }
+    };
     send_message = function(text) {
-        console.log(text);
-        socket.emit('SEND MESSAGE', {
-            gameid: template_gameid,
-            text:   text,
-        });
+        if (! message_waiting_to_send){
+            console.log(text);
+            message_waiting_to_send = true;
+            setTimeout(add_message_spinner, 200);
+            socket.emit('SEND MESSAGE', {
+                gameid: template_gameid,
+                text:   text,
+            });
+        }
     };
     $('#chat-window').resizable();
 
     $('#custom-text').on("keypress", function(e) {
-        if (e.keyCode == 13){
+        if (e.keyCode == 13 && !message_waiting_to_send){
             var elem = $('#custom-text');
             if (elem.val().length == 0)
                 return false;

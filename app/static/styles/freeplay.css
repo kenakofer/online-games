@@ -208,6 +208,26 @@ span.ui-selectmenu-text {
     border-radius: 0;
     background: #577;
 }
+.loader {
+    margin-left: 20px;
+    border: 1px solid #dcffcb;
+    border-radius: 50%;
+    border-top: 5px solid #3498db;
+    width: 14px;
+    height: 14px;
+    -webkit-animation: spin .7s linear infinite; /* Safari */
+    animation: spin .7s linear infinite;
+}
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 .message-time {
     color: gray;
     font-family: "Courier New", Courier, monospace;
