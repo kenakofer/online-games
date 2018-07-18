@@ -94,7 +94,7 @@ $( document ).ready(function() {
         self.set_parent_id(parent_id);
         self.player_moving_index = ko.observable(-1);
         self.display_name = ko.observable(display_name);
-        self.full_display_name = ko.computed(function() {
+        self.full_display_name = ko.pureComputed(function() {
             var text = self.display_name();
             var l = self.dependent_ids().length;
             if (l > 0)
@@ -113,7 +113,7 @@ $( document ).ready(function() {
         self.dfdo = ko.observableArray();
         self.move_confirmed_by_server = false;
         //self.offset_per_dependent = ko.observableArray([.5, .5]);
-        self.offset_per_dependent = ko.computed(function() {
+        self.offset_per_dependent = ko.pureComputed(function() {
             if (self.dependent_ids().length === 0) {
                 return;
             }
@@ -136,7 +136,7 @@ $( document ).ready(function() {
             }
             return result
         }, this);
-        self.position_offset = ko.computed(function() {
+        self.position_offset = ko.pureComputed(function() {
             if (self.type() == 'Deck'){
                 return [-10, -27];
             } else if (self.type() == 'Card' && self.parent_id()){
@@ -153,14 +153,14 @@ $( document ).ready(function() {
             // Otherwise
             return [0,0];
         }, this);
-        self.dimension_offset = ko.computed(function() {
+        self.dimension_offset = ko.pureComputed(function() {
             if (self.type() == 'Deck'){
                 return [25, 45];
             }
             // Otherwise
             return [0,0];
         }, this);
-        self.get_index_in_parent = ko.computed(function(){
+        self.get_index_in_parent = ko.pureComputed(function(){
             var p = get_apm_obj(self.parent_id());
             if (! p)
                 return 0
