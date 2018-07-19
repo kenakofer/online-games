@@ -201,6 +201,14 @@ $( document ).ready(function() {
         } else {
             html_elem.animate( css_obj,{duration:time} );
         }
+        // Make the height of the content window big enough to scroll down and see it
+        if (! currently_dragging) {
+            var html_content = $('.content');
+            var min_height = html_elem.position().top + html_elem.height() + $('#private-hand').height() - 50;
+            if ( html_content.height() < min_height){
+                html_content.height(min_height);
+            }
+        }
     };
 
     TableMovable.prototype.sync_image = function(){
