@@ -4,6 +4,7 @@ import threading
 from time import sleep, time
 from random import random, sample
 from json import load
+from collections import OrderedDict
 
 #The dict to be filled with freeplay_games
 freeplay_games = {}
@@ -403,7 +404,7 @@ class Deck(TableMovable):
     def get_decks_from_json(game, path_to_json):
         print(path_to_json)
         with open(path_to_json) as f:
-            data = load(f) #json.load
+            data = load(f, object_pairs_hook=OrderedDict) #json.load
         xleft = 15
         x = xleft
         y = 32
