@@ -20,237 +20,12 @@
         "shuffle":false
     },
     "decks": {
-        "Artisan":{
-            "cards":[
-                {
-                    "alt_text":"Artisan",
-                    "front_image_url":"/static/images/freeplay/dominion/artisan.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Bandit":{
-            "cards":[
-                {
-                    "alt_text":"Bandit",
-                    "front_image_url":"/static/images/freeplay/dominion/bandit.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Bureaucrat":{
-            "cards":[
-                {
-                    "alt_text":"Bureaucrat",
-                    "front_image_url":"/static/images/freeplay/dominion/bureaucrat.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Cellar":{
-            "cards":[
-                {
-                    "alt_text":"Cellar",
-                    "front_image_url":"/static/images/freeplay/dominion/cellar.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Chapel":{
-            "cards":[
-                {
-                    "alt_text":"Chapel",
-                    "front_image_url":"/static/images/freeplay/dominion/chapel.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
         "Copper":{
             "cards":[
                 {
                     "alt_text":"Copper",
                     "front_image_url":"/static/images/freeplay/dominion/copper.jpg",
                     "repetitions":60
-                }
-            ]
-        },
-        "Council Room":{
-            "cards":[
-                {
-                    "alt_text":"Council Room",
-                    "front_image_url":"/static/images/freeplay/dominion/council_room.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Curse":{
-            "cards":[
-                {
-                    "alt_text":"Curse",
-                    "front_image_url":"/static/images/freeplay/dominion/curse.jpg",
-                    "repetitions":30
-                }
-            ]
-        },
-        "Duchy":{
-            "cards":[
-                {
-                    "alt_text":"Duchy",
-                    "front_image_url":"/static/images/freeplay/dominion/duchy.jpg",
-                    "repetitions":12
-                }
-            ]
-        },
-        "Estate":{
-            "cards":[
-                {
-                    "alt_text":"Estate",
-                    "front_image_url":"/static/images/freeplay/dominion/estate.jpg",
-                    "repetitions":24
-                }
-            ]
-        },
-        "Festival":{
-            "cards":[
-                {
-                    "alt_text":"Festival",
-                    "front_image_url":"/static/images/freeplay/dominion/festival.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Gardens":{
-            "cards":[
-                {
-                    "alt_text":"Gardens",
-                    "front_image_url":"/static/images/freeplay/dominion/gardens.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Gold":{
-            "cards":[
-                {
-                    "alt_text":"Gold",
-                    "front_image_url":"/static/images/freeplay/dominion/gold.jpg",
-                    "repetitions":30
-                }
-            ]
-        },
-        "Harbinger":{
-            "cards":[
-                {
-                    "alt_text":"Harbinger",
-                    "front_image_url":"/static/images/freeplay/dominion/harbinger.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Laboratory":{
-            "cards":[
-                {
-                    "alt_text":"Laboratory",
-                    "front_image_url":"/static/images/freeplay/dominion/laboratory.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Library":{
-            "cards":[
-                {
-                    "alt_text":"Library",
-                    "front_image_url":"/static/images/freeplay/dominion/library.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Market":{
-            "cards":[
-                {
-                    "alt_text":"Market",
-                    "front_image_url":"/static/images/freeplay/dominion/market.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Merchant":{
-            "cards":[
-                {
-                    "alt_text":"Merchant",
-                    "front_image_url":"/static/images/freeplay/dominion/merchant.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Militia":{
-            "cards":[
-                {
-                    "alt_text":"Militia",
-                    "front_image_url":"/static/images/freeplay/dominion/militia.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Mine":{
-            "cards":[
-                {
-                    "alt_text":"Mine",
-                    "front_image_url":"/static/images/freeplay/dominion/mine.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Moat":{
-            "cards":[
-                {
-                    "alt_text":"Moat",
-                    "front_image_url":"/static/images/freeplay/dominion/moat.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Moneylender":{
-            "cards":[
-                {
-                    "alt_text":"Moneylender",
-                    "front_image_url":"/static/images/freeplay/dominion/moneylender.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Poacher":{
-            "cards":[
-                {
-                    "alt_text":"Poacher",
-                    "front_image_url":"/static/images/freeplay/dominion/poacher.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Province":{
-            "cards":[
-                {
-                    "alt_text":"Province",
-                    "front_image_url":"/static/images/freeplay/dominion/province.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Remodel":{
-            "cards":[
-                {
-                    "alt_text":"Remodel",
-                    "front_image_url":"/static/images/freeplay/dominion/remodel.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Sentry":{
-            "cards":[
-                {
-                    "alt_text":"Sentry",
-                    "front_image_url":"/static/images/freeplay/dominion/sentry.jpg",
-                    "repetitions":10
                 }
             ]
         },
@@ -263,62 +38,55 @@
                 }
             ]
         },
-        "Smithy":{
+        "Gold":{
             "cards":[
                 {
-                    "alt_text":"Smithy",
-                    "front_image_url":"/static/images/freeplay/dominion/smithy.jpg",
-                    "repetitions":10
+                    "alt_text":"Gold",
+                    "front_image_url":"/static/images/freeplay/dominion/gold.jpg",
+                    "repetitions":30
                 }
             ]
         },
-        "Throne Room":{
+        "Curse":{
             "cards":[
                 {
-                    "alt_text":"Throne Room",
-                    "front_image_url":"/static/images/freeplay/dominion/throne_room.jpg",
-                    "repetitions":10
+                    "alt_text":"Curse",
+                    "front_image_url":"/static/images/freeplay/dominion/curse.jpg",
+                    "repetitions":30
                 }
             ]
         },
-        "Vassal":{
+        "Estate":{
             "cards":[
                 {
-                    "alt_text":"Vassal",
-                    "front_image_url":"/static/images/freeplay/dominion/vassal.jpg",
-                    "repetitions":10
+                    "alt_text":"Estate",
+                    "front_image_url":"/static/images/freeplay/dominion/estate.jpg",
+                    "repetitions":24
                 }
             ]
         },
-        "Village":{
+        "Duchy":{
             "cards":[
                 {
-                    "alt_text":"Village",
-                    "front_image_url":"/static/images/freeplay/dominion/village.jpg",
-                    "repetitions":10
+                    "alt_text":"Duchy",
+                    "front_image_url":"/static/images/freeplay/dominion/duchy.jpg",
+                    "repetitions":12
                 }
             ]
         },
-        "Witch":{
+        "Province":{
             "cards":[
                 {
-                    "alt_text":"Witch",
-                    "front_image_url":"/static/images/freeplay/dominion/witch.jpg",
-                    "repetitions":10
-                }
-            ]
-        },
-        "Workshop":{
-            "cards":[
-                {
-                    "alt_text":"Workshop",
-                    "front_image_url":"/static/images/freeplay/dominion/workshop.jpg",
+                    "alt_text":"Province",
+                    "front_image_url":"/static/images/freeplay/dominion/province.jpg",
                     "repetitions":10
                 }
             ]
         },
         "Randomizers":{
             "back_image_url":"/static/images/freeplay/dominion/back_blue.jpg",
+            "face_up":false,
+            "shuffle":true,
             "cards":[
                 {
                     "alt_text":"Artisan",
@@ -456,6 +224,240 @@
         },
         "Trash":{
             "cards":[]
+        },
+        "Artisan":{
+            "cards":[
+                {
+                    "alt_text":"Artisan",
+                    "front_image_url":"/static/images/freeplay/dominion/artisan.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Bandit":{
+            "cards":[
+                {
+                    "alt_text":"Bandit",
+                    "front_image_url":"/static/images/freeplay/dominion/bandit.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Bureaucrat":{
+            "cards":[
+                {
+                    "alt_text":"Bureaucrat",
+                    "front_image_url":"/static/images/freeplay/dominion/bureaucrat.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Cellar":{
+            "cards":[
+                {
+                    "alt_text":"Cellar",
+                    "front_image_url":"/static/images/freeplay/dominion/cellar.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Chapel":{
+            "cards":[
+                {
+                    "alt_text":"Chapel",
+                    "front_image_url":"/static/images/freeplay/dominion/chapel.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Council Room":{
+            "cards":[
+                {
+                    "alt_text":"Council Room",
+                    "front_image_url":"/static/images/freeplay/dominion/council_room.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Festival":{
+            "cards":[
+                {
+                    "alt_text":"Festival",
+                    "front_image_url":"/static/images/freeplay/dominion/festival.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Gardens":{
+            "cards":[
+                {
+                    "alt_text":"Gardens",
+                    "front_image_url":"/static/images/freeplay/dominion/gardens.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Harbinger":{
+            "cards":[
+                {
+                    "alt_text":"Harbinger",
+                    "front_image_url":"/static/images/freeplay/dominion/harbinger.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Laboratory":{
+            "cards":[
+                {
+                    "alt_text":"Laboratory",
+                    "front_image_url":"/static/images/freeplay/dominion/laboratory.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Library":{
+            "cards":[
+                {
+                    "alt_text":"Library",
+                    "front_image_url":"/static/images/freeplay/dominion/library.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Market":{
+            "cards":[
+                {
+                    "alt_text":"Market",
+                    "front_image_url":"/static/images/freeplay/dominion/market.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Merchant":{
+            "cards":[
+                {
+                    "alt_text":"Merchant",
+                    "front_image_url":"/static/images/freeplay/dominion/merchant.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Militia":{
+            "cards":[
+                {
+                    "alt_text":"Militia",
+                    "front_image_url":"/static/images/freeplay/dominion/militia.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Mine":{
+            "cards":[
+                {
+                    "alt_text":"Mine",
+                    "front_image_url":"/static/images/freeplay/dominion/mine.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Moat":{
+            "cards":[
+                {
+                    "alt_text":"Moat",
+                    "front_image_url":"/static/images/freeplay/dominion/moat.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Moneylender":{
+            "cards":[
+                {
+                    "alt_text":"Moneylender",
+                    "front_image_url":"/static/images/freeplay/dominion/moneylender.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Poacher":{
+            "cards":[
+                {
+                    "alt_text":"Poacher",
+                    "front_image_url":"/static/images/freeplay/dominion/poacher.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Remodel":{
+            "cards":[
+                {
+                    "alt_text":"Remodel",
+                    "front_image_url":"/static/images/freeplay/dominion/remodel.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Sentry":{
+            "cards":[
+                {
+                    "alt_text":"Sentry",
+                    "front_image_url":"/static/images/freeplay/dominion/sentry.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Smithy":{
+            "cards":[
+                {
+                    "alt_text":"Smithy",
+                    "front_image_url":"/static/images/freeplay/dominion/smithy.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Throne Room":{
+            "cards":[
+                {
+                    "alt_text":"Throne Room",
+                    "front_image_url":"/static/images/freeplay/dominion/throne_room.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Vassal":{
+            "cards":[
+                {
+                    "alt_text":"Vassal",
+                    "front_image_url":"/static/images/freeplay/dominion/vassal.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Village":{
+            "cards":[
+                {
+                    "alt_text":"Village",
+                    "front_image_url":"/static/images/freeplay/dominion/village.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Witch":{
+            "cards":[
+                {
+                    "alt_text":"Witch",
+                    "front_image_url":"/static/images/freeplay/dominion/witch.jpg",
+                    "repetitions":10
+                }
+            ]
+        },
+        "Workshop":{
+            "cards":[
+                {
+                    "alt_text":"Workshop",
+                    "front_image_url":"/static/images/freeplay/dominion/workshop.jpg",
+                    "repetitions":10
+                }
+            ]
         }
     }
 }
