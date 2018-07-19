@@ -409,9 +409,17 @@ class Deck(TableMovable):
         if 'quick_messages' in data:
             game.quick_messages = data['quick_messages'];
         for deck_name in data['decks']:
-            x += 250
             # Get general deck info with defaults
             deck_data = data['decks'][deck_name]
+            deck_data_copy = deck_data.copy()
+            # Add global "all_cards" settings to each deck
+            if 'all_cards' in data:
+                for k in data['all_cards']:
+                    deck_data[k] = data['all_cards'][k]
+            # Allow specific deck settings to take precedence
+            for k in deck_data_copy:
+                deck_data[k] = deck_data_copy[k]
+            x += 250
             w = deck_data['width'] if 'width' in deck_data else 69
             h = deck_data['height'] if 'height' in deck_data else 75
             shuffle = deck_data['shuffle'] if 'shuffle' in deck_data else False
@@ -423,12 +431,7 @@ class Deck(TableMovable):
             # Get the card info for this deck
             for card_data in deck_data['cards']:
                 card_data_copy = card_data.copy()
-
-                # Add global "all_cards" settings
-                if 'all_cards' in data:
-                    for k in data['all_cards']:
-                        card_data[k] = data['all_cards'][k]
-                # Add deck wide settings to cards
+                # Add deck wide settings to cards (this also means that global settings are carried down too)
                 for k in deck_data:
                     if k != 'cards':
                         card_data[k] = deck_data[k]
