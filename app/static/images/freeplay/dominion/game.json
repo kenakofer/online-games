@@ -9,7 +9,7 @@
         "back_image_url":"/static/images/freeplay/dominion/back_brown.jpg",
         "default_face_up_offset": {
             "public":[3,2],
-            "private":[20,0]
+            "private":[40,0]
         },
         "default_face_down_offset":[3,2],
         "front_image_style":"100% 100%",
