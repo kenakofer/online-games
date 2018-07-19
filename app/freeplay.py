@@ -404,8 +404,10 @@ class Deck(TableMovable):
         print(path_to_json)
         with open(path_to_json) as f:
             data = load(f) #json.load
-        x = 0
-        y = 100
+        xleft = 15
+        x = xleft
+        y = 32
+        maxheight = 0
         if 'quick_messages' in data:
             game.quick_messages = data['quick_messages'];
         for deck_name in data['decks']:
@@ -419,9 +421,9 @@ class Deck(TableMovable):
             # Allow specific deck settings to take precedence
             for k in deck_data_copy:
                 deck_data[k] = deck_data_copy[k]
-            x += 250
             w = deck_data['width'] if 'width' in deck_data else 69
             h = deck_data['height'] if 'height' in deck_data else 75
+            maxheight = max(maxheight, h)
             shuffle = deck_data['shuffle'] if 'shuffle' in deck_data else False
             x = deck_data['x'] if 'x' in deck_data else x
             y = deck_data['y'] if 'y' in deck_data else y
@@ -461,6 +463,12 @@ class Deck(TableMovable):
                             )
             if shuffle:
                 deck.shuffle_cards(no_update=True)
+            # Move over the width of a deck plus a little more
+            x += w + 40
+            if (x > 600):
+                y += maxheight + 60
+                x = xleft
+                maxheight = 0
 
         return True
 
