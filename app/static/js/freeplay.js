@@ -846,7 +846,16 @@ $( document ).ready(function() {
     $( "#destroy-button" ).click(function(){
         var id = apm.show_action_buttons_for_id();
         if (id){
-            socket.emit('DESTROY', {gameid:template_gameid, obj_id:id});
+            var apm_obj = get_apm_obj(id);
+            var obj_string = apm_obj.type().toLowerCase();
+            var deps = apm_obj.dependent_ids().length;
+            if (deps > 0)
+                obj_string += ' and '+deps+' other object';
+            if (deps > 1)
+                obj_string += 's';
+            var confirm_message = "Permanently delete this "+obj_string+"?";
+            if (confirm(confirm_message))
+                socket.emit('DESTROY', {gameid:template_gameid, obj_id:id});
         }
     });
     $( "#flip-button"  ).click(function(){
