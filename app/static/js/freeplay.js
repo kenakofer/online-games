@@ -202,7 +202,8 @@ $( document ).ready(function() {
             html_elem.animate( css_obj,{duration:time} );
         }
         // Make the height of the content window big enough to scroll down and see it
-        if (! currently_dragging) {
+        // Was having an issue with html_elem.position(...) is undefined, so check that
+        if (! currently_dragging && html_elem.position()) {
             var html_content = $('.content');
             var min_height = html_elem.position().top + html_elem.height() + $('#private-hand').height() - 50;
             if ( html_content.height() < min_height){
@@ -378,7 +379,6 @@ $( document ).ready(function() {
                 text += self.players()[i];
                 var num_cards = self.private_card_count(i);
                 text += '</span>';
-                console.log(num_cards);
                 if (num_cards > 0)
                     text += " ("+num_cards+")";
             }

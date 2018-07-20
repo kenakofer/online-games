@@ -134,6 +134,8 @@ def start_move(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'START MOVE', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.start_move(player)
     g.time_of_last_update = time()
@@ -143,6 +145,8 @@ def stop_move(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'STOP MOVE', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     privacy = data['privacy'] if 'privacy' in data else None
     obj.stop_move(player, data['position'], privacy=privacy)
@@ -153,6 +157,8 @@ def continue_move(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'CONTINUE MOVE', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.continue_move(player, data['position'])
     g.time_of_last_update = time()
@@ -162,6 +168,8 @@ def resize(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'RESIZE', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.resize(player, data['dimensions'])
     g.time_of_last_update = time()
@@ -171,6 +179,10 @@ def combine(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'COMBINE', data))
+    if not g.confirm_or_destroy_id(data['top_id']):
+        return False
+    if not g.confirm_or_destroy_id(data['bottom_id']):
+        return False
     obj1 = g.all_movables[data['top_id']]
     obj2 = g.all_movables[data['bottom_id']]
     obj2.incorporate(obj1)
@@ -181,6 +193,8 @@ def shuffle(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'shuffle', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.shuffle_cards()
     g.time_of_last_update = time()
@@ -189,6 +203,8 @@ def sort(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'SORT', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.sort_cards()
     g.time_of_last_update = time()
@@ -198,6 +214,8 @@ def flip(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'flip', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.flip()
     g.time_of_last_update = time()
@@ -207,6 +225,8 @@ def deal(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'DEAL', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.deal(int(data['how_many']), data['which_face'])
     g.time_of_last_update = time()
@@ -215,6 +235,8 @@ def destroy(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'DESTROY', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.destroy(destroy_dependents=True)
     g.time_of_last_update = time()
@@ -223,6 +245,8 @@ def pco_set(data):
     g = freeplay_games[data['gameid']]
     player = g.get_player_from_session(current_user)
     print('Client {}, event {}: {}'.format(get_stable_user(), 'PCO SET', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
     obj = g.all_movables[data['obj_id']]
     obj.offset_per_dependent = [int(data['pco_x']), int(data['pco_y'])]
     return_data = {'movables_info':[{'id':obj.id, 'offset_per_dependent':obj.offset_per_dependent}]}

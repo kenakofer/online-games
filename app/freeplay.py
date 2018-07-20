@@ -555,6 +555,27 @@ class FreeplayGame:
         else:
             return player_list[0]
 
+    def confirm_or_destroy_id(self, id):
+        if id in self.all_movables:
+            return True
+        # It doesn't exist, so let's tell the clients
+        self.game.thread_lock.acquire()
+
+        print('Can\'t find {}, telling clients to destroy...'.format(self.id))
+
+        data = data or {'movables_info':[]}
+        data['movables_info'].append({
+            "id":id,
+            "destroy":True,
+        })
+        with app.test_request_context('/'):
+            socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+        self.game.thread_lock.release()
+        # And since things might be royally messed up client side, update everyone
+        send_update()
+        return False
+
+
     def send_messages(self):
         print("sending message update")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
