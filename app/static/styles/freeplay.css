@@ -74,9 +74,15 @@
     border: 2px solid #132;
     transition: opacity 0s;
 }
-.action-button img{
-    width: 90%;
+.action-button svg{
+    width: 80%;
     height: 80%;
+}
+.action-button svg path{
+    fill: white !important;
+}
+.action-button:hover svg path{
+    fill: black !important;
 }
 .ui-spinner.ui-widget.ui-widget-content {
     font-size: 14px;
