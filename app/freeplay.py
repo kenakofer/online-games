@@ -86,7 +86,7 @@ class TableMovable:
         # If it was inside something, take it out (only if the user if moving the dependent and not the container)
         if self.parent and not recursive:
             self.parent.dependents.remove(self)
-            self.game.send_update([self, self.parent] + self.parent.dependents)
+            self.game.send_update([self, self.parent] )
             p = self.parent
             self.parent = None
             p.check_should_destroy()
@@ -559,9 +559,9 @@ class FreeplayGame:
         if id in self.all_movables:
             return True
         # It doesn't exist, so let's tell the clients
-        self.game.thread_lock.acquire()
+        self.thread_lock.acquire()
 
-        print('Can\'t find {}, telling clients to destroy...'.format(self.id))
+        print('Can\'t find {}, telling clients to destroy...'.format(id))
 
         data = data or {'movables_info':[]}
         data['movables_info'].append({
@@ -569,9 +569,9 @@ class FreeplayGame:
             "destroy":True,
         })
         with app.test_request_context('/'):
-            socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
-        self.game.thread_lock.release()
-        # And since things might be royally messed up client side, update everyone
+            socketio.emit('UPDATE', data, broadcast=True, room=self.gameid, namespace='/freeplay')
+        self.thread_lock.release()
+        # And since things might be royally messed up client side, update everything
         send_update()
         return False
 
