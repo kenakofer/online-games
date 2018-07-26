@@ -199,7 +199,7 @@ $( document ).ready(function() {
         if (time === 0){
             html_elem.css( css_obj );
         } else {
-            html_elem.stop(true, true).animate( css_obj,{duration:time, queue:false} );
+            html_elem.stop(true, false).animate( css_obj,{duration:time, queue:false} );
         }
         // Make the height of the content window big enough to scroll down and see it
         // Was having an issue with html_elem.position(...) is undefined, so check that
@@ -687,7 +687,7 @@ $( document ).ready(function() {
             });
             $('#message-box').html(html_string);
             // Scroll to the bottom:
-            $('#message-box').stop(true, true).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
+            $('#message-box').stop(true, false).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
             // Remove the bar on sending more messages
             message_waiting_to_send = false;
 
@@ -820,13 +820,13 @@ $( document ).ready(function() {
                 }
                 // Make changes to position visible in html
                 if (should_sync_position){
-                    console.log(position_sync_time);
+                    var moving = apm_obj.player_moving_index() > -1;
                     apm_obj.sync_position(position_sync_time);
                     apm_obj.dependent_ids().forEach(function (d_id){
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
                             return
-                        apm_dep.depth(get_dragging_depth());
+                        apm_dep.depth(moving ? get_dragging_depth() : get_dropped_public_depth());
                         apm_dep.position(apm_obj.position());
                         apm_dep.sync_position(position_sync_time);
                     });
@@ -947,7 +947,7 @@ $( document ).ready(function() {
     var message_waiting_to_send = false;
     var add_message_spinner = function() {
         if (message_waiting_to_send){
-            $('#message-box').stop(true, true).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
+            $('#message-box').stop(true, false).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
             $('#message-box').append('<div class="loader"></div>');
         }
     };

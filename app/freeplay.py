@@ -73,7 +73,6 @@ class TableMovable:
 
     # Calling this locks movement to only this player until stop_move is called.
     def start_move(self, player, recursive=False):
-        #print("start_move id:{} player:{}".format(self.id, player))
         if (self.player_moving):
             print("{} can't start moving {}, it's already being moved by {}!".format(player, self.id, self.player_moving))
             return False
@@ -86,7 +85,7 @@ class TableMovable:
         # If it was inside something, take it out (only if the user if moving the dependent and not the container)
         if self.parent and not recursive:
             self.parent.dependents.remove(self)
-            self.game.send_update([self, self.parent] )
+            self.game.send_update([self, self.parent], messages = False )
             p = self.parent
             self.parent = None
             p.check_should_destroy()
@@ -272,7 +271,7 @@ class Card(TableMovable):
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
-            self.game.send_update(which_movables = [self, other] + other.dependents)
+            self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
 
         # Single Card dropped onto single card
         elif type(other) is Card:
@@ -286,7 +285,7 @@ class Card(TableMovable):
             other.stop_move(None, self.position, no_check=True, no_update=True)
             print(self.position)
             print(other.position)
-            self.game.send_update(which_movables = [self, other, new_deck])
+            self.game.send_update(which_movables = [self, other, new_deck], messages = False)
 
     def flip(self, no_update=False):
         self.is_face_up = not self.is_face_up
@@ -335,7 +334,7 @@ class Deck(TableMovable):
             d.push_to_top(moving=False)
         # Update all clients
         if not no_update:
-            self.game.send_update([self]+self.dependents)
+            self.game.send_update([self]+self.dependents, messages = False)
 
     def shuffle_cards(self, no_update=False):
         # In place shuffle
@@ -344,7 +343,7 @@ class Deck(TableMovable):
             d.push_to_top(moving=False)
         # Update all clients
         if not no_update:
-            self.game.send_update([self]+self.dependents)
+            self.game.send_update([self]+self.dependents, messages = False)
 
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position
@@ -369,7 +368,7 @@ class Deck(TableMovable):
             for o in other_deps:
                 o.stop_move(None, self.position, no_check=True, no_update=True)
             # Update only the new parent deck and those cards which were added to it
-            self.game.send_update(which_movables = [self] + other_deps)
+            self.game.send_update(which_movables = [self] + self.dependents, messages = False)
 
         # Single Card dropped onto Deck
         elif type(other) is Card:
@@ -379,7 +378,7 @@ class Deck(TableMovable):
             other.is_face_up = self.dependents[0].is_face_up
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
-            self.game.send_update(which_movables = [self, other] + other.dependents)
+            self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
 
 
     def flip(self, no_update=False):
@@ -390,7 +389,7 @@ class Deck(TableMovable):
         for d in self.dependents:
             d.push_to_top(moving=False)
         if not no_update:
-            self.game.send_update([self]+self.dependents)
+            self.game.send_update([self]+self.dependents, messages = False)
             return
 
     def get_standard_deck(game):
@@ -490,7 +489,7 @@ class Deck(TableMovable):
             # If 'same face' keep the same direction, otherwise set face up or down
             if not which_face == "same face":
                 card.is_face_up = (which_face == 'face up')
-        self.game.send_update(which_movables = [new_deck] + new_deck.dependents)
+        self.game.send_update(which_movables = [new_deck] + new_deck.dependents, messages = False)
         # If the deck has 1 or fewer cards, destroy it
         new_deck.check_should_destroy()
 
@@ -587,7 +586,7 @@ class FreeplayGame:
         self.thread_lock.release()
         return all_data
 
-    def send_update(self, which_movables=None):
+    def send_update(self, which_movables=None, messages=True):
         print("sending update")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
@@ -603,10 +602,12 @@ class FreeplayGame:
 
         all_data = {
             "movables_info":movables_info,
-            "players":player_names,
-            'messages':self.messages,
-            'quick_messages':self.quick_messages
+            "players":player_names
             }
+        if messages:
+            all_data['messages'] = self.messages
+            all_data['quick_messages'] = self.quick_messages
+
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
