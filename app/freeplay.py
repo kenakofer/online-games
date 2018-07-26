@@ -121,7 +121,7 @@ class TableMovable:
 
     def update_move(self):
         self.game.thread_lock.acquire()
-        objects = [self] + self.dependents
+        objects = [self]
         if self.parent:
             objects.append(self.parent)
         data = {
@@ -132,7 +132,6 @@ class TableMovable:
                 "dimensions":           o.dimensions,
                 "depth":                o.depth,
                 "parent":               False if not o.parent else str(o.parent.id),
-                "dependents":           [od.id for od in o.dependents],
                 "is_face_up":           o.is_face_up,
                 "privacy":              o.privacy,
             } for o in objects]}

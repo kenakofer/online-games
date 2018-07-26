@@ -199,7 +199,7 @@ $( document ).ready(function() {
         if (time === 0){
             html_elem.css( css_obj );
         } else {
-            html_elem.animate( css_obj,{duration:time} );
+            html_elem.stop(true, true).animate( css_obj,{duration:time, queue:false} );
         }
         // Make the height of the content window big enough to scroll down and see it
         // Was having an issue with html_elem.position(...) is undefined, so check that
@@ -494,7 +494,7 @@ $( document ).ready(function() {
                 // sync_action_buttons()
                 // Only send a server update if enough time has passed since the last
                 var now = new Date().getTime()
-                if (now - time_of_drag_emit > 200){
+                if (now - time_of_drag_emit > 400){
                     time_of_drag_emit = now
                     socket.emit('CONTINUE MOVE', {gameid:template_gameid, obj_id:elem.target.id, position:pos});
                 }
@@ -687,7 +687,7 @@ $( document ).ready(function() {
             });
             $('#message-box').html(html_string);
             // Scroll to the bottom:
-            $('#message-box').animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
+            $('#message-box').stop(true, true).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
             // Remove the bar on sending more messages
             message_waiting_to_send = false;
 
@@ -698,7 +698,9 @@ $( document ).ready(function() {
         data.movables_info.forEach(function(obj_data) {
             //console.log('Processing object changes for '+obj_data.id);
             var apm_obj = get_apm_obj(obj_data.id);
-            var position_sync_time = 200;
+            if (apm_obj === currently_dragging)
+                return
+            var position_sync_time = 500;
             var should_sync_position = false
             if (!apm_obj){
                 //Create the obj if it doesn't exist yet.
@@ -744,6 +746,13 @@ $( document ).ready(function() {
                 if (obj_data.privacy != apm_obj.privacy())
                     position_sync_time = 0;
                 apm_obj.change_privacy(obj_data.privacy);
+                apm_obj.dependent_ids().forEach(function(did){
+                    var dep_obj = get_apm_obj(did);
+                    if (dep_obj) {
+                        dep_obj.change_privacy(obj_data.privacy);
+                        dep_obj.sync_image();
+                    }
+                });
                 //console.log('done changing privacy');
                 // The html_obj has changed
                 html_obj = $('#'+apm_obj.id());
@@ -811,7 +820,16 @@ $( document ).ready(function() {
                 }
                 // Make changes to position visible in html
                 if (should_sync_position){
+                    console.log(position_sync_time);
                     apm_obj.sync_position(position_sync_time);
+                    apm_obj.dependent_ids().forEach(function (d_id){
+                        var apm_dep = get_apm_obj(d_id);
+                        if (! apm_dep)
+                            return
+                        apm_dep.depth(get_dragging_depth());
+                        apm_dep.position(apm_obj.position());
+                        apm_dep.sync_position(position_sync_time);
+                    });
                 }
             } else {
                 //console.log("Not syncing position because of player_moving_index");
@@ -929,7 +947,7 @@ $( document ).ready(function() {
     var message_waiting_to_send = false;
     var add_message_spinner = function() {
         if (message_waiting_to_send){
-            $('#message-box').animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
+            $('#message-box').stop(true, true).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
             $('#message-box').append('<div class="loader"></div>');
         }
     };
