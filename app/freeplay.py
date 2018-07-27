@@ -36,7 +36,7 @@ class TableMovable:
     # Sort in place a list of movables
     def sort_movables_for_sending(movables_list):
         movables_list.sort(key=lambda obj:
-            obj.get_index_in_parent() + (100000000 if isinstance(obj, Card) else 0)
+            obj.get_index_in_parent() + (100000000 if not isinstance(obj, Card) else 0)
         )
 
     def get_index_in_parent(self):
@@ -489,7 +489,8 @@ class Deck(TableMovable):
             # If 'same face' keep the same direction, otherwise set face up or down
             if not which_face == "same face":
                 card.is_face_up = (which_face == 'face up')
-        self.game.send_update(which_movables = [new_deck] + new_deck.dependents, messages = False)
+        new_deck.push_to_top(moving = False)
+        self.game.send_update(which_movables = [new_deck] + new_deck.dependents + [self], messages = False)
         # If the deck has 1 or fewer cards, destroy it
         new_deck.check_should_destroy()
 

@@ -186,6 +186,23 @@ $( document ).ready(function() {
             time = 0
         }
         var html_elem = $('#'+this.id());
+        // Make the dimensions of a containing parent big enough to encompass its deps
+        var width = this.dimensions()[0];
+        var height = this.dimensions()[1];
+        if (this.type() == "Deck" && this.dependent_ids().length) {
+            var maxw = width; var maxh = height;
+            this.dependent_ids().forEach(function(dep_id) {
+                var apm_dep = get_apm_obj(dep_id);
+                if (apm_dep) {
+                    maxw = Math.max(maxw, apm_dep.position_offset()[0] + apm_dep.dimensions()[0])
+                    maxh = Math.max(maxh, apm_dep.position_offset()[1] + apm_dep.dimensions()[1])
+                }
+            });
+            width = maxw;
+            height = maxh;
+        }
+        width += this.dimension_offset()[0];
+        height += this.dimension_offset()[1];
 
         html_elem.css({
             "z-index": this.depth(),
@@ -193,8 +210,8 @@ $( document ).ready(function() {
         var css_obj = {
             "left":this.position()[0]+this.position_offset()[0],
             "top": this.position()[1]+this.position_offset()[1],
-            "min-width": this.dimensions()[0]+this.dimension_offset()[0],
-            "height": this.dimensions()[1]+this.dimension_offset()[1],
+            "min-width": width,
+            "height": height
         }
         if (time === 0){
             html_elem.css( css_obj );
