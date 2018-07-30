@@ -287,22 +287,30 @@ $( document ).ready(function() {
                 html_pos.top -= $(window).scrollTop();
                 html_pos.left -= $(window).scrollLeft();
             }
-            var opacity = '0';
-            if (apm_obj.type() == "Deck")
-                opacity = '1';
-            shuffle_button.css('opacity', opacity);
-            deal_spinner.parent().css('opacity', opacity);
-            deal_button.css('opacity', opacity);
-            sort_button.css('opacity', opacity);
-            $( '#action-button-panel' ).css({
+            // Put in or take out the deck specific controls
+            if (apm_obj.type() == "Deck") {
+                action_button_panel.prepend(action_button_br);
+                action_button_panel.prepend(deal_button);
+                action_button_panel.prepend(deal_spinner_parent);
+                action_button_panel.append(shuffle_button);
+                action_button_panel.append(sort_button);
+            } else {
+                action_button_br.detach();
+                deal_button.detach();
+                deal_spinner_parent.detach();
+                shuffle_button.detach();
+                sort_button.detach();
+            }
+            var height = action_button_panel.height()
+            action_button_panel.css({
                 "left":html_pos.left+4,
-                "top": html_pos.top-74,
+                "top": html_pos.top-height - 2,
                 "display": "inline",
                 "position": position_type,
 
             });
         } else {
-            $( '#action-button-panel' ).css({
+            action_button_panel.css({
                 "display": "none",
             });
         }
@@ -818,6 +826,7 @@ $( document ).ready(function() {
         });
     });
 
+    var action_button_panel = $( "#action-button-panel" );
     var deal_spinner = $( "#deal-spinner" );
     var deal_button = $( "#deal-button" );
     var destroy_button = $( "#destroy-button" );
@@ -826,8 +835,10 @@ $( document ).ready(function() {
     var sort_button = $( "#sort-button" );
     var custom_text = $( "#custom-text" );
     var chat_window = $( "#chat-window" );
+    var action_button_br = $( "#action-button-br" );
 
     deal_spinner.spinner({min:1,max:20,step:1});
+    var deal_spinner_parent = deal_spinner.parent();
     deal_button.click(function(){
         var id = apm.show_action_buttons_for_id();
         var which_face = "same face"; 

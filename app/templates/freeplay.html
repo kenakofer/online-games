@@ -51,15 +51,12 @@
     </div>
     <div id="action-button-panel"><!--
         --><input id="deal-spinner" class='two-digit-action-spinner' title="How many cards to deal" value=5></input><!--
-        --><button id="deal-button" title="Deal out cards" class='action-button'>{% include "svgicons/deal.svg" %}</button><br><!--
+        --><button id="deal-button" title="Deal out cards" class='action-button'>{% include "svgicons/deal.svg" %}</button><br id="action-button-br"><!--
         --><button id="destroy-button" title="Permanently delete" class='action-button'>{% include "svgicons/trash.svg" %} </button><!--
         --><button id="flip-button" title="Flip over" class='action-button rotate'>{% include "svgicons/flip.svg" %} </button><!--
         --><button id="shuffle-button" title="Shuffle" class='action-button'>{% include "svgicons/shuffle.svg" %} </button><!--
-        --><button id="sort-button" title="Sort" class='action-button'>{% include "svgicons/sort.svg" %} </button>
-        <!-- <select id="deal-select"><option>same face</option><option>face up</option><option>face down</option></select> -->
-        <!-- <input id="pco-x-spinner" class='four-digit-action-spinner' value=3></input> -->
-        <!-- <input id="pco-y-spinner" class='four-digit-action-spinner' value=2></input> -->
-    </div>
+        --><button id="sort-button" title="Sort" class='action-button'>{% include "svgicons/sort.svg" %} </button><!--
+    --></div>
 {% endblock %}
 
 {% block footer %}
