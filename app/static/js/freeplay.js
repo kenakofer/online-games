@@ -585,7 +585,6 @@ $( document ).ready(function() {
                 return
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now
-            apm_top.position( apm_bottom.position() );
             apm_top.depth(get_dragging_depth());
             apm_top.dependent_ids().forEach(function (d_id){
                 var apm_dep = get_apm_obj(d_id);
