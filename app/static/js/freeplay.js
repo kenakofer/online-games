@@ -290,10 +290,10 @@ $( document ).ready(function() {
             var opacity = '0';
             if (apm_obj.type() == "Deck")
                 opacity = '1';
-            $('#BUTTONSHUFFLE').css('opacity', opacity);
-            $('#deal-spinner').parent().css('opacity', opacity);
-            $('#deal-button').css('opacity', opacity);
-            $('#sort-button').css('opacity', opacity);
+            shuffle_button.css('opacity', opacity);
+            deal_spinner.parent().css('opacity', opacity);
+            deal_button.css('opacity', opacity);
+            sort_button.css('opacity', opacity);
             $( '#action-button-panel' ).css({
                 "left":html_pos.left+4,
                 "top": html_pos.top-74,
@@ -817,17 +817,26 @@ $( document ).ready(function() {
             }
         });
     });
-    $( "#deal-spinner" ).spinner({min:1,max:20,step:1});
-    $( "#deal-select"  ).selectmenu();
-    $( "#deal-button" ).click(function(){
+
+    var deal_spinner = $( "#deal-spinner" );
+    var deal_button = $( "#deal-button" );
+    var destroy_button = $( "#destroy-button" );
+    var flip_button = $( "#flip-button");
+    var shuffle_button = $( "#shuffle-button");
+    var sort_button = $( "#sort-button" );
+    var custom_text = $( "#custom-text" );
+    var chat_window = $( "#chat-window" );
+
+    deal_spinner.spinner({min:1,max:20,step:1});
+    deal_button.click(function(){
         var id = apm.show_action_buttons_for_id();
-        var which_face = "same face"; //$("#deal-select")[0].value;
-        var how_many = $("#deal-spinner")[0].value || 1
+        var which_face = "same face"; 
+        var how_many = deal_spinner[0].value || 1
         if (id){
             socket.emit('DEAL', {gameid:template_gameid, obj_id:id, which_face:which_face, how_many:how_many});
         }
     });
-    $( "#destroy-button" ).click(function(){
+    destroy_button.click(function(){
         var id = apm.show_action_buttons_for_id();
         if (id){
             var apm_obj = get_apm_obj(id);
@@ -842,19 +851,19 @@ $( document ).ready(function() {
                 socket.emit('DESTROY', {gameid:template_gameid, obj_id:id});
         }
     });
-    $( "#flip-button"  ).click(function(){
+    flip_button.click(function(){
         var id = apm.show_action_buttons_for_id();
         if (id){
             socket.emit('FLIP', {gameid:template_gameid, obj_id:id});
         }
     });
-    $( "#BUTTONSHUFFLE" ).click(function(){
+    shuffle_button.click(function(){
         var id = apm.show_action_buttons_for_id();
         if (id){
             socket.emit('SHUFFLE', {gameid:template_gameid, obj_id:id});
         }
     });
-    $( "#sort-button" ).click(function(){
+    sort_button.click(function(){
         var id = apm.show_action_buttons_for_id();
         if (id){
             socket.emit('SORT', {gameid:template_gameid, obj_id:id});
@@ -909,7 +918,8 @@ $( document ).ready(function() {
             'n':'#handle'
         }
     });
-    $('#chat-window').draggable();
+    chat_window.draggable();
+    chat_window.resizable();
     var message_waiting_to_send = false;
     var add_message_spinner = function() {
         if (message_waiting_to_send){
@@ -927,15 +937,12 @@ $( document ).ready(function() {
             });
         }
     };
-    $('#chat-window').resizable();
 
-    $('#custom-text').on("keypress", function(e) {
-        if (e.keyCode == 13 && !message_waiting_to_send){
-            var elem = $('#custom-text');
-            if (elem.val().length == 0)
-                return false;
-            send_message(elem.val());
-            elem.val("");
+    custom_text.on("keypress", function(e) {
+        // If enter is pressed, and there isn't a message waiting to send, and the text box isn't empty, send the message
+        if (e.keyCode == 13 && !message_waiting_to_send && custom_text.val().length > 0) {
+            send_message(custom_text.val());
+            custom_text.val("");
             return false;
         }
     });
