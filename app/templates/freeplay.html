@@ -72,9 +72,18 @@
         </div>
     </div>
     <div id='chat-window' class='ui-widget-content'>
-        <div id='message-box'></div>
-        <div data-bind="foreach: quick_messages"><button data-bind="text: nocolor($data), click: function(){send_message($data)}, attr: {class: 'quick-message-button'}, css: get_color_class($data)"></button></div>
-        <input type="text" id="custom-text" placeholder="Type here, then press Enter to send"/>
+        <ul>
+            <li><a href="#message-tab">Messages</a></li>
+            <li><a href="#instructions-tab">Instructions</a></li>
+        </ul>
+        <div id="message-tab">
+            <div id='message-box'></div>
+            <div data-bind="foreach: quick_messages"><button data-bind="text: nocolor($data), click: function(){send_message($data)}, attr: {class: 'quick-message-button'}, css: get_color_class($data)"></button></div>
+            <input type="text" id="custom-text" placeholder="Type here, then press Enter to send"/>
+        </div>
+        <div id="instructions-tab">
+            This game has no instructions written for it yet.
+        </div>
     </div>
 </div>
 {% endblock %}

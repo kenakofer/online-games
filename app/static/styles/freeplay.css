@@ -183,7 +183,25 @@ span.ui-selectmenu-text {
     /* Internet Explorer */
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 }
-
+ul.ui-tabs-nav.ui-widget-header {
+    border: none;
+    background: none;
+    padding: 0px;
+}
+li.ui-tabs-tab.ui-corner-top.ui-tab {
+    border-width: 1px !important;
+    padding: 0px !important;
+    margin-bottom: 0px !important;
+    font-size: 14px;
+}
+div.ui-tabs .ui-tabs-panel {
+    padding: 0px;
+    margin-top: 10px;
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    overflow-y: auto;
+}
 #chat-window {
     width: 255px;
     height: 255px;
@@ -202,7 +220,7 @@ span.ui-selectmenu-text {
     background: #dfc;
     border: 2px inset #afa;
     border-radius: 3px;
-    overflow-y: scroll;
+    overflow-y: auto;
     width: auto;
     font-size: 12px;
     flex-grow: 1;
@@ -270,4 +288,18 @@ span.ui-selectmenu-text {
 .player-color-4 {
     font-weight: bold;
     color: #a0a;
+}
+
+#instructions-tab {
+    background: #dfc;
+    border: 2px inset #afa;
+    font-family: serif;
+}
+#instructions-tab h1 {
+    margin: 5px 0 5px 0;
+    color: black;
+}
+#instructions-tab p {
+    margin: 5px 0 5px 0;
+    font-size: 16px;
 }

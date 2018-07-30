@@ -5,6 +5,7 @@ from time import sleep, time
 from random import random, sample
 from json import load
 from collections import OrderedDict
+from markdown2 import markdown
 
 #The dict to be filled with freeplay_games
 freeplay_games = {}
@@ -515,6 +516,7 @@ class FreeplayGame:
         self.game_over=False
         self.messages = []
         self.quick_messages = ['Who\'s turn?', 'My turn', 'Your turn', 'Good game', 'I win!', 'Play again?']
+        self.instructions_html = "";
         self.thread_lock.release()
         self.depth_counter= {'public':100, 'private':50000000, 'dragging':100000000}
         self.sort_index = 0
@@ -522,6 +524,7 @@ class FreeplayGame:
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
         Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/'+deck_name+'/game.json')
+        self.get_instructions_from_markdown(app.root_path+'/static/images/freeplay/'+deck_name+'/instructions.md')
         self.send_update()
 
     def get_sort_index(self):
@@ -574,6 +577,13 @@ class FreeplayGame:
         send_update()
         return False
 
+    def get_instructions_from_markdown(self, path_to_md):
+        try:
+            with open(path_to_md, 'r') as md_file:
+                data = md_file.read()
+                self.instructions_html = markdown(data, extras=["target-blank-links"])
+        except:
+            print(path_to_md+" does not exist or could not be loaded.")
 
     def send_messages(self):
         print("sending message update")
@@ -608,6 +618,8 @@ class FreeplayGame:
         if messages:
             all_data['messages'] = self.messages
             all_data['quick_messages'] = self.quick_messages
+        if self.instructions_html:
+            all_data['instructions_html'] = self.instructions_html
 
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')

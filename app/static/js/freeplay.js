@@ -649,6 +649,10 @@ $( document ).ready(function() {
             qms = qms.concat(data.quick_messages);
             apm.quick_messages(qms);
         }
+        // Instructions update
+        if (data.instructions_html) {
+            instructions_tab.html(data.instructions_html);
+        };
         //Messages update
         if (data.messages){
             apm.messages(data.messages);
@@ -836,6 +840,7 @@ $( document ).ready(function() {
     var custom_text = $( "#custom-text" );
     var chat_window = $( "#chat-window" );
     var action_button_br = $( "#action-button-br" );
+    var instructions_tab = $( "#instructions-tab" );
 
     deal_spinner.spinner({min:1,max:20,step:1});
     var deal_spinner_parent = deal_spinner.parent();
@@ -929,6 +934,7 @@ $( document ).ready(function() {
             'n':'#handle'
         }
     });
+    chat_window.tabs();
     chat_window.draggable();
     chat_window.resizable();
     var message_waiting_to_send = false;
