@@ -86,7 +86,7 @@ class TableMovable:
         # If it was inside something, take it out (only if the user if moving the dependent and not the container)
         if self.parent and not recursive:
             self.parent.dependents.remove(self)
-            self.game.send_update([self, self.parent], messages = False )
+            self.game.send_update([self, self.parent], messages = False, include_self=False )
             p = self.parent
             self.parent = None
             p.check_should_destroy()
@@ -100,7 +100,8 @@ class TableMovable:
             d.continue_move(player, new_position, no_check=no_check, no_update=True)
         # Update all users
         if not no_update:
-            self.update_move()
+            print("update_move with include_self=True")
+            self.update_move(include_self=False)
 
     def stop_move(self, player, new_position, privacy=None, no_check=False, no_update=False):
         if (not self.player_moving == player) and (not no_check):
@@ -119,7 +120,7 @@ class TableMovable:
         if not no_update:
             self.update_move()
 
-    def update_move(self):
+    def update_move(self, include_self=True):
         self.game.thread_lock.acquire()
         objects = [self]
         if self.parent:
@@ -135,8 +136,8 @@ class TableMovable:
                 "is_face_up":           o.is_face_up,
                 "privacy":              o.privacy,
             } for o in objects]}
-        with app.test_request_context('/'):
-            socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+        #with app.test_request_context('/'):
+        socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay', include_self=include_self)
         self.game.thread_lock.release()
         return data
 
@@ -597,7 +598,7 @@ class FreeplayGame:
         self.thread_lock.release()
         return all_data
 
-    def send_update(self, which_movables=None, messages=True):
+    def send_update(self, which_movables=None, messages=True, include_self=True):
         print("sending update")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
@@ -621,8 +622,8 @@ class FreeplayGame:
         if self.instructions_html:
             all_data['instructions_html'] = self.instructions_html
 
-        with app.test_request_context('/'):
-            socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
+        #with app.test_request_context('/'):
+        socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
         self.thread_lock.release()
         return all_data
 
