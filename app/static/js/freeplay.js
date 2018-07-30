@@ -112,7 +112,6 @@ $( document ).ready(function() {
         self.dfuo = ko.observableArray();
         self.dfdo = ko.observableArray();
         self.move_confirmed_by_server = false;
-        //self.offset_per_dependent = ko.observableArray([.5, .5]);
         self.offset_per_dependent = ko.pureComputed(function() {
             if (self.dependent_ids().length === 0) {
                 return;
@@ -180,7 +179,6 @@ $( document ).ready(function() {
         }
         if (time === 200 && window.test)
             snthaoeusnth;
-        //console.log("Calling sync position on "+this.id()+': '+time);
         if (this.has_synced_once === false){
             this.has_synced_once = true;
             time = 0
@@ -251,7 +249,6 @@ $( document ).ready(function() {
         }
     }
     TableMovable.prototype.change_privacy = function(privacy_index){
-        //console.log('change_privacy of '+this.id()+' to '+privacy_index);
         if (privacy_index === this.privacy())
             return
         this.privacy(privacy_index);
@@ -304,10 +301,6 @@ $( document ).ready(function() {
                 "position": position_type,
 
             });
-            // Set the PCO dials to the correct values
-            /*var a = apm_obj.offset_per_dependent();
-            $( "#pco-x-spinner" ).spinner( 'value', Math.abs(a[0]) ** .5 * 4 * Math.sign(a[0]) );
-            $( "#pco-y-spinner" ).spinner( 'value', Math.abs(a[1]) ** .5 * 4 * Math.sign(a[0]) );*/
         } else {
             $( '#action-button-panel' ).css({
                 "display": "none",
@@ -450,7 +443,6 @@ $( document ).ready(function() {
     }
 
     clickable_settings =  function(){
-        //console.log('clicked on: '+this.id);
         // If we clicked on the same one again, hide the button
         if (apm.show_action_buttons_for_id() === this.id){
             apm.show_action_buttons_for_id(false)
@@ -478,9 +470,6 @@ $( document ).ready(function() {
                         return
                     apm_dep.depth(get_dragging_depth());
                     apm_dep.sync_position(0);
-                    /*try {
-                        $( '#'+apm_dep.id() ).droppable("destroy");
-                    } catch (err) {}*/
                 });
                 // Remove this object from its parents
                 apm_obj.set_parent_id(false);
@@ -507,8 +496,6 @@ $( document ).ready(function() {
                     apm_dep.position(pos);
                     apm_dep.sync_position(0);
                 });
-                // Move the action buttons
-                // sync_action_buttons()
                 // Only send a server update if enough time has passed since the last
                 var now = new Date().getTime()
                 if (now - time_of_drag_emit > 400){
@@ -536,9 +523,6 @@ $( document ).ready(function() {
                         apm_dep.depth(get_dropped_public_depth());
                         apm_dep.position(pos);
                         apm_dep.sync_position(0);
-                        /*try {
-                            $( '#'+apm_dep.id() ).droppable(droppable_settings);
-                        } catch (err) {console.log(err);}*/
                     });
                     // If the object was private, we need to do a position offset
                     if (apm_obj.privacy() !== -1) {
@@ -587,7 +571,6 @@ $( document ).ready(function() {
             }
             console.log("Dropping "+top_id+' on '+bottom_id);
             time_of_drop_emit = now
-            console.log('droped '+top_id+' on '+bottom_id);
             // Line up the dropped object
             // If either is not a deck or card, ignore the drop
             if (!['Deck','Card'].includes(apm_top.type()) || !['Deck','Card'].includes(apm_bottom.type()))
@@ -602,11 +585,6 @@ $( document ).ready(function() {
                     return
                 apm_dep.depth(get_dragging_depth());
                 apm_dep.sync_position(0);
-                /*try {
-                    $( '#'+apm_dep.id() ).droppable(droppable_settings);
-                } catch (err) {
-                    console.log(err);
-                } */
             });
             apm_top.sync_position();
             // Move the action buttons
@@ -713,7 +691,6 @@ $( document ).ready(function() {
         if (! data.movables_info)
             return
         data.movables_info.forEach(function(obj_data) {
-            //console.log('Processing object changes for '+obj_data.id);
             var apm_obj = get_apm_obj(obj_data.id);
             if (apm_obj === currently_dragging)
                 return
@@ -770,7 +747,6 @@ $( document ).ready(function() {
                         dep_obj.sync_image();
                     }
                 });
-                //console.log('done changing privacy');
                 // The html_obj has changed
                 html_obj = $('#'+apm_obj.id());
             }
@@ -783,7 +759,6 @@ $( document ).ready(function() {
                 $("#"+apm_obj.id()+" span").off('click');
                 $("#"+apm_obj.id()+" span").on('click', function(){
                     html_obj.trigger('click');
-                    //console.log('click redirect:');
                 });
             }
             // Update card image
@@ -811,17 +786,6 @@ $( document ).ready(function() {
             // Sync card image changes
             apm_obj.sync_image();
 
-            /*if ('offset_per_dependent' in obj_data){
-                var a = obj_data.offset_per_dependent.slice();
-                apm_obj.offset_per_dependent(a);
-                // Move all the dependents
-                apm_obj.dependent_ids().forEach(function (d_id){
-                    var apm_dep = get_apm_obj(d_id);
-                    if (! apm_dep)
-                        return
-                    apm_dep.sync_position(0);
-                });
-            }*/
             if (apm_obj.player_moving_index() !== template_player_index && apm_obj !== currently_dragging){
                 if ('depth' in obj_data) {
                     apm_obj.depth( obj_data.depth );
@@ -853,22 +817,7 @@ $( document ).ready(function() {
             }
         });
     });
-    var pco_spinner_settings = {
-        min:-50, max:50, step:1,
-
-
-        stop: function( event, ui ) {
-            var id = apm.show_action_buttons_for_id();
-            var pco_x = $("#pco-x-spinner")[0].value || 1;
-            var pco_y = $("#pco-y-spinner")[0].value || 1;
-            if (id){
-                socket.emit('PCO SET', {gameid:template_gameid, obj_id:id, pco_x:pco_x, pco_y:pco_y});
-            }
-        }
-    };
     $( "#deal-spinner" ).spinner({min:1,max:20,step:1});
-    $( "#pco-x-spinner" ).spinner(pco_spinner_settings);
-    $( "#pco-y-spinner" ).spinner(pco_spinner_settings);
     $( "#deal-select"  ).selectmenu();
     $( "#deal-button" ).click(function(){
         var id = apm.show_action_buttons_for_id();
@@ -970,7 +919,6 @@ $( document ).ready(function() {
     };
     send_message = function(text) {
         if (! message_waiting_to_send){
-            console.log(text);
             message_waiting_to_send = true;
             setTimeout(add_message_spinner, 200);
             socket.emit('SEND MESSAGE', {
