@@ -136,23 +136,6 @@ $( document ).ready(function() {
             }
             return result
         }, this);
-        self.position_offset = ko.pureComputed(function() {
-            if (self.type() == 'Deck'){
-                return [-10, -27];
-            } else if (self.type() == 'Card' && self.parent_id()){
-                var i = self.get_index_in_parent();
-                var p = get_apm_obj(self.parent_id());
-                var opd = [.5,.5];
-                if (p && p.offset_per_dependent()) {
-                    opd = p.offset_per_dependent().slice();
-                    opd[0] = Math.abs(opd[0] / 4) ** 2 * Math.sign(opd[0]);
-                    opd[1] = Math.abs(opd[1] / 4) ** 2 * Math.sign(opd[1]);
-                }
-                return [i * opd[0], i * opd[1]]
-            }
-            // Otherwise
-            return [0,0];
-        }, this);
         self.dimension_offset = ko.pureComputed(function() {
             if (self.type() == 'Deck'){
                 return [25, 45];
@@ -173,6 +156,24 @@ $( document ).ready(function() {
         // Dropping a card in the private area inhibits the stop drag event as well, but allows the general drop event to fire
         self.drop_time = 0;
         self.has_synced_once = false;
+    }
+
+    TableMovable.prototype.position_offset = function() {
+        if (this.type() == 'Deck'){
+            return [-10, -27];
+        } else if (this.type() == 'Card' && this.parent_id()){
+            var i = this.get_index_in_parent();
+            var p = get_apm_obj(this.parent_id());
+            var opd = [.5,.5];
+            if (p && p.offset_per_dependent()) {
+                opd = p.offset_per_dependent().slice();
+                opd[0] = Math.abs(opd[0] / 4) ** 2 * Math.sign(opd[0]);
+                opd[1] = Math.abs(opd[1] / 4) ** 2 * Math.sign(opd[1]);
+            }
+            return [i * opd[0], i * opd[1]]
+        }
+        // Otherwise
+        return [0,0];
     }
     TableMovable.prototype.sync_position = function(time){
         if (time === undefined) {
