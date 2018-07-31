@@ -113,49 +113,51 @@ $( document ).ready(function() {
         self.dfdo = ko.observableArray();
         self.move_confirmed_by_server = false;
         self.html_elem = false;
-        self.offset_per_dependent = ko.pureComputed(function() {
-            if (self.dependent_ids().length === 0) {
-                return;
-            }
-            var first_dep = get_apm_obj(self.dependent_ids()[0]);
-            if (! first_dep) {
-                return;
-            }
-            var result;
-            if (first_dep.is_face_up()) {
-                result = first_dep.dfuo();
-            } else {
-                result = first_dep.dfdo();
-            }
-            if (!(result instanceof Array)){
-                // Result is actually a dict
-                if (first_dep.privacy() === -1)
-                    result = result['public'];
-                else
-                    result = result['private'];
-            }
-            return result
-        }, this);
-        self.dimension_offset = ko.pureComputed(function() {
-            if (self.type() == 'Deck'){
-                return [25, 45];
-            }
-            // Otherwise
-            return [0,0];
-        }, this);
-        self.get_index_in_parent = ko.pureComputed(function(){
-            var p = get_apm_obj(self.parent_id());
-            if (! p)
-                return 0
-            var i = p.dependent_ids().indexOf( self.id() );
-            return Math.max(0, i)
-        }, this);
 
         // Drop time works like this:
         // Dropping a card anywhere inhibits the stop drag event, and disallows another immediate general drop event
         // Dropping a card in the private area inhibits the stop drag event as well, but allows the general drop event to fire
         self.drop_time = 0;
         self.has_synced_once = false;
+    }
+    TableMovable.prototype.dimension_offset = function() {
+            if (this.type() == 'Deck'){
+                return [25, 45];
+            }
+            // Otherwise
+            return [0,0];
+    }
+
+    TableMovable.prototype.offset_per_dependent = function() {
+        if (this.dependent_ids().length === 0) {
+            return;
+        }
+        var first_dep = get_apm_obj(this.dependent_ids()[0]);
+        if (! first_dep) {
+            return;
+        }
+        var result;
+        if (first_dep.is_face_up()) {
+            result = first_dep.dfuo();
+        } else {
+            result = first_dep.dfdo();
+        }
+        if (!(result instanceof Array)){
+            // Result is actually a dict
+            if (first_dep.privacy() === -1)
+                result = result['public'];
+            else
+                result = result['private'];
+        }
+        return result
+    }
+
+    TableMovable.prototype.get_index_in_parent = function() {
+        var p = get_apm_obj(this.parent_id());
+        if (! p)
+            return 0
+        var i = p.dependent_ids().indexOf( this.id() );
+        return Math.max(0, i)
     }
 
     TableMovable.prototype.position_offset = function() {
@@ -373,10 +375,10 @@ $( document ).ready(function() {
         self.movables = ko.observableArray([]);
         self.my_player_index = template_player_index;
         self.show_action_buttons_for_id = ko.observable(false);
-        self.public_movables = ko.computed(function() {
+        self.public_movables = ko.pureComputed(function() {
             return ko.utils.arrayFilter(self.movables(), function(m){return m.privacy() === -1});
         });
-        self.my_private_movables = ko.computed(function() {
+        self.my_private_movables = ko.pureComputed(function() {
             return ko.utils.arrayFilter(self.movables(), function(m){return m.privacy() === self.my_player_index});
         });
         self.private_card_count = function(player_index) {
@@ -384,14 +386,14 @@ $( document ).ready(function() {
                 return m.privacy() == player_index && m.type() === 'Card'
             }).length;
         }
-        self.private_hand_label_text = ko.computed(function() {
+        self.private_hand_label_text = ko.pureComputed(function() {
             var text = "Your private hand";
             var num_cards = self.private_card_count(template_player_index);
             if (num_cards > 0)
                 text += " ("+num_cards+")";
             return text;
         });
-        self.other_players_info_text = ko.computed(function() {
+        self.other_players_info_text = ko.pureComputed(function() {
             var text = ""
             var no_one = true;
             for (var i in self.players()){
