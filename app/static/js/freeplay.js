@@ -112,6 +112,7 @@ $( document ).ready(function() {
         self.dfuo = ko.observableArray();
         self.dfdo = ko.observableArray();
         self.move_confirmed_by_server = false;
+        self.html_elem = false;
         self.offset_per_dependent = ko.pureComputed(function() {
             if (self.dependent_ids().length === 0) {
                 return;
@@ -183,7 +184,9 @@ $( document ).ready(function() {
             this.has_synced_once = true;
             time = 0
         }
-        var html_elem = $('#'+this.id());
+        // If the html_elem doesn't exist or is outdated (like from a private/public switch)
+        if (! this.html_elem || this.html_elem.closest('body').length == 0)
+            this.html_elem = $('#'+this.id());
         // Make the dimensions of a containing parent big enough to encompass its deps
         var width = this.dimensions()[0];
         var height = this.dimensions()[1];
@@ -202,7 +205,7 @@ $( document ).ready(function() {
         width += this.dimension_offset()[0];
         height += this.dimension_offset()[1];
 
-        html_elem.css({
+        this.html_elem.css({
             "z-index": this.depth(),
         });
         var css_obj = {
@@ -212,36 +215,34 @@ $( document ).ready(function() {
             "height": height
         }
         if (time === 0){
-            html_elem.css( css_obj );
+            this.html_elem.css( css_obj );
         } else {
-            html_elem.stop(true, false).animate( css_obj,{duration:time, queue:false} );
+            this.html_elem.stop(true, false).animate( css_obj,{duration:time, queue:false} );
         }
         // Make the height of the content window big enough to scroll down and see it
         // Was having an issue with html_elem.position(...) is undefined, so check that
-        if (! currently_dragging && html_elem.position()) {
-            var html_content = $('.content');
-            var min_height = html_elem.position().top + html_elem.height() + $('#private-hand').height() - 50;
-            if ( html_content.height() < min_height){
-                html_content.height(min_height);
+        if (! currently_dragging && this.html_elem.position()) {
+            var min_height = this.html_elem.position().top + this.html_elem.height() + private_hand.height() - 50;
+            if ( content.height() < min_height){
+                content.height(min_height);
             }
         }
     };
 
     TableMovable.prototype.sync_image = function(){
-        var html_obj = $('#'+this.id());
         if (this.is_face_up()){
-            html_obj.removeClass( 'back' )
+            this.html_elem.removeClass( 'back' )
             // If the card has an image, show it
             if (this.front_image_url()){
-                html_obj.css({
+                this.html_elem.css({
                     'background-image': "url("+this.front_image_url()+")",
                     'background-size': this.front_image_style(),
                 });
             }
         } else {
-            html_obj.addClass( 'back' )
+            this.html_elem.addClass( 'back' )
             if (this.back_image_url()){
-                html_obj.css({
+                this.html_elem.css({
                     'background-image': "url("+this.back_image_url()+")",
                     'background-size': this.back_image_style(),
                 });
@@ -259,18 +260,20 @@ $( document ).ready(function() {
             this.sync_image();
             // The changes need to reach the html before we can reference the object.
             ko.tasks.runEarly();
-            var html_obj = $('#'+this.id());
-            html_obj.draggable(draggable_settings);
-            html_obj.click(clickable_settings);
+            // Recreate the jquery html elem
+            this.html_elem = $('#'+this.id());
+            // Get the listeners working again
+            this.html_elem.draggable(draggable_settings);
+            this.html_elem.click(clickable_settings);
             this.set_droppability();
         }
     };
 
     var private_hand_vertical_offset = function() {
-        return $('.content').offset().top - $('#private-hand').offset().top + 2;
+        return content.offset().top - private_hand.offset().top + 2;
     };
     var private_hand_horizontal_offset = function() {
-        return $('.content').offset().left - $('#private-hand').offset().left + 2;
+        return content.offset().left - private_hand.offset().left + 2;
     };
 
     var sync_action_buttons = function(should_hide){
@@ -284,8 +287,8 @@ $( document ).ready(function() {
                 position_type = 'fixed';
                 // Since it's private, get the position relative to the screen
                 html_pos = html_obj.offset();
-                html_pos.top -= $(window).scrollTop();
-                html_pos.left -= $(window).scrollLeft();
+                html_pos.top -= jwindow.scrollTop();
+                html_pos.left -= jwindow.scrollLeft();
             }
             // Put in or take out the deck specific controls
             if (apm_obj.type() == "Deck") {
@@ -349,12 +352,14 @@ $( document ).ready(function() {
     /* If the object has no parent, give it droppability. Otherwise take it away.
      */
     TableMovable.prototype.set_droppability = function(){
-        var html_obj = $('#'+this.id());
+        // If the html_elem doesn't exist or is outdated (like from a private/public switch)
+        if (! this.html_elem || this.html_elem.closest('body').length == 0)
+            this.html_elem = $('#'+this.id());
         if ( this.parent_id() === false || this.parent_id() === undefined ) {
-            html_obj.droppable(droppable_settings);
+            this.html_elem.droppable(droppable_settings);
         } else {
             try {
-                html_obj.droppable("destroy");
+                this.html_elem.droppable("destroy");
             } catch (err) {}
         }
     }
@@ -441,10 +446,12 @@ $( document ).ready(function() {
         apm.movables.push(apm_obj);
         // To do things with the html object, we have to run ko notifications now
         ko.tasks.runEarly();
+        // Give it its html_elem
+        apm_obj.html_elem = $( '#'+apm_obj.id() );
         // Make it draggable and droppable
-        $( '#'+apm_obj.id() ).draggable(draggable_settings);
-        $( '#'+apm_obj.id() ).droppable(droppable_settings);
-        $( '#'+apm_obj.id() ).click(clickable_settings);
+        apm_obj.html_elem.draggable(draggable_settings);
+        apm_obj.html_elem.droppable(droppable_settings);
+        apm_obj.html_elem.click(clickable_settings);
         apm_obj.set_droppability();
 
         return apm_obj;
@@ -565,7 +572,7 @@ $( document ).ready(function() {
             var bottom_id = event.target.id;
             var apm_bottom = get_apm_obj(bottom_id);
             var apm_top = get_apm_obj(top_id);
-            if (apm_bottom.privacy() === -1 && top_middle_y > $('#private-hand').offset().top){
+            if (apm_bottom.privacy() === -1 && top_middle_y > private_hand.offset().top){
                 console.log('elem is below private hand line, won\'t trigger public drop');
                 return;
             }
@@ -691,9 +698,9 @@ $( document ).ready(function() {
                 }
                 html_string += '<span class="'+class_string+'">'+text+'</span><br>';
             });
-            $('#message-box').html(html_string);
+            message_box.html(html_string);
             // Scroll to the bottom:
-            $('#message-box').stop(true, false).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
+            message_box.stop(true, false).animate({scrollTop:message_box.scrollHeight}, {duration:300, queue:false});
             // Remove the bar on sending more messages
             message_waiting_to_send = false;
 
@@ -713,7 +720,9 @@ $( document ).ready(function() {
                 position_sync_time = 0;
                 should_sync_position = true;
             }
-            var html_obj = $('#'+apm_obj.id());
+            // If the html_elem doesn't exist or is outdated (like from a private/public switch)
+            if (! apm_obj.html_elem || apm_obj.html_elem.closest('body').length == 0)
+                apm_obj.html_elem = $('#'+this.id());
 
             //Update its info
             if ('dependents' in obj_data){
@@ -758,8 +767,8 @@ $( document ).ready(function() {
                         dep_obj.sync_image();
                     }
                 });
-                // The html_obj has changed
-                html_obj = $('#'+apm_obj.id());
+                // The html_elem has changed
+                apm_obj.html_elem = $('#'+apm_obj.id());
             }
             if ('type' in obj_data){
                 apm_obj.type( obj_data.type );
@@ -769,7 +778,7 @@ $( document ).ready(function() {
                 // Redirect clicks on the text to the parent
                 $("#"+apm_obj.id()+" span").off('click');
                 $("#"+apm_obj.id()+" span").on('click', function(){
-                    html_obj.trigger('click');
+                    apm_obj.html_elem.trigger('click');
                 });
             }
             // Update card image
@@ -829,6 +838,9 @@ $( document ).ready(function() {
         });
     });
 
+    var jwindow = $(window);
+    var content = $( ".content" );
+    var private_hand = $( "#private-hand" );
     var action_button_panel = $( "#action-button-panel" );
     var deal_spinner = $( "#deal-spinner" );
     var deal_button = $( "#deal-button" );
@@ -840,6 +852,7 @@ $( document ).ready(function() {
     var chat_window = $( "#chat-window" );
     var action_button_br = $( "#action-button-br" );
     var instructions_tab = $( "#instructions-tab" );
+    var message_box = $( "#message-box" );
 
     deal_spinner.spinner({min:1,max:20,step:1});
     var deal_spinner_parent = deal_spinner.parent();
@@ -885,13 +898,13 @@ $( document ).ready(function() {
         }
     });
     // If the user clicks on the background, take away the action buttons
-    $( '.content' ).on('click', function(e) {
+     content.on('click', function(e) {
         if (e.target !== this)
             return;
         apm.show_action_buttons_for_id(false);
         sync_action_buttons();
     });
-    $( '#private-hand' ).droppable({
+    private_hand.droppable({
         accept: function(el) {
             return el.hasClass('Card') || el.hasClass('Deck');
         },
@@ -906,8 +919,7 @@ $( document ).ready(function() {
             apm_top.depth(get_dropped_public_depth());
             // Move the action buttons
             sync_action_buttons()
-            var html_elem = $('#'+top_id);
-            var private_pos = get_position_array_from_html_pos(html_elem.position());
+            var private_pos = get_position_array_from_html_pos(apm_top.html_elem.position());
             // If the object was public, we need to do a position offset
             if (apm_top.privacy() === -1) {
                 private_pos[0] += private_hand_horizontal_offset();
@@ -939,8 +951,8 @@ $( document ).ready(function() {
     var message_waiting_to_send = false;
     var add_message_spinner = function() {
         if (message_waiting_to_send){
-            $('#message-box').stop(true, false).animate({scrollTop:$('#message-box')[0].scrollHeight}, {duration:300, queue:false});
-            $('#message-box').append('<div class="loader"></div>');
+            message_box.stop(true, false).animate({scrollTop:message_box.scrollHeight}, {duration:300, queue:false});
+            message_box.append('<div class="loader"></div>');
         }
     };
     send_message = function(text) {
