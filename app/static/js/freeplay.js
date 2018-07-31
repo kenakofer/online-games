@@ -570,11 +570,11 @@ $( document ).ready(function() {
         drop: function( event, ui ) {
             var now = new Date().getTime()
             var top_id = ui.draggable.context.id;
-            var top_html = $('#'+top_id);
+            var apm_top = get_apm_obj(top_id);
+            var top_html = apm_top.html_elem;
             var top_middle_y = top_html.offset().top + top_html.height()/2;
             var bottom_id = event.target.id;
             var apm_bottom = get_apm_obj(bottom_id);
-            var apm_top = get_apm_obj(top_id);
             if (apm_bottom.privacy() === -1 && top_middle_y > private_hand.offset().top){
                 console.log('elem is below private hand line, won\'t trigger public drop');
                 return;
@@ -779,8 +779,8 @@ $( document ).ready(function() {
             if ('display_name' in obj_data){
                 apm_obj.display_name( obj_data.display_name );
                 // Redirect clicks on the text to the parent
-                $("#"+apm_obj.id()+" span").off('click');
-                $("#"+apm_obj.id()+" span").on('click', function(){
+                var span = $( 'span', apm_obj.html_elem );
+                span.off('click').on('click', function(){
                     apm_obj.html_elem.trigger('click');
                 });
             }
