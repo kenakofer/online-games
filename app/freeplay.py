@@ -607,7 +607,7 @@ class FreeplayGame:
         self.thread_lock.release()
         return all_data
 
-    def send_update(self, which_movables=None, messages=True, include_self=True):
+    def send_update(self, which_movables=None, messages=True, include_self=True, instructions=False):
         print("sending update")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
@@ -628,7 +628,7 @@ class FreeplayGame:
         if messages:
             all_data['messages'] = self.messages
             all_data['quick_messages'] = self.quick_messages
-        if self.instructions_html:
+        if instructions and self.instructions_html:
             all_data['instructions_html'] = self.instructions_html
 
         #with app.test_request_context('/'):

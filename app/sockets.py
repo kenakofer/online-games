@@ -121,7 +121,7 @@ def update_request(data):
     print('Client UPDATE REQUEST: {}'.format(data))
     print('The games are {}'.format(freeplay_games))
     g = freeplay_games[data['gameid']]
-    g.send_update()
+    g.send_update(instructions=True)
     g.time_of_last_update = time()
 
 @socketio.on('JOIN ROOM', namespace='/freeplay')
