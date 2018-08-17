@@ -704,7 +704,7 @@ $( document ).ready(function () {
             }
             // If the html_elem doesn't exist or is outdated (like from a private/public switch)
             if (! apm_obj.html_elem || apm_obj.html_elem.closest('body').length == 0)
-                apm_obj.html_elem = $('#'+this.id());
+                apm_obj.html_elem = $('#'+apm_obj.id());
 
             //Update its info
             if ('dependents' in obj_data) {

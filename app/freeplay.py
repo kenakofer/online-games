@@ -566,7 +566,7 @@ class FreeplayGame:
 
         print('Can\'t find {}, telling clients to destroy...'.format(id))
 
-        data = data or {'movables_info':[]}
+        data = {'movables_info':[]}
         data['movables_info'].append({
             "id":id,
             "destroy":True,
