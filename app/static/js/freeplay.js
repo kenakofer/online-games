@@ -107,6 +107,7 @@ $( document ).ready(function () {
         self.front_image_style = ko.observable("100% 100%");
         self.back_image_url = ko.observable('/static/images/freeplay/red_back.png');
         self.back_image_style = ko.observable("100% 100%");
+        self.stack_group = ko.observable("");
         self.dfuo = ko.observableArray();
         self.dfdo = ko.observableArray();
         self.move_confirmed_by_server = false;
@@ -176,6 +177,14 @@ $( document ).ready(function () {
         return [0, 0];
     };
 
+    TableMovable.prototype.get_stack_group = function () {
+        if (this.stack_group()) {
+            return this.stack_group()
+        } else if (this.dependent_ids().length) {
+            return get_apm_obj(this.dependent_ids()[0]).stack_group();
+        }
+        return false;
+    }
     TableMovable.prototype.sync_position = function (time) {
         if (time === undefined) {
             time = 200;
@@ -563,6 +572,12 @@ $( document ).ready(function () {
             var top_middle_y = top_html.offset().top + top_html.height()/2;
             var bottom_id = event.target.id;
             var apm_bottom = get_apm_obj(bottom_id);
+            var top_group = apm_top.get_stack_group();
+            var bottom_group = apm_bottom.get_stack_group();
+            if (top_group && bottom_group && top_group != bottom_group) {
+                console.log('elems are in different stack groups, so ignoring drop');
+                return;
+            }
             if (apm_bottom.privacy() === -1 && top_middle_y > private_hand.offset().top) {
                 console.log('elem is below private hand line, won\'t trigger public drop');
                 return;
@@ -735,6 +750,8 @@ $( document ).ready(function () {
             }
             if ('parent' in obj_data)
                 apm_obj.set_parent_id( obj_data.parent );
+            if ('stack_group' in obj_data)
+                apm_obj.stack_group(obj_data.stack_group);
             if ('player_moving_index' in obj_data) {
                 apm_obj.player_moving_index( obj_data.player_moving_index );
             }

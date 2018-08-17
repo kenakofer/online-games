@@ -220,7 +220,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dims=[-1,-1], is_face_up=True, dfuo=None, dfdo=None):
+    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dims=[-1,-1], is_face_up=True, dfuo=None, dfdo=None, stack_group=None):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -235,6 +235,7 @@ class Card(TableMovable):
                 display_name=alt_text,
                 is_face_up=is_face_up
                 )
+        self.stack_group = stack_group or deck.display_name
         self.front_image_url = front_image_url
         self.front_image_style = front_image_style
         self.back_image_url = back_image_url
@@ -311,6 +312,7 @@ class Card(TableMovable):
         info['back_image_style'] = self.back_image_style
         info['default_face_up_offset'] = self.dfuo
         info['default_face_down_offset'] = self.dfdo
+        info['stack_group'] = self.stack_group
         return info
 
 class Deck(TableMovable):
@@ -449,6 +451,7 @@ class Deck(TableMovable):
                 reps = card_data['repetitions'] if 'repetitions' in card_data else 1
                 dfuo = card_data['default_face_up_offset'] if 'default_face_up_offset' in card_data else [24,0]
                 dfdo = card_data['default_face_down_offset'] if 'default_face_down_offset' in card_data else [3,2]
+                stack_group = card_data['stack_group'] if 'stack_group' in card_data else deck_name
                 # Create the card
                 for i in range(reps):
                     card = Card(
@@ -461,6 +464,7 @@ class Deck(TableMovable):
                             is_face_up = face_up,
                             dfuo = dfuo,
                             dfdo = dfdo,
+                            stack_group = stack_group,
                             )
             if shuffle:
                 deck.shuffle_cards(no_update=True)

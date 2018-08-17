@@ -17,7 +17,8 @@
         "width":121,
         "height":194,
         "face_up":true,
-        "shuffle":false
+        "shuffle":false,
+        "stack_group":"play_cards"
     },
     "decks": {
         "Copper":{
@@ -87,6 +88,7 @@
             "back_image_url":"/static/images/freeplay/dominion/back_blue.jpg",
             "face_up":false,
             "shuffle":true,
+            "stack_group":"randomizer_cards",
             "cards":[
                 {
                     "alt_text":"Artisan",
