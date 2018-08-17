@@ -289,14 +289,20 @@ div.ui-tabs .ui-tabs-panel {
     font-weight: bold;
     color: #a0a;
 }
+.player-color-5 {
+    font-weight: bold;
+    color: #000;
+}
 
 #instructions-tab {
     background: #dfc;
     border: 2px inset #afa;
     font-family: serif;
 }
+#instructions-tab h3,
+#instructions-tab h2,
 #instructions-tab h1 {
-    margin: 5px 0 5px 0;
+    margin: 5px 0 5px 15px;
     color: black;
 }
 #instructions-tab p {

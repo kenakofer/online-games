@@ -397,7 +397,7 @@ $( document ).ready(function () {
                     continue;
                 no_one = false;
                 text += ", "; // We remove the first of these after
-                text += '<span class="player-color-'+i+'">';
+                text += '<span class="player-color-'+(i%6)+'">';
                 text += self.players()[i];
                 var num_cards = self.private_card_count(i);
                 text += '</span>';
@@ -663,7 +663,7 @@ $( document ).ready(function () {
                       seconds = seconds;
                     html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
                     var i = m.player_index;
-                    html_string += '<span class="message-name player-color-'+(i%5)+'">'+apm.players()[m.player_index]+':</span><br>';
+                    html_string += '<span class="message-name player-color-'+(i%6)+'">'+apm.players()[m.player_index]+':</span><br>';
                 }
                 last_time = m.timestamp;
                 last_player_index = m.player_index;
@@ -675,7 +675,7 @@ $( document ).ready(function () {
                 // If there is a color prefix, add that class
                 var class_string = "message-text";
                 if (text.startsWith("$*")) {
-                    class_string += ' player-color-'+text.substring(2, 3);
+                    class_string += ' player-color-'+(text.substring(2, 3) % 6);
                     text = text.substring(3);
                 }
                 html_string += '<span class="'+class_string+'">'+text+'</span><br>';

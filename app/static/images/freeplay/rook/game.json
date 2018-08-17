@@ -1,4 +1,18 @@
 {
+    "quick_messages":[
+        "Bid?",
+        "100","105","110","115","120","125","130",
+        "Pass",
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "What's trump?",
+        "What led?",
+        "$*3Red",
+        "$*1Brown",
+        "$*2Green",
+        "$*5Black"
+    ],
     "all_cards": {
         "back_image_style":"100% 100%",
         "default_face_up_offset":[23,0],

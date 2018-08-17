@@ -579,12 +579,17 @@ class FreeplayGame:
         return False
 
     def get_instructions_from_markdown(self, path_to_md):
+        print('Trying to get instructions from '+path_to_md)
         try:
-            with open(path_to_md, 'r') as md_file:
+            with open(path_to_md, 'r', encoding="utf-8") as md_file:
+                print("File opened successfully")
                 data = md_file.read()
+                print("File read successfully")
                 self.instructions_html = markdown(data, extras=["target-blank-links"])
-        except:
-            print(path_to_md+" does not exist or could not be loaded.")
+                print("Markdown parsed successfully");
+        except Exception as e:
+            print(path_to_md+" does not exist or could not be loaded. Error:")
+            print(e)
 
     def send_messages(self):
         print("sending message update")
