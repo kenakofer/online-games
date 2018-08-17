@@ -697,7 +697,7 @@ $( document ).ready(function () {
             });
             message_box.html(html_string);
             // Scroll to the bottom:
-            message_box.stop(true, false).animate({scrollTop:message_box.scrollHeight}, {duration:300, queue:false});
+            message_box.stop(true, false).animate({scrollTop:message_box[0].scrollHeight}, {duration:300, queue:false});
             // Remove the bar on sending more messages
             message_waiting_to_send = false;
 
@@ -950,8 +950,8 @@ $( document ).ready(function () {
     var message_waiting_to_send = false;
     var add_message_spinner = function () {
         if (message_waiting_to_send) {
-            message_box.stop(true, false).animate({scrollTop:message_box.scrollHeight}, {duration:300, queue:false});
             message_box.append('<div class="loader"></div>');
+            message_box.stop(true, false).animate({scrollTop:message_box[0].scrollHeight}, {duration:300, queue:false});
         }
     };
     send_message = function (text) {
