@@ -377,19 +377,16 @@ $( document ).ready(function () {
         self.players = ko.observableArray([]);
         self.quick_messages = ko.observableArray(["I win!", "Good game", "Your turn"]);
         self.messages = ko.observableArray([]);
-        self.movables = ko.observableArray([]);
+        //self.movables = {};
         self.my_player_index = template_player_index;
         self.show_action_buttons_for_id = ko.observable(false);
-        self.public_movables = ko.pureComputed(function () {
-            return ko.utils.arrayFilter(self.movables(), function (m) {return m.privacy() === -1;});
-        });
-        self.my_private_movables = ko.pureComputed(function () {
-            return ko.utils.arrayFilter(self.movables(), function (m) {return m.privacy() === self.my_player_index;});
-        });
+        self.public_movables = {};
+        self.private_movables = {};
         self.private_card_count = function (player_index) {
-            return ko.utils.arrayFilter(self.movables(), function (m) {
-                return m.privacy() == player_index && m.type() === 'Card';
-            }).length;
+            var filtered = _.pickBy(self.private_movables, function(movable) {
+                  return movable.privacy() == player_index;
+            });
+            return filtered.length;
         };
         self.private_hand_label_text = ko.pureComputed(function () {
             var text = "Your private hand";
@@ -444,7 +441,7 @@ $( document ).ready(function () {
     function createBasicTableMovable(id) {
         var apm_obj = new TableMovable(id, [0, 0], [0, 0], [], false, undefined);
         // Add it to the html
-        apm.movables.push(apm_obj);
+        apm.public_movables[id] = apm_obj;
         // To do things with the html object, we have to run ko notifications now
         ko.tasks.runEarly();
         // Give it its html_elem
@@ -616,12 +613,10 @@ $( document ).ready(function () {
 
     // Knockout helper functions
     get_apm_obj = function (oid) {
-        var poss = apm.movables().filter(function (apm_p) {return apm_p.id() == oid;});
-        if (poss.length > 0) {
-            return poss[0];
-        } else {
-            //console.log("No such movable: "+oid);
-        }
+        if (oid in apm.private_movables)
+            return apm.private_movables[oid];
+        else if (oid in apm.public_movables)
+            return apm.public_movables[oid];
     };
 
     // Socketio functions
@@ -745,7 +740,8 @@ $( document ).ready(function () {
                     sync_action_buttons();
                 }
                 // Remove from the movables array
-                apm.movables.splice( $.inArray(apm_obj, apm.movables()), 1);
+                delete apm.public_movables[obj_data.id];
+                delete apm.private_movables[obj_data.id];
                 return;
             }
             if ('parent' in obj_data)

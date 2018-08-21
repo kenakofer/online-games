@@ -42,13 +42,15 @@
 
 {% block content %}
     <h1>Free Play</h1>
+    <div id="public-movables"></div>
+    <!--
     <div data-bind="foreach: public_movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
             <span data-bind="if: type()!='Card'">
                 <span data-bind="text: full_display_name()"></span>
             </span>
         </div>
-    </div>
+    </div> -->
     <div id="action-button-panel"><!--
         --><input id="deal-spinner" class='two-digit-action-spinner' title="How many cards to deal" value=5></input><!--
         --><button id="deal-button" title="Deal out cards" class='action-button'>{% include "svgicons/deal.svg" %}</button><br id="action-button-br"><!--
