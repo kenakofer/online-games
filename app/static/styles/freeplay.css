@@ -23,6 +23,7 @@
 
 #action-button-panel {
     position: absolute;
+    white-space: nowrap;
     z-index: 1000000000;
     display: none;
 }
@@ -30,7 +31,9 @@
     position: fixed;
     bottom: -100px;
     top: auto !important; /* the "important" prevents the resizing operation from setting top */
-    left: -5px;
+    padding-left: 2000px;
+    padding-right: 2000px;
+    left: -2005px;
     width: 110%;
     height: 300px;
     background: #243;
