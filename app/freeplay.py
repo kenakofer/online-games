@@ -579,7 +579,7 @@ class FreeplayGame:
             socketio.emit('UPDATE', data, broadcast=True, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
         # And since things might be royally messed up client side, update everything
-        send_update()
+        self.send_update()
         return False
 
     def get_instructions_from_markdown(self, path_to_md):

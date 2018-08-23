@@ -91,14 +91,7 @@ $( document ).ready(function () {
         self.parent_id = ko.observable(get_apm_obj(parent_id));
         self.set_parent_id(parent_id);
         self.player_moving_index = ko.observable(-1);
-        self.display_name = ko.observable(display_name);
-        self.full_display_name = ko.pureComputed(function () {
-            var text = self.display_name();
-            var l = self.dependent_ids().length;
-            if (l > 0)
-                text += " ("+l+")";
-            return text;
-        });
+        self.display_name = display_name;
         self.is_face_up = ko.observable(true);
         self.depth = ko.observable(0);
         self.type = ko.observable("");
@@ -119,12 +112,19 @@ $( document ).ready(function () {
         self.drop_time = 0;
         self.has_synced_once = false;
     }
+    TableMovable.prototype.full_display_name = function () {
+        var text = this.display_name;
+        var l = this.dependent_ids().length;
+        if (l > 0)
+            text += " ("+l+")";
+        return text;
+    };
     TableMovable.prototype.dimension_offset = function () {
-            if (this.type() == 'Deck') {
-                return [25, 45];
-            }
-            // Otherwise
-            return [0, 0];
+        if (this.type() == 'Deck') {
+            return [25, 45];
+        }
+        // Otherwise
+        return [0, 0];
     };
 
     TableMovable.prototype.offset_per_dependent = function () {
@@ -262,19 +262,18 @@ $( document ).ready(function () {
         if (privacy_index === this.privacy())
             return;
         this.privacy(privacy_index);
+        var new_container;
+        if (privacy_index == -1)
+            new_container = public_movables;
+        else if (privacy_index == template_player_index)
+            new_container = my_private_movables;
+        console.log(new_container);
+        if (new_container)
+            this.html_elem = this.html_elem.detach().appendTo(new_container);
 
-        // If it is changing to a state visible to this user, it will need to have it's features reset
+        // If it is changing to a state visible to this user, it will need to have its position updated quick
         if ( [-1, template_player_index].includes(this.privacy()) ) {
             this.sync_position(0);
-            this.sync_image();
-            // The changes need to reach the html before we can reference the object.
-            ko.tasks.runEarly();
-            // Recreate the jquery html elem
-            this.html_elem = $('#'+this.id());
-            // Get the listeners working again
-            this.html_elem.draggable(draggable_settings);
-            this.html_elem.click(clickable_settings);
-            this.set_droppability();
         }
     };
 
@@ -383,9 +382,11 @@ $( document ).ready(function () {
         self.public_movables = {};
         self.private_movables = {};
         self.private_card_count = function (player_index) {
-            var filtered = _.pickBy(self.private_movables, function(movable) {
-                  return movable.privacy() == player_index;
-            });
+            var filtered = Object.keys(self.private_movables).reduce(function (filtered, key) {
+                    if (self.private_movables[key].privacy() == player_index)
+                        filtered[key] = self.private_movables[key];
+                    return filtered;
+            }, {});
             return filtered.length;
         };
         self.private_hand_label_text = ko.pureComputed(function () {
@@ -440,10 +441,10 @@ $( document ).ready(function () {
 
     function createBasicTableMovable(id) {
         var apm_obj = new TableMovable(id, [0, 0], [0, 0], [], false, undefined);
-        // Add it to the html
+        // Add it to the public list
         apm.public_movables[id] = apm_obj;
-        // To do things with the html object, we have to run ko notifications now
-        ko.tasks.runEarly();
+        // Add it to the html
+        public_movables.append('<div id="'+id+'" class="deck droppable noselect ui-widget-content"><span class="display-name"></span></div>');
         // Give it its html_elem
         apm_obj.html_elem = $( '#'+apm_obj.id() );
         // Make it draggable and droppable
@@ -739,6 +740,8 @@ $( document ).ready(function () {
                     apm.show_action_buttons_for_id(false);
                     sync_action_buttons();
                 }
+                // Remove from html
+                apm_obj.html_elem.remove();
                 // Remove from the movables array
                 delete apm.public_movables[obj_data.id];
                 delete apm.private_movables[obj_data.id];
@@ -767,14 +770,23 @@ $( document ).ready(function () {
             }
             if ('type' in obj_data) {
                 apm_obj.type( obj_data.type );
+                apm_obj.html_elem.removeClass('Deck').removeClass('Card');
+                apm_obj.html_elem.addClass(obj_data.type);
             }
             if ('display_name' in obj_data) {
-                apm_obj.display_name( obj_data.display_name );
-                // Redirect clicks on the text to the parent
-                var span = $( 'span', apm_obj.html_elem );
-                span.off('click').on('click', function () {
-                    apm_obj.html_elem.trigger('click');
-                });
+                apm_obj.display_name = obj_data.display_name;
+                if (apm_obj.type() == 'Deck') {
+                    var span = $( 'span.display-name', apm_obj.html_elem );
+                    // Update the html
+                    span.html(apm_obj.full_display_name());
+                    console.log('heresnth');
+                    console.log(apm_obj.full_display_name());
+                    // Redirect clicks on the text to the parent
+                    span.off('click').on('click', function () {
+                        console.log('click parent');
+                        apm_obj.html_elem.trigger('click');
+                    });
+                }
             }
             // Update card image
             if ('front_image_url' in obj_data) {
@@ -848,6 +860,8 @@ $( document ).ready(function () {
     var action_button_br = $( "#action-button-br" );
     var instructions_tab = $( "#instructions-tab" );
     var message_box = $( "#message-box" );
+    var public_movables = $('#public-movables');
+    var my_private_movables = $('#my-private-movables');
 
     deal_spinner.spinner({min:1, max:20, step:1});
     var deal_spinner_parent = deal_spinner.parent();

@@ -66,13 +66,14 @@
     <div id='other-players-info' data-bind="html: other_players_info_text()"></div>
     <div id='handle' class="ui-resizable-handle ui-resizable-n"></div>
     <div id='private-label' data-bind="text: private_hand_label_text()"></div>
-    <div data-bind="foreach: my_private_movables">
+    <div id="my-private-movables"></div>
+    <!--<div data-bind="foreach: my_private_movables">
         <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
             <span data-bind="if: type()!='Card'">
                 <span data-bind="text: full_display_name()"></span>
             </span>
         </div>
-    </div>
+    </div> -->
     <div id='chat-window' class='ui-widget-content'>
         <ul>
             <li><a href="#message-tab">Messages</a></li>
