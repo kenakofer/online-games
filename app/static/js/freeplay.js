@@ -84,26 +84,24 @@ $( document ).ready(function () {
 
     function TableMovable(id, position, dimensions, dependent_ids, parent_id, display_name) {
         var self = this;
-        self.id = ko.observable(id);
-        self.position = ko.observable(position);
-        self.dimensions = ko.observable(dimensions);
-        self.dependent_ids = ko.observableArray(dependent_ids);
-        self.parent_id = ko.observable(get_apm_obj(parent_id));
+        self.id = id;
+        self.position = position;
+        self.dimensions = dimensions;
+        self.dependent_ids = dependent_ids;
         self.set_parent_id(parent_id);
-        self.player_moving_index = ko.observable(-1);
+        self.player_moving_index = -1;
         self.display_name = display_name;
-        self.is_face_up = ko.observable(true);
-        self.depth = ko.observable(0);
-        self.type = ko.observable("");
-        self.privacy = ko.observable(-1); //Index of player it is privately visible, -1 for public
-        self.front_image_url = ko.observable(false);
-        self.front_image_style = ko.observable("100% 100%");
-        self.back_image_url = ko.observable('/static/images/freeplay/red_back.png');
-        self.back_image_style = ko.observable("100% 100%");
-        self.stack_group = ko.observable("");
-        self.dfuo = ko.observableArray();
-        self.dfdo = ko.observableArray();
-        self.move_confirmed_by_server = false;
+        self.is_face_up = true;
+        self.depth = 0;
+        self.type = "";
+        self.privacy = -1; //Index of player it is privately visible, -1 for public
+        self.front_image_url = false;
+        self.front_image_style = "100% 100%";
+        self.back_image_url = '/static/images/freeplay/red_back.png';
+        self.back_image_style = "100% 100%";
+        self.stack_group = "";
+        self.dfuo = [];
+        self.dfdo = [];
         self.html_elem = false;
 
         // Drop time works like this:
@@ -114,13 +112,13 @@ $( document ).ready(function () {
     }
     TableMovable.prototype.full_display_name = function () {
         var text = this.display_name;
-        var l = this.dependent_ids().length;
+        var l = this.dependent_ids.length;
         if (l > 0)
             text += " ("+l+")";
         return text;
     };
     TableMovable.prototype.dimension_offset = function () {
-        if (this.type() == 'Deck') {
+        if (this.type == 'Deck') {
             return [25, 45];
         }
         // Otherwise
@@ -128,22 +126,22 @@ $( document ).ready(function () {
     };
 
     TableMovable.prototype.offset_per_dependent = function () {
-        if (this.dependent_ids().length === 0) {
+        if (this.dependent_ids.length === 0) {
             return;
         }
-        var first_dep = get_apm_obj(this.dependent_ids()[0]);
+        var first_dep = get_apm_obj(this.dependent_ids[0]);
         if (! first_dep) {
             return;
         }
         var result;
-        if (first_dep.is_face_up()) {
-            result = first_dep.dfuo();
+        if (first_dep.is_face_up) {
+            result = first_dep.dfuo;
         } else {
-            result = first_dep.dfdo();
+            result = first_dep.dfdo;
         }
         if (!(result instanceof Array)) {
             // Result is actually a dict
-            if (first_dep.privacy() === -1)
+            if (first_dep.privacy === -1)
                 result = result['public'];
             else
                 result = result['private'];
@@ -152,19 +150,19 @@ $( document ).ready(function () {
     };
 
     TableMovable.prototype.get_index_in_parent = function () {
-        var p = get_apm_obj(this.parent_id());
+        var p = get_apm_obj(this.parent_id);
         if (! p)
             return 0;
-        var i = p.dependent_ids().indexOf( this.id() );
+        var i = p.dependent_ids.indexOf( this.id );
         return Math.max(0, i);
     };
 
     TableMovable.prototype.position_offset = function () {
-        if (this.type() == 'Deck') {
+        if (this.type == 'Deck') {
             return [-10, -27];
-        } else if (this.type() == 'Card' && this.parent_id()) {
+        } else if (this.type == 'Card' && this.parent_id) {
             var i = this.get_index_in_parent();
-            var p = get_apm_obj(this.parent_id());
+            var p = get_apm_obj(this.parent_id);
             var opd = [0.5, 0.5];
             if (p && p.offset_per_dependent()) {
                 opd = p.offset_per_dependent().slice();
@@ -178,10 +176,10 @@ $( document ).ready(function () {
     };
 
     TableMovable.prototype.get_stack_group = function () {
-        if (this.stack_group()) {
-            return this.stack_group()
-        } else if (this.dependent_ids().length) {
-            return get_apm_obj(this.dependent_ids()[0]).stack_group();
+        if (this.stack_group) {
+            return this.stack_group
+        } else if (this.dependent_ids.length) {
+            return get_apm_obj(this.dependent_ids[0]).stack_group;
         }
         return false;
     }
@@ -197,15 +195,15 @@ $( document ).ready(function () {
         if (! this.html_elem || this.html_elem.closest('body').length == 0)
             this.html_elem = $('#'+this.id());
         // Make the dimensions of a containing parent big enough to encompass its deps
-        var width = this.dimensions()[0];
-        var height = this.dimensions()[1];
-        if (this.type() == "Deck" && this.dependent_ids().length) {
+        var width = this.dimensions[0];
+        var height = this.dimensions[1];
+        if (this.type == "Deck" && this.dependent_ids.length) {
             var maxw = width; var maxh = height;
-            this.dependent_ids().forEach(function (dep_id) {
+            this.dependent_ids.forEach(function (dep_id) {
                 var apm_dep = get_apm_obj(dep_id);
                 if (apm_dep) {
-                    maxw = Math.max(maxw, apm_dep.position_offset()[0] + apm_dep.dimensions()[0]);
-                    maxh = Math.max(maxh, apm_dep.position_offset()[1] + apm_dep.dimensions()[1]);
+                    maxw = Math.max(maxw, apm_dep.position_offset()[0] + apm_dep.dimensions[0]);
+                    maxh = Math.max(maxh, apm_dep.position_offset()[1] + apm_dep.dimensions[1]);
                 }
             });
             width = maxw;
@@ -215,11 +213,11 @@ $( document ).ready(function () {
         height += this.dimension_offset()[1];
 
         this.html_elem.css({
-            "z-index": this.depth()
+            "z-index": this.depth
         });
         var css_obj = {
-            "left":this.position()[0]+this.position_offset()[0],
-            "top": this.position()[1]+this.position_offset()[1],
+            "left":this.position[0]+this.position_offset()[0],
+            "top": this.position[1]+this.position_offset()[1],
             "min-width": width,
             "height": height
         };
@@ -239,40 +237,40 @@ $( document ).ready(function () {
     };
 
     TableMovable.prototype.sync_image = function () {
-        if (this.is_face_up()) {
+        if (this.is_face_up) {
             this.html_elem.removeClass( 'back' );
             // If the card has an image, show it
-            if (this.front_image_url()) {
+            if (this.front_image_url) {
                 this.html_elem.css({
-                    'background-image': "url("+this.front_image_url()+")",
-                    'background-size': this.front_image_style()
+                    'background-image': "url("+this.front_image_url+")",
+                    'background-size': this.front_image_style
                 });
             }
         } else {
             this.html_elem.addClass( 'back' );
-            if (this.back_image_url()) {
+            if (this.back_image_url) {
                 this.html_elem.css({
-                    'background-image': "url("+this.back_image_url()+")",
-                    'background-size': this.back_image_style()
+                    'background-image': "url("+this.back_image_url+")",
+                    'background-size': this.back_image_style
                 });
             }
         }
     };
     TableMovable.prototype.change_privacy = function (privacy_index) {
-        if (privacy_index === this.privacy())
+        if (privacy_index === this.privacy)
             return;
-        this.privacy(privacy_index);
+        this.privacy = privacy_index;
         var new_container;
         if (privacy_index == -1)
             new_container = public_movables;
         else if (privacy_index == template_player_index)
             new_container = my_private_movables;
-        console.log(new_container);
-        if (new_container)
+        if (new_container) {
             this.html_elem = this.html_elem.detach().appendTo(new_container);
+        }
 
         // If it is changing to a state visible to this user, it will need to have its position updated quick
-        if ( [-1, template_player_index].includes(this.privacy()) ) {
+        if ( [-1, template_player_index].includes(this.privacy) ) {
             this.sync_position(0);
         }
     };
@@ -291,7 +289,7 @@ $( document ).ready(function () {
         var html_pos = html_obj.position();
         if (!should_hide && html_pos) {
             var position_type = 'absolute';
-            if (apm_obj.privacy() !== -1) {
+            if (apm_obj.privacy !== -1) {
                 position_type = 'fixed';
                 // Since it's private, get the position relative to the screen
                 html_pos = html_obj.offset();
@@ -299,7 +297,7 @@ $( document ).ready(function () {
                 html_pos.left -= jwindow.scrollLeft();
             }
             // Put in or take out the deck specific controls
-            if (apm_obj.type() == "Deck") {
+            if (apm_obj.type == "Deck") {
                 action_button_panel.prepend(action_button_br);
                 action_button_panel.prepend(deal_button);
                 action_button_panel.prepend(deal_spinner_parent);
@@ -328,18 +326,18 @@ $( document ).ready(function () {
 
     // Careful, it places this on top of the pid stack
     TableMovable.prototype.set_parent_id = function (pid) {
-        if (this.parent_id() === pid)
+        if (this.parent_id === pid)
             return;
         // Remove from old parent dependents if possible
-        var obj_old_parent = get_apm_obj( this.parent_id() );
+        var obj_old_parent = get_apm_obj( this.parent_id );
         if (obj_old_parent) {
             var array = obj_old_parent.dependent_ids;
-            var index = $.inArray(this.id(), array());
+            var index = $.inArray(this.id, array);
             if (index >= 0)
                 array.splice( index, 1);
         }
         // Set new parent
-        this.parent_id( pid );
+        this.parent_id = pid;
         if (pid === false || pid === undefined) {
             // Don't need to do anything
         } else {
@@ -350,8 +348,8 @@ $( document ).ready(function () {
                 obj_parent = createBasicTableMovable(pid);
             }
             // Add this to its dependents
-            if (! obj_parent.dependent_ids().includes(this.id()) )
-                obj_parent.dependent_ids.push(this.id());
+            if (! obj_parent.dependent_ids.includes(this.id) )
+                obj_parent.dependent_ids.push(this.id);
         }
         this.set_droppability();
     };
@@ -361,8 +359,8 @@ $( document ).ready(function () {
     TableMovable.prototype.set_droppability = function () {
         // If the html_elem doesn't exist or is outdated (like from a private/public switch)
         if (! this.html_elem || this.html_elem.closest('body').length == 0)
-            this.html_elem = $('#'+this.id());
-        if ( this.parent_id() === false || this.parent_id() === undefined ) {
+            this.html_elem = $('#'+this.id);
+        if ( this.parent_id === false || this.parent_id === undefined ) {
             this.html_elem.droppable(droppable_settings);
         } else {
             try {
@@ -383,7 +381,7 @@ $( document ).ready(function () {
         self.private_movables = {};
         self.private_card_count = function (player_index) {
             var filtered = Object.keys(self.private_movables).reduce(function (filtered, key) {
-                    if (self.private_movables[key].privacy() == player_index)
+                    if (self.private_movables[key].privacy == player_index)
                         filtered[key] = self.private_movables[key];
                     return filtered;
             }, {});
@@ -446,7 +444,7 @@ $( document ).ready(function () {
         // Add it to the html
         public_movables.append('<div id="'+id+'" class="deck droppable noselect ui-widget-content"><span class="display-name"></span></div>');
         // Give it its html_elem
-        apm_obj.html_elem = $( '#'+apm_obj.id() );
+        apm_obj.html_elem = $( '#'+apm_obj.id );
         // Make it draggable and droppable
         apm_obj.html_elem.draggable(draggable_settings);
         apm_obj.html_elem.droppable(droppable_settings);
@@ -474,14 +472,14 @@ $( document ).ready(function () {
                 // This will prevent a click event being triggered at drop time
                 socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
                 var apm_obj = get_apm_obj(elem.target.id);
-                html_elem.css({'z-index':get_dragging_depth()});
+                html_elem.css({'z-index':get_dragging_depth});
                 currently_dragging = apm_obj;
                 // Start all of the dependents dragging as well
-                apm_obj.dependent_ids().forEach(function (d_id) {
+                apm_obj.dependent_ids.forEach(function (d_id) {
                     var apm_dep = get_apm_obj(d_id);
                     if (! apm_dep)
                         return;
-                    apm_dep.depth(get_dragging_depth());
+                    apm_dep.depth = get_dragging_depth;
                     apm_dep.sync_position(0);
                 });
                 // Remove this object from its parents
@@ -490,8 +488,8 @@ $( document ).ready(function () {
                 sync_action_buttons(true);
                 // If the action buttons are on another element, switch them to this element
                 var follow_id = apm.show_action_buttons_for_id();
-                if (follow_id && follow_id !== apm_obj.id()) {
-                    apm.show_action_buttons_for_id(apm_obj.id());
+                if (follow_id && follow_id !== apm_obj.id) {
+                    apm.show_action_buttons_for_id(apm_obj.id);
                 }
             },
             drag: function (elem) {
@@ -500,13 +498,13 @@ $( document ).ready(function () {
                 var pos = get_position_array_from_html_pos(html_elem.position());
                 pos[0] -= apm_obj.position_offset()[0];
                 pos[1] -= apm_obj.position_offset()[1];
-                apm_obj.position(pos);
+                apm_obj.position = pos;
                 // Move all the dependents as well
-                apm_obj.dependent_ids().forEach(function (d_id) {
+                apm_obj.dependent_ids.forEach(function (d_id) {
                     var apm_dep = get_apm_obj(d_id);
                     if (! apm_dep)
                         return;
-                    apm_dep.position(pos);
+                    apm_dep.position = pos;
                     apm_dep.sync_position(0);
                 });
                 // Only send a server update if enough time has passed since the last
@@ -525,20 +523,20 @@ $( document ).ready(function () {
                     var pos = get_position_array_from_html_pos(html_elem.position());
                     pos[0] -= apm_obj.position_offset()[0];
                     pos[1] -= apm_obj.position_offset()[1];
-                    apm_obj.depth(get_dropped_public_depth());
-                    apm_obj.position(pos);
+                    apm_obj.depth = get_dropped_public_depth();
+                    apm_obj.position = pos;
                     apm_obj.sync_position(0);
                     // Move all the dependents as well
-                    apm_obj.dependent_ids().forEach(function (d_id) {
+                    apm_obj.dependent_ids.forEach(function (d_id) {
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
                             return;
-                        apm_dep.depth(get_dropped_public_depth());
-                        apm_dep.position(pos);
+                        apm_dep.depth = get_dropped_public_depth();
+                        apm_dep.position = pos;
                         apm_dep.sync_position(0);
                     });
                     // If the object was private, we need to do a position offset
-                    if (apm_obj.privacy() !== -1) {
+                    if (apm_obj.privacy !== -1) {
                         pos[0] -= private_hand_horizontal_offset();
                         pos[1] -= private_hand_vertical_offset();
                     }
@@ -570,17 +568,17 @@ $( document ).ready(function () {
             var top_middle_y = top_html.offset().top + top_html.height()/2;
             var bottom_id = event.target.id;
             var apm_bottom = get_apm_obj(bottom_id);
-            var top_group = apm_top.get_stack_group();
-            var bottom_group = apm_bottom.get_stack_group();
+            var top_group = apm_top.get_stack_group;
+            var bottom_group = apm_bottom.get_stack_group;
             if (top_group && bottom_group && top_group != bottom_group) {
                 console.log('elems are in different stack groups, so ignoring drop');
                 return;
             }
-            if (apm_bottom.privacy() === -1 && top_middle_y > private_hand.offset().top) {
+            if (apm_bottom.privacy === -1 && top_middle_y > private_hand.offset().top) {
                 console.log('elem is below private hand line, won\'t trigger public drop');
                 return;
             }
-            if (apm_top.dependent_ids().includes(bottom_id)) {
+            if (apm_top.dependent_ids.includes(bottom_id)) {
                 console.log('You cannot drop '+top_id+' onto one of its dependents');
                 return;
             }
@@ -592,16 +590,16 @@ $( document ).ready(function () {
             time_of_drop_emit = now;
             // Line up the dropped object
             // If either is not a deck or card, ignore the drop
-            if (!['Deck', 'Card'].includes(apm_top.type()) || !['Deck', 'Card'].includes(apm_bottom.type()))
+            if (!['Deck', 'Card'].includes(apm_top.type) || !['Deck', 'Card'].includes(apm_bottom.type))
                 return;
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now;
-            apm_top.depth(get_dragging_depth());
-            apm_top.dependent_ids().forEach(function (d_id) {
+            apm_top.depth = get_dragging_depth();
+            apm_top.dependent_ids.forEach(function (d_id) {
                 var apm_dep = get_apm_obj(d_id);
                 if (! apm_dep)
                     return;
-                apm_dep.depth(get_dragging_depth());
+                apm_dep.depth = get_dragging_depth();
                 apm_dep.sync_position(0);
             });
             apm_top.sync_position();
@@ -715,28 +713,28 @@ $( document ).ready(function () {
             }
             // If the html_elem doesn't exist or is outdated (like from a private/public switch)
             if (! apm_obj.html_elem || apm_obj.html_elem.closest('body').length == 0)
-                apm_obj.html_elem = $('#'+apm_obj.id());
+                apm_obj.html_elem = $('#'+apm_obj.id);
 
             //Update its info
             if ('dependents' in obj_data) {
                 obj_data.dependents.forEach(function (did) {
                     var dep_obj = get_apm_obj(did);
                     if (dep_obj)
-                        dep_obj.set_parent_id( apm_obj.id() );
+                        dep_obj.set_parent_id(apm_obj.id);
                 });
                 // Make sure the order is right:
-                apm_obj.dependent_ids(obj_data.dependents.slice());
+                apm_obj.dependent_ids = obj_data.dependents.slice();
             }
             if ('destroy' in obj_data && obj_data.destroy == true) {
-                console.log('destroying '+apm_obj.id());
+                console.log('destroying '+apm_obj.id);
                 // Make all the dependents orphans
-                apm_obj.dependent_ids().forEach(function (did) {
+                apm_obj.dependent_ids.forEach(function (did) {
                     var dep_obj = get_apm_obj(did);
                     if (dep_obj)
                         dep_obj.set_parent_id(false);
                 });
                 // If the action buttons were attached to it, detach them
-                if (apm.show_action_buttons_for_id() == apm_obj.id()) {
+                if (apm.show_action_buttons_for_id() == apm_obj.id) {
                     apm.show_action_buttons_for_id(false);
                     sync_action_buttons();
                 }
@@ -748,17 +746,17 @@ $( document ).ready(function () {
                 return;
             }
             if ('parent' in obj_data)
-                apm_obj.set_parent_id( obj_data.parent );
+                apm_obj.set_parent_id(obj_data.parent);
             if ('stack_group' in obj_data)
-                apm_obj.stack_group(obj_data.stack_group);
+                apm_obj.stack_group = obj_data.stack_group;
             if ('player_moving_index' in obj_data) {
-                apm_obj.player_moving_index( obj_data.player_moving_index );
+                apm_obj.player_moving_index = obj_data.player_moving_index;
             }
             if ('privacy' in obj_data) {
-                if (obj_data.privacy != apm_obj.privacy())
+                if (obj_data.privacy != apm_obj.privacy)
                     position_sync_time = 0;
-                apm_obj.change_privacy(obj_data.privacy);
-                apm_obj.dependent_ids().forEach(function (did) {
+                apm_obj.change_privacy(obj_data.privacy)
+                apm_obj.dependent_ids.forEach(function (did) {
                     var dep_obj = get_apm_obj(did);
                     if (dep_obj) {
                         dep_obj.change_privacy(obj_data.privacy);
@@ -766,76 +764,75 @@ $( document ).ready(function () {
                     }
                 });
                 // The html_elem has changed
-                apm_obj.html_elem = $('#'+apm_obj.id());
+                apm_obj.html_elem = $('#'+apm_obj.id);
             }
             if ('type' in obj_data) {
-                apm_obj.type( obj_data.type );
+                apm_obj.type = obj_data.type;
                 apm_obj.html_elem.removeClass('Deck').removeClass('Card');
                 apm_obj.html_elem.addClass(obj_data.type);
             }
             if ('display_name' in obj_data) {
                 apm_obj.display_name = obj_data.display_name;
-                if (apm_obj.type() == 'Deck') {
+                if (apm_obj.type == 'Deck') {
                     var span = $( 'span.display-name', apm_obj.html_elem );
                     // Update the html
                     span.html(apm_obj.full_display_name());
-                    console.log('heresnth');
-                    console.log(apm_obj.full_display_name());
                     // Redirect clicks on the text to the parent
                     span.off('click').on('click', function () {
                         console.log('click parent');
+                        // TODO it doesn't seem to work
                         apm_obj.html_elem.trigger('click');
                     });
                 }
             }
             // Update card image
             if ('front_image_url' in obj_data) {
-                apm_obj.front_image_url( obj_data.front_image_url );
+                apm_obj.front_image_url = obj_data.front_image_url ;
             }
             if ('front_image_style' in obj_data) {
-                apm_obj.front_image_style( obj_data.front_image_style );
+                apm_obj.front_image_style = obj_data.front_image_style ;
             }
             if ('back_image_url' in obj_data) {
-                apm_obj.back_image_url( obj_data.back_image_url );
+                apm_obj.back_image_url = obj_data.back_image_url;
             }
             if ('back_image_style' in obj_data) {
-                apm_obj.back_image_style( obj_data.back_image_style );
+                apm_obj.back_image_style = obj_data.back_image_style;
             }
             if ('default_face_up_offset' in obj_data) {
-                apm_obj.dfuo( obj_data.default_face_up_offset );
+                apm_obj.dfuo = obj_data.default_face_up_offset ;
             }
             if ('default_face_down_offset' in obj_data) {
-                apm_obj.dfdo( obj_data.default_face_down_offset );
+                apm_obj.dfdo = obj_data.default_face_down_offset;
             }
             if ('is_face_up' in obj_data) {
-                apm_obj.is_face_up( obj_data.is_face_up );
+                apm_obj.is_face_up = obj_data.is_face_up;
             }
             // Sync card image changes
             apm_obj.sync_image();
 
-            if (apm_obj.player_moving_index() !== template_player_index && apm_obj !== currently_dragging) {
+            if (apm_obj.player_moving_index !== template_player_index && apm_obj !== currently_dragging) {
                 if ('depth' in obj_data) {
-                    apm_obj.depth( obj_data.depth );
+                    apm_obj.depth = obj_data.depth;
                     should_sync_position = true;
                 }
                 if ('position' in obj_data) {
-                    apm_obj.position( obj_data.position );
+                    apm_obj.position = obj_data.position;
                     should_sync_position = true;
                 }
                 if ('dimensions' in obj_data) {
-                    apm_obj.dimensions( obj_data.dimensions.slice() );
+                    apm_obj.dimensions = obj_data.dimensions.slice();
                     should_sync_position = true;
                 }
                 // Make changes to position visible in html
                 if (should_sync_position) {
-                    var moving = apm_obj.player_moving_index() > -1;
+                    var moving = apm_obj.player_moving_index > -1;
                     apm_obj.sync_position(position_sync_time);
-                    apm_obj.dependent_ids().forEach(function (d_id) {
+                    apm_obj.dependent_ids.forEach(function (d_id) {
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
                             return;
-                        apm_dep.depth(moving ? get_dragging_depth() : get_dropped_public_depth());
-                        apm_dep.position(apm_obj.position());
+                        apm_dep.depth = moving ? get_dragging_depth() : get_dropped_public_depth();
+                        apm_dep.position = apm_obj.position;
                         apm_dep.sync_position(position_sync_time);
                     });
                 }
@@ -877,8 +874,8 @@ $( document ).ready(function () {
         var id = apm.show_action_buttons_for_id();
         if (id) {
             var apm_obj = get_apm_obj(id);
-            var obj_string = apm_obj.type().toLowerCase();
-            var deps = apm_obj.dependent_ids().length;
+            var obj_string = apm_obj.type.toLowerCase();
+            var deps = apm_obj.dependent_ids.length;
             if (deps > 0)
                 obj_string += ' and '+deps+' other object';
             if (deps > 1)
@@ -924,13 +921,12 @@ $( document ).ready(function () {
 
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now;
-            //apm_top.position( apm_bottom.position() );
-            apm_top.depth(get_dropped_public_depth());
+            apm_top.depth = get_dropped_public_depth();
             // Move the action buttons
             sync_action_buttons();
             var private_pos = get_position_array_from_html_pos(apm_top.html_elem.position());
             // If the object was public, we need to do a position offset
-            if (apm_top.privacy() === -1) {
+            if (apm_top.privacy === -1) {
                 private_pos[0] += private_hand_horizontal_offset();
                 private_pos[1] += private_hand_vertical_offset();
             }
@@ -938,7 +934,7 @@ $( document ).ready(function () {
             private_pos[1] -= apm_top.position_offset()[1];
             socket.emit('STOP MOVE', {
                 gameid:template_gameid,
-                obj_id:apm_top.id(),
+                obj_id:apm_top.id,
                 position:private_pos,
                 privacy:template_player_index
             });
