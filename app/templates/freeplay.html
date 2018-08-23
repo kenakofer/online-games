@@ -43,14 +43,6 @@
 {% block content %}
     <h1>Free Play</h1>
     <div id="public-movables"></div>
-    <!--
-    <div data-bind="foreach: public_movables">
-        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
-            <span data-bind="if: type()!='Card'">
-                <span data-bind="text: full_display_name()"></span>
-            </span>
-        </div>
-    </div> -->
     <div id="action-button-panel"><!--
         --><input id="deal-spinner" class='two-digit-action-spinner' title="How many cards to deal" value=5></input><!--
         --><button id="deal-button" title="Deal out cards" class='action-button'>{% include "svgicons/deal.svg" %}</button><br id="action-button-br"><!--
@@ -63,17 +55,10 @@
 
 {% block footer %}
 <div id="private-hand" class='resizable'>
-    <div id='other-players-info' data-bind="html: other_players_info_text()"></div>
+    <div id='other-players-info'></div>
     <div id='handle' class="ui-resizable-handle ui-resizable-n"></div>
-    <div id='private-label' data-bind="text: private_hand_label_text()"></div>
+    <div id='private-label'></div>
     <div id="my-private-movables"></div>
-    <!--<div data-bind="foreach: my_private_movables">
-        <div data-bind="attr:{'class':'deck droppable noselect ui-widget-content', id:id}, css: type">
-            <span data-bind="if: type()!='Card'">
-                <span data-bind="text: full_display_name()"></span>
-            </span>
-        </div>
-    </div> -->
     <div id='chat-window' class='ui-widget-content'>
         <ul>
             <li><a href="#message-tab">Messages</a></li>
@@ -81,7 +66,7 @@
         </ul>
         <div id="message-tab">
             <div id='message-box'></div>
-            <div data-bind="foreach: quick_messages"><button data-bind="text: nocolor($data), click: function(){send_message($data)}, attr: {class: 'quick-message-button'}, css: get_color_class($data)"></button></div>
+            <div id='quick-messages'></div>
             <input type="text" id="custom-text" placeholder="Type here, then press Enter to send"/>
         </div>
         <div id="instructions-tab">

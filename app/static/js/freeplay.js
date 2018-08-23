@@ -193,7 +193,7 @@ $( document ).ready(function () {
         }
         // If the html_elem doesn't exist or is outdated (like from a private/public switch)
         if (! this.html_elem || this.html_elem.closest('body').length == 0)
-            this.html_elem = $('#'+this.id());
+            this.html_elem = $('#'+this.id);
         // Make the dimensions of a containing parent big enough to encompass its deps
         var width = this.dimensions[0];
         var height = this.dimensions[1];
@@ -261,12 +261,13 @@ $( document ).ready(function () {
             return;
         this.privacy = privacy_index;
         var new_container;
+        this.html_elem.detach();
         if (privacy_index == -1)
             new_container = public_movables;
         else if (privacy_index == template_player_index)
             new_container = my_private_movables;
         if (new_container) {
-            this.html_elem = this.html_elem.detach().appendTo(new_container);
+            this.html_elem = this.html_elem.appendTo(new_container);
         }
 
         // If it is changing to a state visible to this user, it will need to have its position updated quick
@@ -284,8 +285,8 @@ $( document ).ready(function () {
 
     var sync_action_buttons = function (should_hide) {
         // If the option buttons are attached to this object, move it too.
-        var html_obj = $( '#'+apm.show_action_buttons_for_id());
-        var apm_obj = get_apm_obj(apm.show_action_buttons_for_id());
+        var html_obj = $( '#'+apm.show_action_buttons_for_id);
+        var apm_obj = get_apm_obj(apm.show_action_buttons_for_id);
         var html_pos = html_obj.position();
         if (!should_hide && html_pos) {
             var position_type = 'absolute';
@@ -371,39 +372,39 @@ $( document ).ready(function () {
 
     function AppViewModel() {
         var self = this;
-        self.players = ko.observableArray([]);
-        self.quick_messages = ko.observableArray(["I win!", "Good game", "Your turn"]);
-        self.messages = ko.observableArray([]);
+        self.players = [];
+        self.quick_messages = ["I win!", "Good game", "Your turn"];
+        self.messages = [];
         //self.movables = {};
-        self.my_player_index = template_player_index;
-        self.show_action_buttons_for_id = ko.observable(false);
+        self.show_action_buttons_for_id = false;
         self.public_movables = {};
-        self.private_movables = {};
         self.private_card_count = function (player_index) {
-            var filtered = Object.keys(self.private_movables).reduce(function (filtered, key) {
-                    if (self.private_movables[key].privacy == player_index)
-                        filtered[key] = self.private_movables[key];
+            var filtered = Object.keys(self.public_movables).reduce(function (filtered, key) {
+                    if (self.public_movables[key].type !== 'Deck' && self.public_movables[key].privacy == player_index)
+                        filtered[key] = self.public_movables[key];
                     return filtered;
             }, {});
-            return filtered.length;
+            return Object.keys(filtered).length;
         };
-        self.private_hand_label_text = ko.pureComputed(function () {
+        self.set_private_hand_label_text = function () {
             var text = "Your private hand";
             var num_cards = self.private_card_count(template_player_index);
             if (num_cards > 0)
                 text += " ("+num_cards+")";
+            var elem = $('#private-label');
+            elem.html(text);
             return text;
-        });
-        self.other_players_info_text = ko.pureComputed(function () {
+        };
+        self.set_other_players_info_text = function () {
             var text = "";
             var no_one = true;
-            for (var i=0; i<self.players().length; i++) {
+            for (var i=0; i<self.players.length; i++) {
                 if (i == template_player_index)
                     continue;
                 no_one = false;
                 text += ", "; // We remove the first of these after
                 text += '<span class="player-color-'+(i%6)+'">';
-                text += self.players()[i];
+                text += self.players[i];
                 var num_cards = self.private_card_count(i);
                 text += '</span>';
                 if (num_cards > 0)
@@ -413,8 +414,10 @@ $( document ).ready(function () {
             text = "Other players: "+text;
             if (no_one)
                 text = "No one else has joined your game yet. Have you given them your url?";
+            var elem = $('#other-players-info');
+            elem.html(text);
             return text;
-        });
+        };
     }
 
     // Activates knockout.js
@@ -456,12 +459,12 @@ $( document ).ready(function () {
 
     clickable_settings =  function () {
         // If we clicked on the same one again, hide the button
-        if (apm.show_action_buttons_for_id() === this.id) {
-            apm.show_action_buttons_for_id(false);
+        if (apm.show_action_buttons_for_id === this.id) {
+            apm.show_action_buttons_for_id = false;
             sync_action_buttons();
         }
         else {
-            apm.show_action_buttons_for_id(this.id);
+            apm.show_action_buttons_for_id = this.id;
             sync_action_buttons();
         }
     };
@@ -487,9 +490,9 @@ $( document ).ready(function () {
                 // Hide action buttons for duration of drag
                 sync_action_buttons(true);
                 // If the action buttons are on another element, switch them to this element
-                var follow_id = apm.show_action_buttons_for_id();
+                var follow_id = apm.show_action_buttons_for_id;
                 if (follow_id && follow_id !== apm_obj.id) {
-                    apm.show_action_buttons_for_id(apm_obj.id);
+                    apm.show_action_buttons_for_id = apm_obj.id;
                 }
             },
             drag: function (elem) {
@@ -612,9 +615,7 @@ $( document ).ready(function () {
 
     // Knockout helper functions
     get_apm_obj = function (oid) {
-        if (oid in apm.private_movables)
-            return apm.private_movables[oid];
-        else if (oid in apm.public_movables)
+        if (oid in apm.public_movables)
             return apm.public_movables[oid];
     };
 
@@ -636,15 +637,24 @@ $( document ).ready(function () {
         const data = d;
         deepFreeze(data);
         if (data.players) {
-            apm.players(data.players.slice());
+            apm.players = data.players.slice();
         }
         // quick_messages update
         if (data.quick_messages) {
             var qms = [];
-            for (var i=0; i<apm.players().length; i++)
-                qms.push('$*'+i+'@'+apm.players()[i]);
+            for (var i=0; i<apm.players.length; i++)
+                qms.push('$*'+i+'@'+apm.players[i]);
             qms = qms.concat(data.quick_messages);
-            apm.quick_messages(qms);
+            apm.quick_messages = qms;
+            var elem = $('#quick-messages');
+            elem.empty();
+            qms.forEach(function(message) {
+                elem.append('<button class="quick-message-button '+get_color_class(message)+'" data-message="'+message+'">'+nocolor(message)+'</button>');
+            });
+            var buttons = $('.quick-message-button', elem);
+            buttons.on('click', function() {
+                send_message($(this).data('message'));
+            });
         }
         // Instructions update
         if (data.instructions_html) {
@@ -652,7 +662,7 @@ $( document ).ready(function () {
         }
         //Messages update
         if (data.messages) {
-            apm.messages(data.messages);
+            apm.messages = data.messages;
             var html_string = "";
             var last_time = 0;
             var last_player_index = -1;
@@ -672,7 +682,7 @@ $( document ).ready(function () {
                       seconds = seconds;
                     html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
                     var i = m.player_index;
-                    html_string += '<span class="message-name player-color-'+(i%6)+'">'+apm.players()[m.player_index]+':</span><br>';
+                    html_string += '<span class="message-name player-color-'+(i%6)+'">'+apm.players[m.player_index]+':</span><br>';
                 }
                 last_time = m.timestamp;
                 last_player_index = m.player_index;
@@ -734,15 +744,14 @@ $( document ).ready(function () {
                         dep_obj.set_parent_id(false);
                 });
                 // If the action buttons were attached to it, detach them
-                if (apm.show_action_buttons_for_id() == apm_obj.id) {
-                    apm.show_action_buttons_for_id(false);
+                if (apm.show_action_buttons_for_id == apm_obj.id) {
+                    apm.show_action_buttons_for_id = false;
                     sync_action_buttons();
                 }
                 // Remove from html
                 apm_obj.html_elem.remove();
                 // Remove from the movables array
                 delete apm.public_movables[obj_data.id];
-                delete apm.private_movables[obj_data.id];
                 return;
             }
             if ('parent' in obj_data)
@@ -809,6 +818,9 @@ $( document ).ready(function () {
             }
             // Sync card image changes
             apm_obj.sync_image();
+            // Update info text
+            apm.set_other_players_info_text();
+            apm.set_private_hand_label_text();
 
             if (apm_obj.player_moving_index !== template_player_index && apm_obj !== currently_dragging) {
                 if ('depth' in obj_data) {
@@ -860,18 +872,21 @@ $( document ).ready(function () {
     var public_movables = $('#public-movables');
     var my_private_movables = $('#my-private-movables');
 
+    apm.set_other_players_info_text();
+    apm.set_private_hand_label_text();
+
     deal_spinner.spinner({min:1, max:20, step:1});
     var deal_spinner_parent = deal_spinner.parent();
     deal_button.click(function () {
-        var id = apm.show_action_buttons_for_id();
-        var which_face = "same face"; 
+        var id = apm.show_action_buttons_for_id;
+        var which_face = "same face";
         var how_many = deal_spinner[0].value || 1;
         if (id) {
             socket.emit('DEAL', {gameid:template_gameid, obj_id:id, which_face:which_face, how_many:how_many});
         }
     });
     destroy_button.click(function () {
-        var id = apm.show_action_buttons_for_id();
+        var id = apm.show_action_buttons_for_id;
         if (id) {
             var apm_obj = get_apm_obj(id);
             var obj_string = apm_obj.type.toLowerCase();
@@ -886,19 +901,19 @@ $( document ).ready(function () {
         }
     });
     flip_button.click(function () {
-        var id = apm.show_action_buttons_for_id();
+        var id = apm.show_action_buttons_for_id;
         if (id) {
             socket.emit('FLIP', {gameid:template_gameid, obj_id:id});
         }
     });
     shuffle_button.click(function () {
-        var id = apm.show_action_buttons_for_id();
+        var id = apm.show_action_buttons_for_id;
         if (id) {
             socket.emit('SHUFFLE', {gameid:template_gameid, obj_id:id});
         }
     });
     sort_button.click(function () {
-        var id = apm.show_action_buttons_for_id();
+        var id = apm.show_action_buttons_for_id;
         if (id) {
             socket.emit('SORT', {gameid:template_gameid, obj_id:id});
         }
@@ -907,7 +922,7 @@ $( document ).ready(function () {
      content.on('click', function (e) {
         if (e.target !== this)
             return;
-        apm.show_action_buttons_for_id(false);
+        apm.show_action_buttons_for_id = false;
         sync_action_buttons();
     });
     private_hand.droppable({
