@@ -420,10 +420,7 @@ $( document ).ready(function () {
         };
     }
 
-    // Activates knockout.js
-    ko.options.deferUpdates = true;
     apm = new AppViewModel();
-    ko.applyBindings(apm);
     var time_of_drag_emit = 0;
     var currently_dragging = false;
     var time_of_drop_emit = 0;
@@ -458,6 +455,7 @@ $( document ).ready(function () {
     }
 
     clickable_settings =  function () {
+        console.log('clickable_settings');
         // If we clicked on the same one again, hide the button
         if (apm.show_action_buttons_for_id === this.id) {
             apm.show_action_buttons_for_id = false;
@@ -613,7 +611,6 @@ $( document ).ready(function () {
         }
     };
 
-    // Knockout helper functions
     get_apm_obj = function (oid) {
         if (oid in apm.public_movables)
             return apm.public_movables[oid];
@@ -786,12 +783,6 @@ $( document ).ready(function () {
                     var span = $( 'span.display-name', apm_obj.html_elem );
                     // Update the html
                     span.html(apm_obj.full_display_name());
-                    // Redirect clicks on the text to the parent
-                    span.off('click').on('click', function () {
-                        console.log('click parent');
-                        // TODO it doesn't seem to work
-                        apm_obj.html_elem.trigger('click');
-                    });
                 }
             }
             // Update card image
