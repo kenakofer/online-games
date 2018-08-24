@@ -50,14 +50,13 @@ class TableMovable:
 
 
 
-    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", is_face_up=True):
+    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name=""):
         self.id = id
         self.sort_index = game.get_sort_index()
         self.game = game
         self.position = position
         self.dimensions = dimensions
         self.dependents = dependents or []
-        self.is_face_up = is_face_up
         self.parent = parent
         if self.parent:
             self.parent.dependents.append(self)
@@ -133,7 +132,6 @@ class TableMovable:
                 "dimensions":           o.dimensions,
                 "depth":                o.depth,
                 "parent":               False if not o.parent else str(o.parent.id),
-                "is_face_up":           o.is_face_up,
                 "privacy":              o.privacy,
             } for o in objects]}
         #with app.test_request_context('/'):
@@ -173,7 +171,6 @@ class TableMovable:
             "display_name":         self.display_name,
             "depth":                self.depth,
             "type":                 self.__class__.__name__,
-            "is_face_up":           self.is_face_up,
             "privacy":              self.privacy, 
             }
         return d
@@ -220,7 +217,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, front_image_url, back_image_url='/static/images/freeplay/red_back.png', front_image_style="100% 100%", back_image_style="initial", alt_text="", dims=[-1,-1], is_face_up=True, dfuo=None, dfdo=None, stack_group=None):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -233,13 +230,10 @@ class Card(TableMovable):
                 dependents=[],
                 parent=deck,
                 display_name=alt_text,
-                is_face_up=is_face_up
                 )
         self.stack_group = stack_group or deck.display_name
-        self.front_image_url = front_image_url
-        self.front_image_style = front_image_style
-        self.back_image_url = back_image_url
-        self.back_image_style = back_image_style
+        self.images = images
+        self.current_image = current_image
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
         game.cards[self.id] = self
@@ -270,7 +264,7 @@ class Card(TableMovable):
             self.parent = other
             other.dependents.insert(0,self)
             for d in other.dependents:
-                d.is_face_up = self.is_face_up
+                d.current_image = self.current_image
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -282,7 +276,7 @@ class Card(TableMovable):
             print("Dropping single Card on single Card...")
             new_deck = Deck(self.game, self.position, self.dimensions, cards=[self, other], text="")
             new_deck.privacy = self.privacy
-            other.is_face_up = self.is_face_up
+            other.current_image = self.current_image
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -291,28 +285,27 @@ class Card(TableMovable):
             self.game.send_update(which_movables = [self, other, new_deck], messages = False)
 
     def flip(self, no_update=False):
-        self.is_face_up = not self.is_face_up
-        if not no_update:
-            self.game.thread_lock.acquire()
-            data = {
-                "movables_info":[{
-                    "id":self.id,
-                    "is_face_up":self.is_face_up,
-                    }]
-                }
-            with app.test_request_context('/'):
-                socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
-            self.game.thread_lock.release()
+        if (len(self.images) == 2):
+            self.current_image = 0 if self.current_image == 1 else 1
+            if not no_update:
+                self.game.thread_lock.acquire()
+                data = {
+                    "movables_info":[{
+                        "id":self.id,
+                        "current_image":self.current_image,
+                        }]
+                    }
+                with app.test_request_context('/'):
+                    socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+                self.game.thread_lock.release()
 
     def get_info(self):
-        info = super().get_info()
-        info['front_image_url'] = self.front_image_url
-        info['front_image_style'] = self.front_image_style
-        info['back_image_url'] = self.back_image_url
-        info['back_image_style'] = self.back_image_style
-        info['default_face_up_offset'] = self.dfuo
-        info['default_face_down_offset'] = self.dfdo
-        info['stack_group'] = self.stack_group
+        info                              =  super().get_info()
+        info['images']                    =  self.images
+        info['current_image']             =  self.current_image
+        info['default_face_up_offset']    =  self.dfuo
+        info['default_face_down_offset']  =  self.dfdo
+        info['stack_group']               =  self.stack_group
         return info
 
 class Deck(TableMovable):
@@ -365,7 +358,7 @@ class Deck(TableMovable):
             while len(other.dependents) > 0:
                 card = other.dependents.pop(0)
                 self.dependents.append(card)
-                card.is_face_up = self.dependents[0].is_face_up
+                card.current_image = self.dependents[0].current_image
                 card.parent = self
             # Delete the other deck
             other.destroy()
@@ -379,7 +372,7 @@ class Deck(TableMovable):
             assert not other.parent
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
-            other.is_face_up = self.dependents[0].is_face_up
+            other.current_image = self.dependents[0].current_image
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
             self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
@@ -447,21 +440,21 @@ class Deck(TableMovable):
                 # Defaults if nothing specified
                 biu = card_data['back_image_url'] if 'back_image_url' in card_data else '/static/images/freeplay/red_back.png'
                 bis = card_data['back_image_style'] if 'back_image_style' in card_data else 'initial'
+                images = card_data['images'] if 'images' in card_data else [{'url':card_data['front_image_url'], 'style':'100% 100%'},{'url':biu, 'style':bis}]
                 at = card_data['alt_text'] if 'alt_text' in card_data else ""
                 reps = card_data['repetitions'] if 'repetitions' in card_data else 1
                 dfuo = card_data['default_face_up_offset'] if 'default_face_up_offset' in card_data else [24,0]
                 dfdo = card_data['default_face_down_offset'] if 'default_face_down_offset' in card_data else [3,2]
                 stack_group = card_data['stack_group'] if 'stack_group' in card_data else deck_name
+                current_image = card_data['current_image'] if 'current_image' in card_data else (0 if face_up else 1)
                 # Create the card
                 for i in range(reps):
                     card = Card(
                             game,
                             deck,
-                            card_data['front_image_url'],
-                            back_image_url = biu,
-                            back_image_style = bis,
+                            images,
+                            current_image,
                             alt_text = at,
-                            is_face_up = face_up,
                             dfuo = dfuo,
                             dfdo = dfdo,
                             stack_group = stack_group,
@@ -494,7 +487,7 @@ class Deck(TableMovable):
             card.stop_move(None, new_position, no_check=True, no_update=True)
             # If 'same face' keep the same direction, otherwise set face up or down
             if not which_face == "same face":
-                card.is_face_up = (which_face == 'face up')
+                card.current_image = 0 if (which_face == 'face up') else 1
         new_deck.push_to_top(moving = False)
         self.game.send_update(which_movables = [new_deck] + new_deck.dependents + [self], messages = False)
         # If the deck has 1 or fewer cards, destroy it

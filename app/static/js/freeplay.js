@@ -131,7 +131,7 @@ $( document ).ready(function () {
             return;
         }
         var result;
-        if (this.current_image === 0) {
+        if (first_dep.current_image === 0) {
             result = first_dep.dfuo;
         } else {
             result = first_dep.dfdo;
@@ -160,9 +160,9 @@ $( document ).ready(function () {
         } else if (this.type == 'Card' && this.parent_id) {
             var i = this.get_index_in_parent();
             var p = get_apm_obj(this.parent_id);
-            var opd = [0.5, 0.5];
-            if (p && p.offset_per_dependent()) {
-                opd = p.offset_per_dependent().slice();
+            var opd = p.offset_per_dependent() || [0.5, 0.5];
+            if (p && opd) {
+                opd = opd.slice();
                 opd[0] = Math.pow(Math.abs(opd[0] / 4), 2) * Math.sign(opd[0]);
                 opd[1] = Math.pow(Math.abs(opd[1] / 4), 2) * Math.sign(opd[1]);
             }
@@ -780,17 +780,8 @@ $( document ).ready(function () {
                 }
             }
             // Update card image
-            if ('front_image_url' in obj_data) {
-                apm_obj.images[0].url = obj_data.front_image_url;
-            }
-            if ('front_image_style' in obj_data) {
-                apm_obj.images[0].style = obj_data.front_image_style;
-            }
-            if ('back_image_url' in obj_data) {
-                apm_obj.images[1].url = obj_data.back_image_url;
-            }
-            if ('back_image_style' in obj_data) {
-                apm_obj.images[1].style = obj_data.back_image_style;
+            if ('images' in obj_data) {
+                apm_obj.images = obj_data.images;
             }
             if ('default_face_up_offset' in obj_data) {
                 apm_obj.dfuo = obj_data.default_face_up_offset;
@@ -798,8 +789,8 @@ $( document ).ready(function () {
             if ('default_face_down_offset' in obj_data) {
                 apm_obj.dfdo = obj_data.default_face_down_offset;
             }
-            if ('is_face_up' in obj_data) {
-                apm_obj.current_image = obj_data.is_face_up ? 0 : 1;
+            if ('current_image' in obj_data) {
+                apm_obj.current_image = obj_data.current_image;
             }
             // Sync card image changes
             apm_obj.sync_image();
