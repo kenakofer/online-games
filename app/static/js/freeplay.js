@@ -84,29 +84,26 @@ $( document ).ready(function () {
 
     function TableMovable(id, position, dimensions, dependent_ids, parent_id, display_name) {
         var self = this;
-        self.id = id;
-        self.position = position;
-        self.dimensions = dimensions;
-        self.dependent_ids = dependent_ids;
-        self.set_parent_id(parent_id);
-        self.player_moving_index = -1;
-        self.display_name = display_name;
-        self.is_face_up = true;
-        self.depth = 0;
-        self.type = "";
-        self.privacy = -1; //Index of player it is privately visible, -1 for public
-        self.front_image_url = false;
-        self.front_image_style = "100% 100%";
-        self.back_image_url = '/static/images/freeplay/red_back.png';
-        self.back_image_style = "100% 100%";
-        self.stack_group = "";
-        self.dfuo = [];
-        self.dfdo = [];
-        self.html_elem = false;
+        self.id = id;                       // The id of the apm element and html element
+        self.position = position;           // The [x,y] position of the apm object to be synced with the html position
+        self.dimensions = dimensions;       // The [w,h] dimensions of the apm object to be synced with the html dimensions
+        self.dependent_ids = dependent_ids; // A list of the ids of dependent objects. This currently only means cards or dice that are in a deck
+        self.set_parent_id(parent_id);      // The children cards and dice also store a reference to their parent
+        self.player_moving_index = -1;      // The index of the player moving this object
+        self.display_name = display_name;   // The name to display. Currently only decks display the display name
+        self.depth = 0;                     // The z-index of the apm object, to be synced with the html elem
+        self.type = "";                     // One of "Deck", "Card", "Dice"
+        self.privacy = -1;                  // Index of player it is privately visible to (in the private hand of), -1 for public
+        self.images = [                     // Most cards will have a front and back side. Dice might have 6, 8, etc.
+            {},
+            {url: '/static/images/freeplay/red_back.png', style: "100% 100%"}
+        ];
+        self.current_image = -1;            // Which image is currently being displayed. Cards will have two images: front (index 0) and back (index 1). Dice will have more
+        self.stack_group = "";              // Cards and dice in the same stack group can be put into a deck with each other
+        self.dfuo = [];                     // Default face up per card offset. [public, private]
+        self.dfdo = [];                     //              down
+        self.html_elem = false;             // Store the jquery selector for this object id
 
-        // Drop time works like this:
-        // Dropping a card anywhere inhibits the stop drag event, and disallows another immediate general drop event
-        // Dropping a card in the private area inhibits the stop drag event as well, but allows the general drop event to fire
         self.drop_time = 0;
         self.has_synced_once = false;
     }
@@ -134,7 +131,7 @@ $( document ).ready(function () {
             return;
         }
         var result;
-        if (first_dep.is_face_up) {
+        if (this.current_image === 0) {
             result = first_dep.dfuo;
         } else {
             result = first_dep.dfdo;
@@ -237,24 +234,21 @@ $( document ).ready(function () {
     };
 
     TableMovable.prototype.sync_image = function () {
-        if (this.is_face_up) {
-            this.html_elem.removeClass( 'back' );
-            // If the card has an image, show it
-            if (this.front_image_url) {
-                this.html_elem.css({
-                    'background-image': "url("+this.front_image_url+")",
-                    'background-size': this.front_image_style
-                });
-            }
-        } else {
-            this.html_elem.addClass( 'back' );
-            if (this.back_image_url) {
-                this.html_elem.css({
-                    'background-image': "url("+this.back_image_url+")",
-                    'background-size': this.back_image_style
-                });
-            }
+        if (this.type === "Deck")
+            return
+        if (this.current_image < 0) {
+            console.error('Card image is less than 0');
+            return;
         }
+        if (! this.images[this.current_image]) {
+            console.error('Card has no image '+this.current_image);
+            return;
+        }
+        var image = this.images[this.current_image];
+        this.html_elem.css({
+            'background-image': "url("+image['url']+")",
+            'background-size': image['style']
+        });
     };
     TableMovable.prototype.change_privacy = function (privacy_index) {
         if (privacy_index === this.privacy)
@@ -787,25 +781,25 @@ $( document ).ready(function () {
             }
             // Update card image
             if ('front_image_url' in obj_data) {
-                apm_obj.front_image_url = obj_data.front_image_url ;
+                apm_obj.images[0].url = obj_data.front_image_url;
             }
             if ('front_image_style' in obj_data) {
-                apm_obj.front_image_style = obj_data.front_image_style ;
+                apm_obj.images[0].style = obj_data.front_image_style;
             }
             if ('back_image_url' in obj_data) {
-                apm_obj.back_image_url = obj_data.back_image_url;
+                apm_obj.images[1].url = obj_data.back_image_url;
             }
             if ('back_image_style' in obj_data) {
-                apm_obj.back_image_style = obj_data.back_image_style;
+                apm_obj.images[1].style = obj_data.back_image_style;
             }
             if ('default_face_up_offset' in obj_data) {
-                apm_obj.dfuo = obj_data.default_face_up_offset ;
+                apm_obj.dfuo = obj_data.default_face_up_offset;
             }
             if ('default_face_down_offset' in obj_data) {
                 apm_obj.dfdo = obj_data.default_face_down_offset;
             }
             if ('is_face_up' in obj_data) {
-                apm_obj.is_face_up = obj_data.is_face_up;
+                apm_obj.current_image = obj_data.is_face_up ? 0 : 1;
             }
             // Sync card image changes
             apm_obj.sync_image();
