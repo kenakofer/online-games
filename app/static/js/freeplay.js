@@ -120,7 +120,7 @@ $( document ).ready(function () {
     };
     TableMovable.prototype.dimension_offset = function () {
         if (this.type == 'Deck') {
-            return [25, 45];
+            return [15, 36];
         }
         // Otherwise
         return [0, 0];
@@ -161,7 +161,7 @@ $( document ).ready(function () {
     TableMovable.prototype.position_offset = function () {
         if (this.type == 'Deck') {
             return [-10, -27];
-        } else if (this.type == 'Card' && this.parent_id) {
+        } else if (['Card', 'Dice'].includes(this.type) && this.parent_id) {
             var i = this.get_index_in_parent();
             var p = get_apm_obj(this.parent_id);
             var opd = p.offset_per_dependent() || [0.5, 0.5];
@@ -314,13 +314,15 @@ $( document ).ready(function () {
 
                 // If it's a deck of cards, put shuffle/flip/sort button, if it's dice put roll button
                 var first_dep = get_apm_obj(apm_obj.dependent_ids[0]);
-                if (first_dep.type === 'Dice') {
-                    action_button_panel.append(roll_button);
-                } else {
-                    action_button_panel.append(flip_button);
-                    action_button_panel.append(shuffle_button);
-                    action_button_panel.append(sort_button);
-                    action_button_panel.append(sort_button);
+                if (first_dep) {
+                    if (first_dep.type === 'Dice') {
+                        action_button_panel.append(roll_button);
+                    } else {
+                        action_button_panel.append(flip_button);
+                        action_button_panel.append(shuffle_button);
+                        action_button_panel.append(sort_button);
+                        action_button_panel.append(sort_button);
+                    }
                 }
 
             } else if (apm_obj.type == "Card") {
@@ -462,13 +464,18 @@ $( document ).ready(function () {
         dropped_public_z += 1;
         return dropped_public_z;
     };
+    var dropped_private_z = 500000001;
+    var get_dropped_private_depth = function () {
+        dropped_private_z += 1;
+        return dropped_private_z;
+    };
 
     function createBasicTableMovable(id) {
         var apm_obj = new TableMovable(id, [0, 0], [0, 0], [], false, undefined);
         // Add it to the public list
         apm.public_movables[id] = apm_obj;
         // Add it to the html
-        public_movables.append('<div id="'+id+'" class="deck droppable noselect ui-widget-content"><span class="display-name"></span></div>');
+        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span></div>');
         // Give it its html_elem
         apm_obj.html_elem = $( '#'+apm_obj.id );
         // Make it draggable and droppable
@@ -588,7 +595,7 @@ $( document ).ready(function () {
             "ui-droppable-hover": "ui-state-hover"
         },
         accept: function (el) {
-            return el.hasClass('Card') || el.hasClass('Deck');
+            return el.hasClass('Card') || el.hasClass('Deck') || el.hasClass("Dice");
         },
         drop: function ( event, ui ) {
             var now = new Date().getTime();
@@ -620,7 +627,7 @@ $( document ).ready(function () {
             time_of_drop_emit = now;
             // Line up the dropped object
             // If either is not a deck or card, ignore the drop
-            if (!['Deck', 'Card'].includes(apm_top.type) || !['Deck', 'Card'].includes(apm_bottom.type))
+            if (!['Deck', 'Card', 'Dice'].includes(apm_top.type) || !['Deck', 'Card', 'Dice'].includes(apm_bottom.type))
                 return;
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now;
@@ -803,7 +810,7 @@ $( document ).ready(function () {
             }
             if ('type' in obj_data) {
                 apm_obj.type = obj_data.type;
-                apm_obj.html_elem.removeClass('Deck').removeClass('Card');
+                apm_obj.html_elem.removeClass('Deck').removeClass('Card').removeClass('Dice');
                 apm_obj.html_elem.addClass(obj_data.type);
             }
             if ('display_name' in obj_data) {
@@ -850,7 +857,7 @@ $( document ).ready(function () {
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
                             return;
-                        apm_dep.depth = moving ? get_dragging_depth() : get_dropped_public_depth();
+                        apm_dep.depth = moving ? get_dragging_depth() : (apm_obj.privacy == -1 ? get_dropped_public_depth() : get_dropped_private_depth());
                         apm_dep.position = apm_obj.position;
                         apm_dep.sync_position(position_sync_time);
                     });
@@ -908,6 +915,12 @@ $( document ).ready(function () {
                 socket.emit('DESTROY', {gameid:template_gameid, obj_id:id});
         }
     });
+    roll_button.click(function () {
+        var id = apm.show_action_buttons_for_id;
+        if (id) {
+            socket.emit('ROLL', {gameid:template_gameid, obj_id:id});
+        }
+    });
     flip_button.click(function () {
         var id = apm.show_action_buttons_for_id;
         if (id) {
@@ -935,7 +948,7 @@ $( document ).ready(function () {
     });
     private_hand.droppable({
         accept: function (el) {
-            return el.hasClass('Card') || el.hasClass('Deck');
+            return el.hasClass('Card') || el.hasClass('Deck') || el.hasClass('Dice');
         },
         drop: function ( elem, ui ) {
             var top_id = ui.draggable.context.id;

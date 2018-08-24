@@ -3,9 +3,7 @@
     --cardinnerborderdark: 3px solid black;
 }
 
-/*body{ color: white; background: #583; }*/
-.ui-widget-content.deck {
-    background: #8B6;
+.ui-widget-content.table-movable {
     color: #DFA;
     border-radius: 6px;
     border: 2px solid #474;
@@ -13,12 +11,15 @@
     height: 125px;
     position: absolute;
     z-index: 0;
-    padding-left: 5px;
     transition: box-shadow 0.3s;
-    padding-top: 3px;
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
     white-space: nowrap;
+}
+.ui-widget-content.Deck {
+    background: #8B6;
+    padding-top: 3px;
+    padding-left: 5px;
 }
 
 #action-button-panel {
@@ -123,19 +124,14 @@ span.ui-selectmenu-text {
     display: inline-block;
     border: 2px solid #565;
     text-align: left;
-    /*height: 75px;
-    width: 69px;*/
     margin: 0px;
     background: white;
-    /* Add shadows to create the "card" effect */
-    /* box-shadow: 0 4px 8px 0 rgba(0,0,0,0.5); */
     transition: box-shadow 0.3s;
     position: absolute;
     transform: scale(1);
     transform-origin: top left;
     float: left;
     color: #555;
-    /*padding: 10px 0 0 10px;*/
     font-size: 35px;
     font-weight: bold;
 }

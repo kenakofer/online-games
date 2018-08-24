@@ -1,0 +1,229 @@
+{
+    "quick_messages":[
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "Suit?",
+        "Number?",
+        "Got any...",
+        "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A",
+        "\u2660", "\u2663", "$*3\u2666", "$*3\u2665",
+        "Yes", "No",
+        "I win!",
+        "Good game",
+        "Rematch?"
+    ],
+    "all_cards": {
+        "default_face_up_offset": {
+            "public":[3,2],
+            "private":[20,0]
+        },
+        "default_face_down_offset":[3,2],
+        "back_image_url":"/static/images/freeplay/red_back.png",
+        "front_image_style":"100% 100%",
+        "back_image_style":"initial"
+    },
+    "decks": {
+        "dice":{
+            "width":40,
+            "height":40,
+            "current_image":3,
+            "type":"Dice",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_png/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_png/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_png/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_png/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_png/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_png/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 6
+                }
+            ]
+        },
+        "deck":{
+            "width":69,
+            "height":100,
+            "face_up":false,
+            "shuffle":true,
+            "cards":[
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-0.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-1.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-2.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-3.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-4.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-5.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-6.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-7.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-8.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-9.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-10.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-11.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-12.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-13.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-14.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-15.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-16.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-17.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-18.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-19.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-20.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-21.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-22.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-23.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-24.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-25.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-26.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-27.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-28.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-29.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-30.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-31.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-32.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-33.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-34.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-35.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-36.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-37.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-38.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-39.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-40.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-41.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-42.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-43.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-44.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-45.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-46.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-47.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-48.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-49.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-50.png"
+                },
+                {
+                    "front_image_url":"/static/images/freeplay/standard_deck/card-51.png"
+                }
+            ]
+        }
+    }
+}

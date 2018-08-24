@@ -1,8 +1,7 @@
-from random import shuffle
+from random import shuffle, random, sample, randint
 from app import app, db, socketio
 import threading
 from time import sleep, time
-from random import random, sample
 from json import load
 from collections import OrderedDict
 from markdown2 import markdown
@@ -271,7 +270,8 @@ class Card(TableMovable):
             self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
 
         # Single Card dropped onto single card
-        elif type(other) is Card:
+        #elif type(other) is Card:
+        else:
             assert not self.parent and not other.parent
             print("Dropping single Card on single Card...")
             new_deck = Deck(self.game, self.position, self.dimensions, cards=[self, other], text="")
@@ -283,6 +283,10 @@ class Card(TableMovable):
             print(self.position)
             print(other.position)
             self.game.send_update(which_movables = [self, other, new_deck], messages = False)
+
+    def roll(self, no_update=True):
+        print("Can't roll card! "+self.id)
+        return
 
     def flip(self, no_update=False):
         if (len(self.images) == 2):
@@ -307,6 +311,36 @@ class Card(TableMovable):
         info['default_face_down_offset']  =  self.dfdo
         info['stack_group']               =  self.stack_group
         return info
+
+class Dice(Card):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None):
+        dimensions = dims[:]
+        for i,c in enumerate(dimensions):
+            if c<0:
+                dimensions[i] = deck.dimensions[i]
+        TableMovable.__init__(
+            self,
+            'DICE'+str(game.get_new_id()),
+            game,
+            deck.position,
+            dimensions,
+            dependents=[],
+            parent=deck,
+            display_name=alt_text,
+            )
+        self.stack_group = stack_group or deck.display_name
+        self.images = images
+        self.current_image = current_image
+        self.dfuo = dfuo or [25,0]
+        self.dfdo = dfdo or [3,2]
+        game.cards[self.id] = self
+
+    def roll(self, no_update=False):
+        self.current_image = randint(0,len(self.images)-1)
+        if not no_update:
+            self.game.send_update(which_movables = [self], messages = False)
+        return self.current_image
+
 
 class Deck(TableMovable):
 
@@ -368,7 +402,8 @@ class Deck(TableMovable):
             self.game.send_update(which_movables = [self] + self.dependents, messages = False)
 
         # Single Card dropped onto Deck
-        elif type(other) is Card:
+        #elif type(other) is Card:
+        else:
             assert not other.parent
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
@@ -377,6 +412,12 @@ class Deck(TableMovable):
             other.stop_move(None, self.position, no_check=True, no_update=True)
             self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
 
+    def roll(self, no_update=False):
+        for d in self.dependents:
+            d.roll(no_update=True)
+        if not no_update:
+            self.game.send_update(+self.dependents, messages = False)
+            return
 
     def flip(self, no_update=False):
         for d in self.dependents:
@@ -447,18 +488,33 @@ class Deck(TableMovable):
                 dfdo = card_data['default_face_down_offset'] if 'default_face_down_offset' in card_data else [3,2]
                 stack_group = card_data['stack_group'] if 'stack_group' in card_data else deck_name
                 current_image = card_data['current_image'] if 'current_image' in card_data else (0 if face_up else 1)
-                # Create the card
-                for i in range(reps):
-                    card = Card(
-                            game,
-                            deck,
-                            images,
-                            current_image,
-                            alt_text = at,
-                            dfuo = dfuo,
-                            dfdo = dfdo,
-                            stack_group = stack_group,
-                            )
+                object_type = card_data['type'] if 'type' in card_data else "Card"
+                if (object_type == "Dice"):
+                    # Create the dice
+                    for i in range(reps):
+                        card = Dice(
+                                game,
+                                deck,
+                                images,
+                                current_image,
+                                alt_text = at,
+                                dfuo = dfuo,
+                                dfdo = dfdo,
+                                stack_group = stack_group,
+                                )
+                else:
+                    # Create the card
+                    for i in range(reps):
+                        card = Card(
+                                game,
+                                deck,
+                                images,
+                                current_image,
+                                alt_text = at,
+                                dfuo = dfuo,
+                                dfdo = dfdo,
+                                stack_group = stack_group,
+                                )
             if shuffle:
                 deck.shuffle_cards(no_update=True)
             # Move over the width of a deck plus a little more
