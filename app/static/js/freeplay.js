@@ -107,12 +107,16 @@ $( document ).ready(function () {
         self.drop_time = 0;
         self.has_synced_once = false;
     }
-    TableMovable.prototype.full_display_name = function () {
-        var text = this.display_name;
-        var l = this.dependent_ids.length;
-        if (l > 0)
-            text += " ("+l+")";
-        return text;
+    TableMovable.prototype.update_full_display_name = function () {
+        if (this.type == 'Deck') {
+            var text = this.display_name;
+            var l = this.dependent_ids.length;
+            if (l > 0)
+                text += " ("+l+")";
+            var span = $( 'span.display-name', this.html_elem );
+            // Update the html
+            span.html(text);
+        }
     };
     TableMovable.prototype.dimension_offset = function () {
         if (this.type == 'Deck') {
@@ -291,19 +295,38 @@ $( document ).ready(function () {
                 html_pos.top -= jwindow.scrollTop();
                 html_pos.left -= jwindow.scrollLeft();
             }
-            // Put in or take out the deck specific controls
+
+            //Detach all the buttons
+            deal_spinner_parent.detach();
+            deal_button.detach();
+            action_button_br.detach();
+            shuffle_button.detach();
+            roll_button.detach();
+            flip_button.detach();
+            sort_button.detach();
+
+            // Put in specific buttons
             if (apm_obj.type == "Deck") {
                 action_button_panel.prepend(action_button_br);
                 action_button_panel.prepend(deal_button);
                 action_button_panel.prepend(deal_spinner_parent);
-                action_button_panel.append(shuffle_button);
-                action_button_panel.append(sort_button);
-            } else {
-                action_button_br.detach();
-                deal_button.detach();
-                deal_spinner_parent.detach();
-                shuffle_button.detach();
-                sort_button.detach();
+
+
+                // If it's a deck of cards, put shuffle/flip/sort button, if it's dice put roll button
+                var first_dep = get_apm_obj(apm_obj.dependent_ids[0]);
+                if (first_dep.type === 'Dice') {
+                    action_button_panel.append(roll_button);
+                } else {
+                    action_button_panel.append(flip_button);
+                    action_button_panel.append(shuffle_button);
+                    action_button_panel.append(sort_button);
+                    action_button_panel.append(sort_button);
+                }
+
+            } else if (apm_obj.type == "Card") {
+                action_button_panel.append(flip_button);
+            } else if (apm_obj.type == "Dice") {
+                action_button_panel.append(roll_button);
             }
             var height = action_button_panel.height();
             action_button_panel.css({
@@ -330,6 +353,15 @@ $( document ).ready(function () {
             var index = $.inArray(this.id, array);
             if (index >= 0)
                 array.splice( index, 1);
+            obj_old_parent.update_full_display_name();
+            obj_old_parent.sync_position(); //To update dimensions 
+            // This doesn't look good if we don't also sync position on siblings
+            obj_old_parent.dependent_ids.forEach(function (d_id) {
+                var apm_dep = get_apm_obj(d_id);
+                if (! apm_dep)
+                    return;
+                apm_dep.sync_position();
+            });
         }
         // Set new parent
         this.parent_id = pid;
@@ -478,7 +510,10 @@ $( document ).ready(function () {
                     apm_dep.sync_position(0);
                 });
                 // Remove this object from its parents
-                apm_obj.set_parent_id(false);
+                if (apm_obj.parent_id) {
+                    apm_obj.set_parent_id(false);
+
+                }
                 // Hide action buttons for duration of drag
                 sync_action_buttons(true);
                 // If the action buttons are on another element, switch them to this element
@@ -773,11 +808,7 @@ $( document ).ready(function () {
             }
             if ('display_name' in obj_data) {
                 apm_obj.display_name = obj_data.display_name;
-                if (apm_obj.type == 'Deck') {
-                    var span = $( 'span.display-name', apm_obj.html_elem );
-                    // Update the html
-                    span.html(apm_obj.full_display_name());
-                }
+                apm_obj.update_full_display_name();
             }
             // Update card image
             if ('images' in obj_data) {
@@ -840,6 +871,7 @@ $( document ).ready(function () {
     var flip_button = $( "#flip-button");
     var shuffle_button = $( "#shuffle-button");
     var sort_button = $( "#sort-button" );
+    var roll_button = $( "#roll-button" );
     var custom_text = $( "#custom-text" );
     var chat_window = $( "#chat-window" );
     var action_button_br = $( "#action-button-br" );
