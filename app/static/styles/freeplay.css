@@ -81,9 +81,11 @@
     width: 80%;
     height: 80%;
 }
+.action-button svg circle,
 .action-button svg path{
     fill: white !important;
 }
+.action-button:hover svg circle,
 .action-button:hover svg path{
     fill: black !important;
 }
