@@ -30,7 +30,7 @@
             "current_image":3,
             "default_face_up_offset":[27,0],
             "type":"Dice",
-            "background_color":"#cccc11",
+            "background_color":"#e0a800",
             "cards":[
                 {
                     "images":[

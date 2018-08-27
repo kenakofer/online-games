@@ -216,7 +216,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -235,6 +235,7 @@ class Card(TableMovable):
         self.current_image = current_image
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
+        self.background_color = background_color
         game.cards[self.id] = self
 
     # This is called when one object in the client is dropped onto another
@@ -313,10 +314,12 @@ class Card(TableMovable):
         info['default_face_up_offset']    =  self.dfuo
         info['default_face_down_offset']  =  self.dfdo
         info['stack_group']               =  self.stack_group
+        if self.background_color:
+            info['background_color']      =  self.background_color
         return info
 
 class Dice(Card):
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -337,6 +340,7 @@ class Dice(Card):
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
         game.cards[self.id] = self
+        self.background_color = background_color
 
     def roll(self, no_update=False):
         self.current_image = randint(0,len(self.images)-1)
@@ -493,10 +497,11 @@ class Deck(TableMovable):
                 stack_group = card_data['stack_group'] if 'stack_group' in card_data else deck_name
                 current_image = card_data['current_image'] if 'current_image' in card_data else (0 if face_up else 1)
                 object_type = card_data['type'] if 'type' in card_data else "Card"
+                background_color = card_data['background_color'] if 'background_color' in card_data else None
                 if (object_type == "Dice"):
                     # Create the dice
                     for i in range(reps):
-                        card = Dice(
+                        dice = Dice(
                                 game,
                                 deck,
                                 images,
@@ -505,6 +510,7 @@ class Deck(TableMovable):
                                 dfuo = dfuo,
                                 dfdo = dfdo,
                                 stack_group = stack_group,
+                                background_color = background_color
                                 )
                 else:
                     # Create the card
@@ -518,6 +524,7 @@ class Deck(TableMovable):
                                 dfuo = dfuo,
                                 dfdo = dfdo,
                                 stack_group = stack_group,
+                                background_color = background_color
                                 )
             if shuffle:
                 deck.shuffle_cards(no_update=True)

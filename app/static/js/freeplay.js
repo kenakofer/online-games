@@ -850,6 +850,9 @@ $( document ).ready(function () {
                     apm_obj.current_image = obj_data.current_image;
                 }
             }
+            if ('background_color' in obj_data) {
+                apm_obj.html_elem.css({"background": obj_data.background_color});
+            }
             // Sync card image changes
             apm_obj.sync_image();
             // Update info text
