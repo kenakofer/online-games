@@ -127,6 +127,7 @@ $( document ).ready(function () {
     };
 
     TableMovable.prototype.start_roll = function (number_left, final_val) {
+        this.html_elem.toggleClass('rotate');
         if (number_left <= 0) {
             this.current_image = final_val;
             this.sync_image();
