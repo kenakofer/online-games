@@ -132,7 +132,6 @@ $( document ).ready(function () {
             this.sync_image();
             return
         }
-        console.log('continue');
         this.current_image = Math.floor(Math.random() * 6);
         this.sync_image();
         var obj = this;
