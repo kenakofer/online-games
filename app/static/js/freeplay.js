@@ -876,11 +876,12 @@ $( document ).ready(function () {
                 if (should_sync_position) {
                     var moving = apm_obj.player_moving_index > -1;
                     apm_obj.sync_position(position_sync_time);
+                    var dep_depth = apm_obj.depth + 1;
                     apm_obj.dependent_ids.forEach(function (d_id) {
                         var apm_dep = get_apm_obj(d_id);
                         if (! apm_dep)
                             return;
-                        apm_dep.depth = moving ? get_dragging_depth() : (apm_obj.privacy == -1 ? get_dropped_public_depth() : get_dropped_private_depth());
+                        apm_dep.depth = dep_depth++;
                         apm_dep.position = apm_obj.position;
                         apm_dep.sync_position(position_sync_time);
                     });
