@@ -24,13 +24,14 @@
         "back_image_style":"initial"
     },
     "decks": {
-        "dice-white":{
+        "dice-green":{
             "width":40,
             "height":40,
             "current_image":3,
             "default_face_up_offset":[27,0],
             "type":"Dice",
-            "background_color":"#e0a800",
+            "background_color":"#00cc00",
+            "stack_group":"colored_dice",
             "cards":[
                 {
                     "images":[
@@ -59,7 +60,127 @@
                             "style":"100% 100%"
                         }
                     ],
-                    "repetitions": 6
+                    "repetitions": 5
+                }
+            ]
+        },
+        "dice-blue":{
+            "width":40,
+            "height":40,
+            "current_image":3,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#0000cc",
+            "stack_group":"colored_dice",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 5
+                }
+            ]
+        },
+        "dice-red":{
+            "width":40,
+            "height":40,
+            "current_image":3,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#cc0000",
+            "stack_group":"colored_dice",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 5
+                }
+            ]
+        },
+        "dice-yellow":{
+            "width":40,
+            "height":40,
+            "current_image":3,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#e0a800",
+            "stack_group":"colored_dice",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 5
                 }
             ]
         },
