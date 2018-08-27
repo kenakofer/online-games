@@ -263,7 +263,8 @@ class Card(TableMovable):
             self.parent = other
             other.dependents.insert(0,self)
             for d in other.dependents:
-                d.current_image = self.current_image
+                if type(d) is not Dice:
+                    d.current_image = self.current_image
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -276,7 +277,8 @@ class Card(TableMovable):
             print("Dropping single Card on single Card...")
             new_deck = Deck(self.game, self.position, self.dimensions, cards=[self, other], text="")
             new_deck.privacy = self.privacy
-            other.current_image = self.current_image
+            if type(other) is not Dice:
+                other.current_image = self.current_image
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -290,7 +292,8 @@ class Card(TableMovable):
 
     def flip(self, no_update=False):
         if (len(self.images) == 2):
-            self.current_image = 0 if self.current_image == 1 else 1
+            if type(self) is not Dice:
+                self.current_image = 0 if self.current_image == 1 else 1
             if not no_update:
                 self.game.thread_lock.acquire()
                 data = {
@@ -338,9 +341,8 @@ class Dice(Card):
     def roll(self, no_update=False):
         self.current_image = randint(0,len(self.images)-1)
         if not no_update:
-            self.game.send_update(which_movables = [self], messages = False)
+            self.game.update_roll([self])
         return self.current_image
-
 
 class Deck(TableMovable):
 
@@ -392,7 +394,8 @@ class Deck(TableMovable):
             while len(other.dependents) > 0:
                 card = other.dependents.pop(0)
                 self.dependents.append(card)
-                card.current_image = self.dependents[0].current_image
+                if type(card) is not Dice:
+                    card.current_image = self.dependents[0].current_image
                 card.parent = self
             # Delete the other deck
             other.destroy()
@@ -407,7 +410,8 @@ class Deck(TableMovable):
             assert not other.parent
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
-            other.current_image = self.dependents[0].current_image
+            if type(other) is not Dice:
+                other.current_image = self.dependents[0].current_image
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
             self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
@@ -416,7 +420,7 @@ class Deck(TableMovable):
         for d in self.dependents:
             d.roll(no_update=True)
         if not no_update:
-            self.game.send_update(+self.dependents, messages = False)
+            self.game.update_roll(self.dependents)
             return
 
     def flip(self, no_update=False):
@@ -542,8 +546,9 @@ class Deck(TableMovable):
             card.parent.dependents.append(card)
             card.stop_move(None, new_position, no_check=True, no_update=True)
             # If 'same face' keep the same direction, otherwise set face up or down
-            if not which_face == "same face":
-                card.current_image = 0 if (which_face == 'face up') else 1
+            if type(self) is not Dice:
+                if not which_face == "same face":
+                    card.current_image = 0 if (which_face == 'face up') else 1
         new_deck.push_to_top(moving = False)
         self.game.send_update(which_movables = [new_deck] + new_deck.dependents + [self], messages = False)
         # If the deck has 1 or fewer cards, destroy it
@@ -681,6 +686,20 @@ class FreeplayGame:
             all_data['instructions_html'] = self.instructions_html
 
         #with app.test_request_context('/'):
+        socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
+        self.thread_lock.release()
+        return all_data
+
+    def update_roll(self, which_movables, include_self=True):
+        print("update roll")
+        # Passing the False makes it try to acquire the lock. If it can't it enters the if
+        if not self.thread_lock.acquire(False):
+            print("blocked...")
+            self.thread_lock.acquire()
+        which_movables = list(set(which_movables))
+        movables_info = [{'id':m.id, 'current_image':m.current_image, 'roll':True} for m in which_movables]
+        # Only send first names
+        all_data = { "movables_info":movables_info }
         socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
         self.thread_lock.release()
         return all_data

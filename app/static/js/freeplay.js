@@ -126,6 +126,20 @@ $( document ).ready(function () {
         return [0, 0];
     };
 
+    TableMovable.prototype.start_roll = function (number_left, final_val) {
+        if (number_left <= 0) {
+            this.current_image = final_val;
+            this.sync_image();
+            return
+        }
+        console.log('continue');
+        this.current_image = Math.floor(Math.random() * 6);
+        this.sync_image();
+        var obj = this;
+        setTimeout(function (){
+            obj.start_roll(number_left-1, final_val);
+        }, 50);
+    }
     TableMovable.prototype.offset_per_dependent = function () {
         if (this.dependent_ids.length === 0) {
             return;
@@ -135,7 +149,7 @@ $( document ).ready(function () {
             return;
         }
         var result;
-        if (first_dep.current_image === 0) {
+        if (first_dep.current_image === 0 || first_dep.type === "Dice") {
             result = first_dep.dfuo;
         } else {
             result = first_dep.dfdo;
@@ -605,8 +619,8 @@ $( document ).ready(function () {
             var top_middle_y = top_html.offset().top + top_html.height()/2;
             var bottom_id = event.target.id;
             var apm_bottom = get_apm_obj(bottom_id);
-            var top_group = apm_top.get_stack_group;
-            var bottom_group = apm_bottom.get_stack_group;
+            var top_group = apm_top.get_stack_group();
+            var bottom_group = apm_bottom.get_stack_group();
             if (top_group && bottom_group && top_group != bottom_group) {
                 console.log('elems are in different stack groups, so ignoring drop');
                 return;
@@ -828,7 +842,14 @@ $( document ).ready(function () {
                 apm_obj.dfdo = obj_data.default_face_down_offset;
             }
             if ('current_image' in obj_data) {
-                apm_obj.current_image = obj_data.current_image;
+                if (apm_obj.type === "Dice") {
+                    var roll_count = 'roll' in obj_data ? 10 : 0;
+                    if (roll_count)
+                        roll_count += Math.floor(Math.random() * 10);
+                    apm_obj.start_roll(roll_count, obj_data.current_image);
+                } else {
+                    apm_obj.current_image = obj_data.current_image;
+                }
             }
             // Sync card image changes
             apm_obj.sync_image();
@@ -920,6 +941,7 @@ $( document ).ready(function () {
         if (id) {
             socket.emit('ROLL', {gameid:template_gameid, obj_id:id});
         }
+        var apm_obj = get_apm_obj(id);
     });
     flip_button.click(function () {
         var id = apm.show_action_buttons_for_id;

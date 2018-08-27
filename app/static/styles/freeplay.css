@@ -5,6 +5,7 @@
 
 .ui-widget-content.table-movable {
     color: #DFA;
+    background: white;
     border-radius: 6px;
     border: 2px solid #474;
     min-width: 97px;
