@@ -18,7 +18,8 @@
     white-space: nowrap;
 }
 .ui-widget-content.Deck {
-    background: #8B6;
+    background: #9A7;
+    opacity: .7;
     padding-top: 3px;
     padding-left: 5px;
 }
