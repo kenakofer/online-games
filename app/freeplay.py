@@ -345,7 +345,15 @@ class Dice(Card):
     def roll(self, no_update=False):
         self.current_image = randint(0,len(self.images)-1)
         if not no_update:
-            self.game.update_roll([self])
+            self.game.update_current_image([self], rolling=True)
+        return self.current_image
+
+    def increment(self, amount, no_update=False):
+        self.current_image += amount
+        self.current_image = max(self.current_image, 0)
+        self.current_image = min(self.current_image, len(self.images)-1)
+        if not no_update:
+            self.game.update_current_image([self], rolling=False)
         return self.current_image
 
 class Deck(TableMovable):
@@ -424,7 +432,7 @@ class Deck(TableMovable):
         for d in self.dependents:
             d.roll(no_update=True)
         if not no_update:
-            self.game.update_roll(self.dependents)
+            self.game.update_current_image(self.dependents, rolling=True)
             return
 
     def flip(self, no_update=False):
@@ -697,14 +705,14 @@ class FreeplayGame:
         self.thread_lock.release()
         return all_data
 
-    def update_roll(self, which_movables, include_self=True):
+    def update_current_image(self, which_movables, rolling=False, include_self=True):
         print("update roll")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
             print("blocked...")
             self.thread_lock.acquire()
         which_movables = list(set(which_movables))
-        movables_info = [{'id':m.id, 'current_image':m.current_image, 'roll':True} for m in which_movables]
+        movables_info = [{'id':m.id, 'current_image':m.current_image, 'roll':rolling} for m in which_movables]
         # Only send first names
         all_data = { "movables_info":movables_info }
         socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)

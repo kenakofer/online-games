@@ -220,6 +220,17 @@ def roll(data):
     obj.roll()
     g.time_of_last_update = time()
 
+@socketio.on('INCREMENT', namespace='/freeplay')
+def increment(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'increment', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
+    obj = g.all_movables[data['obj_id']]
+    obj.increment(data['amount'])
+    g.time_of_last_update = time()
+
 @socketio.on('FLIP', namespace='/freeplay')
 def flip(data):
     g = freeplay_games[data['gameid']]

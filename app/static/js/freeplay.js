@@ -140,7 +140,7 @@ $( document ).ready(function () {
             return
         }
         this.html_elem.toggleClass('rotate');
-        this.current_image = Math.floor(Math.random() * 6);
+        this.current_image = Math.floor(Math.random() * this.images.length);
         this.sync_image();
         var obj = this;
         setTimeout(function (){
@@ -323,6 +323,8 @@ $( document ).ready(function () {
             action_button_br.detach();
             shuffle_button.detach();
             roll_button.detach();
+            up_button.detach();
+            down_button.detach();
             flip_button.detach();
             sort_button.detach();
 
@@ -347,11 +349,14 @@ $( document ).ready(function () {
             } else if (apm_obj.type == "Card") {
                 action_button_panel.append(flip_button);
             } else if (apm_obj.type == "Dice") {
+                action_button_panel.prepend(action_button_br);
+                action_button_panel.prepend(up_button);
+                action_button_panel.prepend(down_button);
                 action_button_panel.append(roll_button);
             }
             var height = action_button_panel.height();
             action_button_panel.css({
-                "left":html_pos.left+4,
+                "left":html_pos.left+1,
                 "top": html_pos.top-height - 2,
                 "display": "inline",
                 "position": position_type
@@ -848,7 +853,7 @@ $( document ).ready(function () {
             }
             if ('current_image' in obj_data) {
                 if (apm_obj.type === "Dice") {
-                    var roll_count = 'roll' in obj_data ? 10 : 0;
+                    var roll_count = obj_data.roll ? 10 : 0;
                     if (roll_count)
                         roll_count += Math.floor(Math.random() * 10);
                     apm_obj.start_roll(roll_count, obj_data.current_image);
@@ -952,6 +957,20 @@ $( document ).ready(function () {
         var id = apm.show_action_buttons_for_id;
         if (id) {
             socket.emit('ROLL', {gameid:template_gameid, obj_id:id});
+        }
+        var apm_obj = get_apm_obj(id);
+    });
+    up_button.click(function () {
+        var id = apm.show_action_buttons_for_id;
+        if (id) {
+            socket.emit('INCREMENT', {gameid:template_gameid, obj_id:id, amount:1});
+        }
+        var apm_obj = get_apm_obj(id);
+    });
+    down_button.click(function () {
+        var id = apm.show_action_buttons_for_id;
+        if (id) {
+            socket.emit('INCREMENT', {gameid:template_gameid, obj_id:id, amount:-1});
         }
         var apm_obj = get_apm_obj(id);
     });
