@@ -111,7 +111,7 @@ $( document ).ready(function () {
         if (this.type == 'Deck') {
             var text = this.display_name;
             var l = this.dependent_ids.length;
-            if (l > 0)
+            if (l > 1)
                 text += " ("+l+")";
             var span = $( 'span.display-name', this.html_elem );
             // Update the html
