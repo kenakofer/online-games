@@ -116,6 +116,13 @@ $( document ).ready(function () {
             var span = $( 'span.display-name', this.html_elem );
             // Update the html
             span.html(text);
+        } else {
+            // Put the display name as the hover text with title
+            if (this.current_image == 0) {
+                this.html_elem.attr('title', this.display_name);
+            } else {
+                this.html_elem.removeAttr('title');
+            }
         }
     };
     TableMovable.prototype.dimension_offset = function () {
@@ -849,6 +856,7 @@ $( document ).ready(function () {
                     apm_obj.start_roll(roll_count, obj_data.current_image);
                 } else {
                     apm_obj.current_image = obj_data.current_image;
+                    apm_obj.update_full_display_name();
                 }
             }
             if ('background_color' in obj_data) {
