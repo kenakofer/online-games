@@ -328,17 +328,15 @@ $( document ).ready(function () {
 
             // Put in specific buttons
             if (apm_obj.type == "Deck") {
-                action_button_panel.prepend(action_button_br);
-                action_button_panel.prepend(deal_button);
-                action_button_panel.prepend(deal_spinner_parent);
-
-
                 // If it's a deck of cards, put shuffle/flip/sort button, if it's dice put roll button
                 var first_dep = get_apm_obj(apm_obj.dependent_ids[0]);
                 if (first_dep) {
                     if (first_dep.type === 'Dice') {
                         action_button_panel.append(roll_button);
                     } else {
+                        action_button_panel.prepend(action_button_br);
+                        action_button_panel.prepend(deal_button);
+                        action_button_panel.prepend(deal_spinner_parent);
                         action_button_panel.append(flip_button);
                         action_button_panel.append(shuffle_button);
                         action_button_panel.append(sort_button);
@@ -912,6 +910,8 @@ $( document ).ready(function () {
     var shuffle_button = $( "#shuffle-button");
     var sort_button = $( "#sort-button" );
     var roll_button = $( "#roll-button" );
+    var up_button = $( "#up-button" );
+    var down_button = $( "#down-button" );
     var custom_text = $( "#custom-text" );
     var chat_window = $( "#chat-window" );
     var action_button_br = $( "#action-button-br" );
