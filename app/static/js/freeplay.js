@@ -294,13 +294,18 @@ $( document ).ready(function () {
             this.sync_position(0);
         }
     };
-    TableMovable.prototype.emit_continue_move = function() {
+    TableMovable.prototype.emit_continue_move = function(prior_position) {
+        // Only continue the loop if this player is moving the card
         if (this.player_moving_index === template_player_index) {
-            socket.emit('CONTINUE MOVE', {gameid:template_gameid, obj_id:this.id, position:this.position});
+            // Only send the update if the positon is new
+            if (!prior_position || this.position[0] !== prior_position[0] || this.position[1] !== prior_position[1]) {
+                socket.emit('CONTINUE MOVE', {gameid:template_gameid, obj_id:this.id, position:this.position});
+            }
             // Call this function again in a bit
             var _this = this
+            prior_position = this.position;
             setTimeout(function (){
-                _this.emit_continue_move()
+                _this.emit_continue_move(prior_position)
             }, 200);
         }
     }
