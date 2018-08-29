@@ -530,14 +530,14 @@ $( document ).ready(function () {
                 // This will prevent a click event being triggered at drop time
                 socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
                 var apm_obj = get_apm_obj(elem.target.id);
-                html_elem.css({'z-index':get_dragging_depth});
+                html_elem.css({'z-index':get_dragging_depth()});
                 currently_dragging = apm_obj;
                 // Start all of the dependents dragging as well
                 apm_obj.dependent_ids.forEach(function (d_id) {
                     var apm_dep = get_apm_obj(d_id);
                     if (! apm_dep)
                         return;
-                    apm_dep.depth = get_dragging_depth;
+                    apm_dep.depth = get_dragging_depth();
                     apm_dep.sync_position(0);
                 });
                 // Remove this object from its parents
@@ -864,6 +864,9 @@ $( document ).ready(function () {
             }
             if ('background_color' in obj_data) {
                 apm_obj.html_elem.css({"background": obj_data.background_color});
+            }
+            if ('force_card_depth' in obj_data) {
+                apm_obj.force_card_depth = obj_data.force_card_depth;
             }
             // Sync card image changes
             apm_obj.sync_image();

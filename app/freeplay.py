@@ -49,7 +49,7 @@ class TableMovable:
 
 
 
-    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name=""):
+    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", force_card_depth=None):
         self.id = id
         self.sort_index = game.get_sort_index()
         self.game = game
@@ -65,10 +65,14 @@ class TableMovable:
         self.display_name = display_name
         self.game.all_movables[self.id] = self
         self.privacy = -1
+        self.force_card_depth = force_card_depth
         self.push_to_top(moving=False)
 
     def push_to_top(self, moving=True):
-        self.depth = self.get_next_depth(moving)
+        if self.parent == None and self.privacy == -1 and self.force_card_depth != None:
+            self.depth = self.force_card_depth
+        else:
+            self.depth = self.get_next_depth(moving)
 
     # Calling this locks movement to only this player until stop_move is called.
     def start_move(self, player, recursive=False):
@@ -170,7 +174,8 @@ class TableMovable:
             "display_name":         self.display_name,
             "depth":                self.depth,
             "type":                 self.__class__.__name__,
-            "privacy":              self.privacy, 
+            "privacy":              self.privacy,
+            "force_card_depth":     False if self.force_card_depth == None else self.force_card_depth,
             }
         return d
 
@@ -216,7 +221,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -229,6 +234,7 @@ class Card(TableMovable):
                 dependents=[],
                 parent=deck,
                 display_name=alt_text,
+                force_card_depth=force_card_depth
                 )
         self.stack_group = stack_group or deck.display_name
         self.images = images
@@ -319,7 +325,7 @@ class Card(TableMovable):
         return info
 
 class Dice(Card):
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -333,6 +339,7 @@ class Dice(Card):
             dependents=[],
             parent=deck,
             display_name=alt_text,
+            force_card_depth=force_card_depth
             )
         self.stack_group = stack_group or deck.display_name
         self.images = images
@@ -506,6 +513,7 @@ class Deck(TableMovable):
                 current_image = card_data['current_image'] if 'current_image' in card_data else (0 if face_up else 1)
                 object_type = card_data['type'] if 'type' in card_data else "Card"
                 background_color = card_data['background_color'] if 'background_color' in card_data else None
+                force_card_depth = card_data['force_card_depth'] if 'force_card_depth' in card_data else None
                 if (object_type == "Dice"):
                     # Create the dice
                     for i in range(reps):
@@ -518,7 +526,8 @@ class Deck(TableMovable):
                                 dfuo = dfuo,
                                 dfdo = dfdo,
                                 stack_group = stack_group,
-                                background_color = background_color
+                                background_color = background_color,
+                                force_card_depth = force_card_depth
                                 )
                 else:
                     # Create the card
@@ -532,7 +541,8 @@ class Deck(TableMovable):
                                 dfuo = dfuo,
                                 dfdo = dfdo,
                                 stack_group = stack_group,
-                                background_color = background_color
+                                background_color = background_color,
+                                force_card_depth = force_card_depth
                                 )
             if shuffle:
                 deck.shuffle_cards(no_update=True)

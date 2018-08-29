@@ -4,6 +4,7 @@
             "width":150,
             "height":150,
             "face_up":true,
+            "force_card_depth": 1,
             "default_face_up_offset":[3,2],
             "default_face_down_offset":[42,0],
             "shuffle":false,
@@ -369,37 +370,47 @@
                     "alt_text":"Expansion: Add a Ship to your Fleet - Immediately roll an expansion ship & either deploy it or put it in your scrapyard.",
                     "front_image_url":"/static/images/freeplay/quantum/card-31.jpg",
                     "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
-                    "back_image_style":"100% 100%"
+                    "back_image_style":"100% 100%",
+                    "repetitions":8
                 },
                 {
                     "alt_text":"Reorganization: Immediately Reroll any or all of your Ships - For each of the rerolled ships, either deploy it or put it in your scrapyard.",
                     "front_image_url":"/static/images/freeplay/quantum/card-32.jpg",
                     "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
-                    "back_image_style":"100% 100%"
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
                 },
                 {
                     "alt_text":"Relocation: Immediately Move a Cube - Move another players cube to a planet without that player's cube that has an open space (you can't move a player's initial cube)",
                     "front_image_url":"/static/images/freeplay/quantum/card-33.jpg",
                     "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
-                    "back_image_style":"100% 100%"
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+
                 },
                 {
                     "alt_text":"Aggression: Immediately Add 2 to Dominance",
                     "front_image_url":"/static/images/freeplay/quantum/card-34.jpg",
                     "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
-                    "back_image_style":"100% 100%"
+                    "back_image_style":"100% 100%",
+                    "repetitions":4
+
                 },
                 {
                     "alt_text":"Momentum: Take a Bonus 2-Action Turn - Immediately take another turn, with 2 actions instead of 3 actions.",
                     "front_image_url":"/static/images/freeplay/quantum/card-35.jpg",
                     "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
-                    "back_image_style":"100% 100%"
+                    "back_image_style":"100% 100%",
+                    "repetitions":4
+
                 },
                 {
                     "alt_text":"Sabotage: Remove Command Cards - All other players must immediately choose and discard a single Command card.",
                     "front_image_url":"/static/images/freeplay/quantum/card-36.jpg",
                     "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
-                    "back_image_style":"100% 100%"
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+
                 }
             ]
         },
