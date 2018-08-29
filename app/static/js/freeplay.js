@@ -186,11 +186,6 @@ $( document ).ready(function () {
             var i = this.get_index_in_parent();
             var p = get_apm_obj(this.parent_id);
             var opd = p.offset_per_dependent() || [0.5, 0.5];
-            if (p && opd) {
-                opd = opd.slice();
-                opd[0] = Math.pow(Math.abs(opd[0] / 4), 2) * Math.sign(opd[0]);
-                opd[1] = Math.pow(Math.abs(opd[1] / 4), 2) * Math.sign(opd[1]);
-            }
             return [i * opd[0], i * opd[1]];
         }
         // Otherwise

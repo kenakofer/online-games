@@ -460,13 +460,22 @@ class Deck(TableMovable):
             Card(game, deck, '/static/images/freeplay/standard_deck/card-{}.png'.format(i), alt_text=str(i))
         return deck
 
+    def opd_conversion(opd):
+        if isinstance(opd, dict):
+            opd = {k: Deck.opd_conversion(v) for k, v in opd.items()}
+        elif isinstance(opd, list):
+            opd = [Deck.opd_conversion(i) for i in opd]
+        else:
+            opd = opd * abs(opd) / 16
+        return opd
+
     def get_decks_from_json(game, path_to_json):
         print(path_to_json)
         with open(path_to_json) as f:
             data = load(f, object_pairs_hook=OrderedDict) #json.load
         xleft = 15
         x = xleft
-        y = 32
+        y = 67
         maxheight = 0
         if 'quick_messages' in data:
             game.quick_messages = data['quick_messages'];
@@ -490,6 +499,8 @@ class Deck(TableMovable):
             x = deck_data['x'] if 'x' in deck_data else x
             y = deck_data['y'] if 'y' in deck_data else y
             opd = deck_data['offset_per_dependent'] if 'offset_per_dependent' in deck_data else [3,2]
+            # Perform mathematical adjustment on opd:
+            opd = Deck.opd_conversion(opd)
             face_up = deck_data['face_up'] if 'face_up' in deck_data else True
             deck = Deck(game, [x,y], [w,h], text=deck_name, offset_per_dependent=opd)
             # Get the card info for this deck
@@ -510,7 +521,9 @@ class Deck(TableMovable):
                 at = card_data['alt_text'] if 'alt_text' in card_data else ""
                 reps = card_data['repetitions'] if 'repetitions' in card_data else 1
                 dfuo = card_data['default_face_up_offset'] if 'default_face_up_offset' in card_data else [24,0]
+                dfuo = Deck.opd_conversion(dfuo)
                 dfdo = card_data['default_face_down_offset'] if 'default_face_down_offset' in card_data else [3,2]
+                dfdo = Deck.opd_conversion(dfdo)
                 stack_group = card_data['stack_group'] if 'stack_group' in card_data else deck_name
                 current_image = card_data['current_image'] if 'current_image' in card_data else (0 if face_up else 1)
                 object_type = card_data['type'] if 'type' in card_data else "Card"
@@ -548,8 +561,16 @@ class Deck(TableMovable):
                                 )
             if shuffle:
                 deck.shuffle_cards(no_update=True)
-            # Move over the width of a deck plus a little more
-            x += w + 40
+            # Move over the width of the deck, considering its dependents
+            shift = w
+            if len(deck.dependents) > 0:
+                d = deck.dependents[0]
+                offset = (d.dfuo if d.current_image == 0 else d.dfdo)
+                if isinstance(offset, dict):
+                    offset = offset['public']
+                shift = (len(deck.dependents) - 1) * offset[0] + d.dimensions[0]
+            # And a bit more too
+            x += shift + 40
             if (x > 600):
                 y += maxheight + 60
                 x = xleft
