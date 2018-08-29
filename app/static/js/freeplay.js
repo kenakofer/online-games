@@ -800,6 +800,8 @@ $( document ).ready(function () {
                     if (dep_obj)
                         dep_obj.set_parent_id(false);
                 });
+                // Make the parent lose the child
+                apm_obj.set_parent_id(false);
                 // If the action buttons were attached to it, detach them
                 if (apm.show_action_buttons_for_id == apm_obj.id) {
                     apm.show_action_buttons_for_id = false;
