@@ -294,6 +294,17 @@ $( document ).ready(function () {
             this.sync_position(0);
         }
     };
+    TableMovable.prototype.emit_continue_move = function() {
+        console.log('emit_continue_move');
+        if (this.player_moving_index === template_player_index) {
+            socket.emit('CONTINUE MOVE', {gameid:template_gameid, obj_id:this.id, position:this.position});
+            // Call this function again in a bit
+            var _this = this
+            setTimeout(function (){
+                _this.emit_continue_move()
+            }, 200);
+        }
+    }
 
     var private_hand_vertical_offset = function () {
         return content.offset().top - private_hand.offset().top + 2;
@@ -560,6 +571,10 @@ $( document ).ready(function () {
                 if (follow_id && follow_id !== apm_obj.id) {
                     apm.show_action_buttons_for_id = apm_obj.id;
                 }
+                // Set the current player moving
+                apm_obj.player_moving_index = template_player_index;
+                // Start the looping of emit_continue_move
+                apm_obj.emit_continue_move();
             },
             drag: function (elem) {
                 var html_elem = $('#'+elem.target.id);
@@ -576,12 +591,6 @@ $( document ).ready(function () {
                     apm_dep.position = pos;
                     apm_dep.sync_position(0);
                 });
-                // Only send a server update if enough time has passed since the last
-                var now = new Date().getTime();
-                if (now - time_of_drag_emit > 400) {
-                    time_of_drag_emit = now;
-                    socket.emit('CONTINUE MOVE', {gameid:template_gameid, obj_id:elem.target.id, position:pos});
-                }
             },
             stop: function (elem) {
                 var apm_obj = get_apm_obj(elem.target.id);
@@ -609,6 +618,8 @@ $( document ).ready(function () {
                         pos[0] -= private_hand_horizontal_offset();
                         pos[1] -= private_hand_vertical_offset();
                     }
+                    // Set the current player moving to none
+                    apm_obj.player_moving_index = -1;
                     // Move the action buttons
                     sync_action_buttons(); //This really should wait until the object has synced position
                     // Tell the server about the stop move
@@ -671,7 +682,7 @@ $( document ).ready(function () {
                 apm_dep.depth = get_dragging_depth();
                 apm_dep.sync_position(0);
             });
-            apm_top.sync_position();
+            apm_top.sync_position(0);
             // Move the action buttons
             sync_action_buttons();
             // Tell the server to combine the two
@@ -780,7 +791,7 @@ $( document ).ready(function () {
             var apm_obj = get_apm_obj(obj_data.id);
             if (apm_obj === currently_dragging)
                 return;
-            var position_sync_time = 500;
+            var position_sync_time = 300;
             var should_sync_position = false;
             if (!apm_obj) {
                 //Create the obj if it doesn't exist yet.
@@ -1044,6 +1055,7 @@ $( document ).ready(function () {
             });
         }
     });
+
     var get_position_array_from_html_pos = function (html_pos) {
         var x = html_pos.left;
         var y = html_pos.top;
