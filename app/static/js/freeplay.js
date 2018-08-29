@@ -295,7 +295,6 @@ $( document ).ready(function () {
         }
     };
     TableMovable.prototype.emit_continue_move = function() {
-        console.log('emit_continue_move');
         if (this.player_moving_index === template_player_index) {
             socket.emit('CONTINUE MOVE', {gameid:template_gameid, obj_id:this.id, position:this.position});
             // Call this function again in a bit
@@ -784,6 +783,10 @@ $( document ).ready(function () {
             message_waiting_to_send = false;
 
         }
+        //Set private hand height
+        if (data.private_hand_height !== undefined) {
+            set_private_hand_once(data.private_hand_height, parseInt(private_hand.css('bottom'), 10));
+        }
         //Movables changes
         if (! data.movables_info)
             return;
@@ -1054,6 +1057,21 @@ $( document ).ready(function () {
                 privacy:template_player_index
             });
         }
+    });
+
+    function once(fn, context) { 
+	var result;
+	return function() { 
+	    if (fn) {
+		result = fn.apply(context || this, arguments);
+		fn = null;
+	    }
+	    return result;
+	};
+    }
+    // Allow this function to be called once, then disable it
+    var set_private_hand_once = once(function (height, bottom) {
+        private_hand.css({'height': height - bottom});
     });
 
     var get_position_array_from_html_pos = function (html_pos) {

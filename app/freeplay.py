@@ -470,6 +470,8 @@ class Deck(TableMovable):
         maxheight = 0
         if 'quick_messages' in data:
             game.quick_messages = data['quick_messages'];
+        if 'private_hand_height' in data:
+            game.private_hand_height = data['private_hand_height']
         for deck_name in data['decks']:
             # Get general deck info with defaults
             deck_data = data['decks'][deck_name]
@@ -604,6 +606,7 @@ class FreeplayGame:
         self.thread_lock.release()
         self.depth_counter= {'public':100, 'private':50000000, 'dragging':100000000}
         self.sort_index = 0
+        self.private_hand_height = None;
 
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
         #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
@@ -709,6 +712,8 @@ class FreeplayGame:
             all_data['quick_messages'] = self.quick_messages
         if instructions and self.instructions_html:
             all_data['instructions_html'] = self.instructions_html
+        if self.private_hand_height != None:
+            all_data['private_hand_height'] = self.private_hand_height
 
         #with app.test_request_context('/'):
         socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
