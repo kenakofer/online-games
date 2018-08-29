@@ -707,8 +707,10 @@ $( document ).ready(function () {
         // quick_messages update
         if (data.quick_messages) {
             var qms = [];
-            for (var i=0; i<apm.players.length; i++)
-                qms.push('$*'+i+'@'+apm.players[i]);
+            for (var i=0; i<apm.players.length; i++) {
+                var name = template_player_index === i ? 'Me' : apm.players[i];
+                qms.push('$*'+i+'@'+name);
+            }
             qms = qms.concat(data.quick_messages);
             apm.quick_messages = qms;
             var elem = $('#quick-messages');
