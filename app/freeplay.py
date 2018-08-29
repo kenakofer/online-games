@@ -559,6 +559,7 @@ class Deck(TableMovable):
                                 background_color = background_color,
                                 force_card_depth = force_card_depth
                                 )
+
             if shuffle:
                 deck.shuffle_cards(no_update=True)
             # Move over the width of the deck, considering its dependents
@@ -571,7 +572,7 @@ class Deck(TableMovable):
                 shift = (len(deck.dependents) - 1) * offset[0] + d.dimensions[0]
             # And a bit more too
             x += shift + 40
-            if (x > 600):
+            if x > 640 or ('last_in_row' in deck_data and deck_data['last_in_row']):
                 y += maxheight + 60
                 x = xleft
                 maxheight = 0

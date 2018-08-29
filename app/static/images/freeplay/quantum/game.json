@@ -441,15 +441,16 @@
                 }
             ]
         },
-        "G Scrapyard":{
+        "Att/Def":{
             "width":35,
             "height":35,
             "current_image":0,
+            "last_in_row":true,
             "default_face_up_offset":[27,0],
             "type":"Dice",
-            "background_color":"#00ff00bb",
             "cards":[
                 {
+                    "background_color":"#000000",
                     "images":[
                         {
                             "url":"/static/images/freeplay/dice_white/dice1.png",
@@ -475,97 +476,46 @@
                             "url":"/static/images/freeplay/dice_white/dice6.png",
                             "style":"100% 100%"
                         }
-                    ],
-                    "repetitions": 3
-                }
-            ]
-        },
-        "G expand":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#00ff00bb",
-            "stack_group":"G Scrapyard",
-            "cards":[
+                    ]
+                },
                 {
+                    "background_color":"#ffffff",
                     "images":[
                         {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "url":"/static/images/freeplay/dice_black/dice1.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "url":"/static/images/freeplay/dice_black/dice2.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "url":"/static/images/freeplay/dice_black/dice3.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "url":"/static/images/freeplay/dice_black/dice4.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "url":"/static/images/freeplay/dice_black/dice5.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "url":"/static/images/freeplay/dice_black/dice6.png",
                             "style":"100% 100%"
                         }
-                    ],
-                    "repetitions": 2
+                    ]
                 }
             ]
         },
-        "G Res":{
+        "B Dom":{
             "width":35,
             "height":35,
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
-            "background_color":"#00ff0055",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 1
-                }
-            ]
-        },
-        "G Dom":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#00ff0055",
+            "background_color":"#0055ff55",
             "cards":[
                 {
                     "images":[
@@ -595,371 +545,6 @@
                         }
                     ],
                     "repetitions": 1
-                }
-            ]
-        },
-        "G Cubes":{
-            "width":17,
-            "height":17,
-            "current_image":0,
-            "default_face_up_offset":[13,0],
-            "type":"Dice",
-            "background_color":"#00ff0088",
-            "cards":[
-                {
-                    "images":[
-                        {
-                        }
-                    ],
-                    "repetitions": 7
-                }
-            ]
-        },
-        "R Scrapyard":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ff0000bb",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 3
-                }
-            ]
-        },
-        "R expand":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ff0000bb",
-            "stack_group":"R Scrapyard",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 2
-                }
-            ]
-        },
-        "R Res":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ff000055",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 1
-                }
-            ]
-        },
-        "R Dom":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ff000055",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 1
-                }
-            ]
-        },
-        "R Cubes":{
-            "width":17,
-            "height":17,
-            "current_image":0,
-            "default_face_up_offset":[13,0],
-            "type":"Dice",
-            "background_color":"#ff000088",
-            "cards":[
-                {
-                    "images":[
-                        {
-                        }
-                    ],
-                    "repetitions": 7
-                }
-            ]
-        },
-        "Y Scrapyard":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ffbb00bb",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 3
-                }
-            ]
-        },
-        "Y expand":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ffbb00bb",
-            "stack_group":"Y Scrapyard",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 2
-                }
-            ]
-        },
-        "Y Res":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ffbb0055",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 1
-                }
-            ]
-        },
-        "Y Dom":{
-            "width":35,
-            "height":35,
-            "current_image":0,
-            "default_face_up_offset":[27,0],
-            "type":"Dice",
-            "background_color":"#ffbb0055",
-            "cards":[
-                {
-                    "images":[
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice1.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice2.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice3.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice4.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice5.png",
-                            "style":"100% 100%"
-                        },
-                        {
-                            "url":"/static/images/freeplay/dice_white/dice6.png",
-                            "style":"100% 100%"
-                        }
-                    ],
-                    "repetitions": 1
-                }
-            ]
-        },
-        "Y Cubes":{
-            "width":17,
-            "height":17,
-            "current_image":0,
-            "default_face_up_offset":[13,0],
-            "type":"Dice",
-            "background_color":"#ffbb0088",
-            "cards":[
-                {
-                    "images":[
-                        {
-                        }
-                    ],
-                    "repetitions": 7
                 }
             ]
         },
@@ -1081,13 +666,31 @@
                 }
             ]
         },
-        "B Dom":{
+        "B Cubes":{
+            "width":17,
+            "height":17,
+            "current_image":0,
+            "last_in_row":true,
+            "default_face_up_offset":[13,0],
+            "type":"Dice",
+            "background_color":"#0055ff88",
+            "cards":[
+                {
+                    "images":[
+                        {
+                        }
+                    ],
+                    "repetitions": 7
+                }
+            ]
+        },
+        "Y Dom":{
             "width":35,
             "height":35,
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
-            "background_color":"#0055ff55",
+            "background_color":"#ffbb0055",
             "cards":[
                 {
                     "images":[
@@ -1120,32 +723,15 @@
                 }
             ]
         },
-        "B Cubes":{
-            "width":17,
-            "height":17,
-            "current_image":0,
-            "default_face_up_offset":[13,0],
-            "type":"Dice",
-            "background_color":"#0055ff88",
-            "cards":[
-                {
-                    "images":[
-                        {
-                        }
-                    ],
-                    "repetitions": 7
-                }
-            ]
-        },
-        "Att/Def":{
+        "Y Scrapyard":{
             "width":35,
             "height":35,
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
+            "background_color":"#ffbb00bb",
             "cards":[
                 {
-                    "background_color":"#000000",
                     "images":[
                         {
                             "url":"/static/images/freeplay/dice_white/dice1.png",
@@ -1171,36 +757,455 @@
                             "url":"/static/images/freeplay/dice_white/dice6.png",
                             "style":"100% 100%"
                         }
-                    ]
-                },
+                    ],
+                    "repetitions": 3
+                }
+            ]
+        },
+        "Y expand":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ffbb00bb",
+            "stack_group":"Y Scrapyard",
+            "cards":[
                 {
-                    "background_color":"#ffffff",
                     "images":[
                         {
-                            "url":"/static/images/freeplay/dice_black/dice1.png",
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_black/dice2.png",
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_black/dice3.png",
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_black/dice4.png",
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_black/dice5.png",
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
                             "style":"100% 100%"
                         },
                         {
-                            "url":"/static/images/freeplay/dice_black/dice6.png",
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
                             "style":"100% 100%"
                         }
-                    ]
+                    ],
+                    "repetitions": 2
+                }
+            ]
+        },
+        "Y Res":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ffbb0055",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "Y Cubes":{
+            "width":17,
+            "height":17,
+            "current_image":0,
+            "default_face_up_offset":[13,0],
+            "type":"Dice",
+            "last_in_row":true,
+            "background_color":"#ffbb0088",
+            "cards":[
+                {
+                    "images":[
+                        {
+                        }
+                    ],
+                    "repetitions": 7
+                }
+            ]
+        },
+        "G Dom":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#00ff0055",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "G Scrapyard":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#00ff00bb",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 3
+                }
+            ]
+        },
+        "G expand":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#00ff00bb",
+            "stack_group":"G Scrapyard",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 2
+                }
+            ]
+        },
+        "G Res":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#00ff0055",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "G Cubes":{
+            "width":17,
+            "height":17,
+            "current_image":0,
+            "last_in_row":true,
+            "default_face_up_offset":[13,0],
+            "type":"Dice",
+            "background_color":"#00ff0088",
+            "cards":[
+                {
+                    "images":[
+                        {
+                        }
+                    ],
+                    "repetitions": 7
+                }
+            ]
+        },
+        "R Dom":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ff000055",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "R Scrapyard":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ff0000bb",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 3
+                }
+            ]
+        },
+        "R expand":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ff0000bb",
+            "stack_group":"R Scrapyard",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 2
+                }
+            ]
+        },
+        "R Res":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ff000055",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "R Cubes":{
+            "width":17,
+            "height":17,
+            "current_image":0,
+            "last_in_row":true,
+            "default_face_up_offset":[13,0],
+            "type":"Dice",
+            "background_color":"#ff000088",
+            "cards":[
+                {
+                    "images":[
+                        {
+                        }
+                    ],
+                    "repetitions": 7
                 }
             ]
         }
