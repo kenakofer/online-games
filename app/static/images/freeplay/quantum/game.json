@@ -1,4 +1,29 @@
 {
+    "quick_messages":[
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "$*0Blue",
+        "$*1Yellow",
+        "$*2Green",
+        "$*3Red",
+        "I'm attacking",
+        "I prevail!",
+        "I fail",
+        "Special ability",
+        "My actions:",
+        "Reconfigure",
+        "Deploy",
+        "Move/Attack",
+        "Construct Cube",
+        "Research",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+    ],
     "decks": {
         "planets":{
             "width":150,
@@ -1107,6 +1132,73 @@
                         }
                     ],
                     "repetitions": 7
+                }
+            ]
+        },
+        "Att/Def":{
+            "width":35,
+            "height":35,
+            "current_image":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "cards":[
+                {
+                    "background_color":"#000000",
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ]
+                },
+                {
+                    "background_color":"#ffffff",
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ]
                 }
             ]
         }

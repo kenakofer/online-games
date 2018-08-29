@@ -60,9 +60,9 @@
     position: absolute;
     top: -28px;
     height: 14px;
-    left: 23px;
     padding: 4px;
     padding-bottom: 5px;
+    padding-left: 10px;
     border-radius: 5px;
     color: #9b7;
     background: #242;
