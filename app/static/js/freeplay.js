@@ -514,12 +514,20 @@ $( document ).ready(function () {
     clickable_settings =  function () {
         console.log('clickable_settings');
         // If we clicked on the same one again, hide the button
-        if (apm.show_action_buttons_for_id === this.id) {
+        var target_id = this.id;
+        var apm_obj = get_apm_obj(this.id);
+        if (apm_obj && apm_obj.dependent_ids && apm_obj.dependent_ids.length === 1) {
+            console.log(1);
+            target_id = apm_obj.dependent_ids[0];
+        }
+        if (apm.show_action_buttons_for_id === target_id) {
+            console.log(2);
             apm.show_action_buttons_for_id = false;
             sync_action_buttons();
         }
         else {
-            apm.show_action_buttons_for_id = this.id;
+            console.log(3);
+            apm.show_action_buttons_for_id = target_id;
             sync_action_buttons();
         }
     };
