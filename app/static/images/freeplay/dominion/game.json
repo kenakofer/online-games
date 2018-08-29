@@ -24,7 +24,7 @@
         "Copper":{
             "cards":[
                 {
-                    "alt_text":"Copper",
+                    "alt_text":"Copper: Treasure. Cost: 0; Worth: 1",
                     "front_image_url":"/static/images/freeplay/dominion/copper.jpg",
                     "repetitions":60
                 }
@@ -33,7 +33,7 @@
         "Silver":{
             "cards":[
                 {
-                    "alt_text":"Silver",
+                    "alt_text":"Silver: Treasure. Cost: 3; Worth: 2",
                     "front_image_url":"/static/images/freeplay/dominion/silver.jpg",
                     "repetitions":40
                 }
@@ -42,7 +42,7 @@
         "Gold":{
             "cards":[
                 {
-                    "alt_text":"Gold",
+                    "alt_text":"Gold: Treasure. Cost: 6; Worth: 3",
                     "front_image_url":"/static/images/freeplay/dominion/gold.jpg",
                     "repetitions":30
                 }
@@ -51,7 +51,7 @@
         "Curse":{
             "cards":[
                 {
-                    "alt_text":"Curse",
+                    "alt_text":"Curse. Cost: 0; VP: -1",
                     "front_image_url":"/static/images/freeplay/dominion/curse.jpg",
                     "repetitions":30
                 }
@@ -60,7 +60,7 @@
         "Estate":{
             "cards":[
                 {
-                    "alt_text":"Estate",
+                    "alt_text":"Estate: Victory. Cost: 2; VP: 1",
                     "front_image_url":"/static/images/freeplay/dominion/estate.jpg",
                     "repetitions":24
                 }
@@ -69,7 +69,7 @@
         "Duchy":{
             "cards":[
                 {
-                    "alt_text":"Duchy",
+                    "alt_text":"Duchy: Victory. Cost: 5; VP: 3",
                     "front_image_url":"/static/images/freeplay/dominion/duchy.jpg",
                     "repetitions":12
                 }
@@ -78,7 +78,7 @@
         "Province":{
             "cards":[
                 {
-                    "alt_text":"Province",
+                    "alt_text":"Province: Victory. Cost: 8; VP: 6",
                     "front_image_url":"/static/images/freeplay/dominion/province.jpg",
                     "repetitions":12
                 }
@@ -91,23 +91,23 @@
             "stack_group":"randomizer_cards",
             "cards":[
                 {
-                    "alt_text":"Artisan",
+                    "alt_text":"Artisan: Gain a card to your hand costing up to 5. Put a card from your hand onto your deck. Cost: 6",
                     "front_image_url":"/static/images/freeplay/dominion/artisan.jpg"
                 },
                 {
-                    "alt_text":"Bandit",
+                    "alt_text":"Bandit: Gain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/bandit.jpg"
                 },
                 {
-                    "alt_text":"Bureaucrat",
+                    "alt_text":"Bureaucrat: Gain a Silver onto your deck. Each other player reveals a Victory card from their hand and puts it onto their deck (or reveals a hand with no Victory cards). Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/bureaucrat.jpg"
                 },
                 {
-                    "alt_text":"Cellar",
+                    "alt_text":"Cellar: +1 Action. Discard any number of cards, then draw that many. Cost: 2",
                     "front_image_url":"/static/images/freeplay/dominion/cellar.jpg"
                 },
                 {
-                    "alt_text":"Chapel",
+                    "alt_text":"Chapel: Trash up to 4 cards from your hand. Cost: 2",
                     "front_image_url":"/static/images/freeplay/dominion/chapel.jpg"
                 },
                 {
@@ -115,7 +115,7 @@
                     "front_image_url":"/static/images/freeplay/dominion/copper.jpg"
                 },
                 {
-                    "alt_text":"Council Room",
+                    "alt_text":"Council Room: +4 Cards +1 Buy. Each other player draws a card. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/council_room.jpg"
                 },
                 {
@@ -131,11 +131,11 @@
                     "front_image_url":"/static/images/freeplay/dominion/estate.jpg"
                 },
                 {
-                    "alt_text":"Festival",
+                    "alt_text":"Festival: +2 Actions +1 Buy +2 Money. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/festival.jpg"
                 },
                 {
-                    "alt_text":"Gardens",
+                    "alt_text":"Gardens: Worth 1 VP per 10 cards you have (rounded down). Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/gardens.jpg"
                 },
                 {
@@ -143,43 +143,43 @@
                     "front_image_url":"/static/images/freeplay/dominion/gold.jpg"
                 },
                 {
-                    "alt_text":"Harbinger",
+                    "alt_text":"Harbinger: +1 Card +1 Action. Look through your discard pile. You may put a card from it onto your deck. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/harbinger.jpg"
                 },
                 {
-                    "alt_text":"Laboratory",
+                    "alt_text":"Laboratory: +2 Cards +1 Action. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/laboratory.jpg"
                 },
                 {
-                    "alt_text":"Library",
+                    "alt_text":"Library: Draw until you have 7 cards in hand, skipping any Action cards you choose to; set those aside, discarding them afterwards. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/library.jpg"
                 },
                 {
-                    "alt_text":"Market",
+                    "alt_text":"Market: +1 Card +1 Action +1 Buy +1 Money. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/market.jpg"
                 },
                 {
-                    "alt_text":"Merchant",
+                    "alt_text":"Merchant: +1 Card +1 Action. The first time you play a Silver this turn, +1 Money. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/merchant.jpg"
                 },
                 {
-                    "alt_text":"Militia",
+                    "alt_text":"Militia: +2 Money. Each other player discards down to 3 cards in hand. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/militia.jpg"
                 },
                 {
-                    "alt_text":"Mine",
+                    "alt_text":"Mine: You may trash a Treasure from your hand. Gain a Treasure to your hand costing up to 3 more than it. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/mine.jpg"
                 },
                 {
-                    "alt_text":"Moat",
+                    "alt_text":"Moat: Action: +2 Cards. Reaction: When another player plays an Attack card, you may first reveal this from your hand, to be unaffected by it. Cost: 2",
                     "front_image_url":"/static/images/freeplay/dominion/moat.jpg"
                 },
                 {
-                    "alt_text":"Moneylender",
+                    "alt_text":"Moneylender: You may trash a Copper from your hand for +3 Money. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/moneylender.jpg"
                 },
                 {
-                    "alt_text":"Poacher",
+                    "alt_text":"Poacher: +1 Card +1 Action +1 Money. Discard a card per empty Supply pile. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/poacher.jpg"
                 },
                 {
@@ -187,11 +187,11 @@
                     "front_image_url":"/static/images/freeplay/dominion/province.jpg"
                 },
                 {
-                    "alt_text":"Remodel",
+                    "alt_text":"Remodel: Trash a card from your hand. Gain a card costing up to 2 more than it. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/remodel.jpg"
                 },
                 {
-                    "alt_text":"Sentry",
+                    "alt_text":"Sentry: +1 Card +1 Action. Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/sentry.jpg"
                 },
                 {
@@ -199,27 +199,27 @@
                     "front_image_url":"/static/images/freeplay/dominion/silver.jpg"
                 },
                 {
-                    "alt_text":"Smithy",
+                    "alt_text":"Smithy: +3 Cards. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/smithy.jpg"
                 },
                 {
-                    "alt_text":"Throne Room",
+                    "alt_text":"Throne Room: You may play an Action card from your hand twice. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/throne_room.jpg"
                 },
                 {
-                    "alt_text":"Vassal",
+                    "alt_text":"Vassal: +2 Money. Discard the top card of your deck. If it's an Action card, you may play it. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/vassal.jpg"
                 },
                 {
-                    "alt_text":"Village",
+                    "alt_text":"Village: +1 Card +2 Actions. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/village.jpg"
                 },
                 {
-                    "alt_text":"Witch",
+                    "alt_text":"Witch: +2 Cards. Each other player gains a Curse. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/witch.jpg"
                 },
                 {
-                    "alt_text":"Workshop",
+                    "alt_text":"Workshop: Gain a card costing up to 4. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/workshop.jpg"
                 }
             ]
@@ -230,7 +230,7 @@
         "Artisan":{
             "cards":[
                 {
-                    "alt_text":"Artisan",
+                    "alt_text":"Artisan: Gain a card to your hand costing up to 5. Put a card from your hand onto your deck. Cost: 6",
                     "front_image_url":"/static/images/freeplay/dominion/artisan.jpg",
                     "repetitions":10
                 }
@@ -239,7 +239,7 @@
         "Bandit":{
             "cards":[
                 {
-                    "alt_text":"Bandit",
+                    "alt_text":"Bandit: Gain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/bandit.jpg",
                     "repetitions":10
                 }
@@ -248,7 +248,7 @@
         "Bureaucrat":{
             "cards":[
                 {
-                    "alt_text":"Bureaucrat",
+                    "alt_text":"Bureaucrat: Gain a Silver onto your deck. Each other player reveals a Victory card from their hand and puts it onto their deck (or reveals a hand with no Victory cards). Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/bureaucrat.jpg",
                     "repetitions":10
                 }
@@ -257,7 +257,7 @@
         "Cellar":{
             "cards":[
                 {
-                    "alt_text":"Cellar",
+                    "alt_text":"Cellar: +1 Action. Discard any number of cards, then draw that many. Cost: 2",
                     "front_image_url":"/static/images/freeplay/dominion/cellar.jpg",
                     "repetitions":10
                 }
@@ -266,7 +266,7 @@
         "Chapel":{
             "cards":[
                 {
-                    "alt_text":"Chapel",
+                    "alt_text":"Chapel: Trash up to 4 cards from your hand. Cost: 2",
                     "front_image_url":"/static/images/freeplay/dominion/chapel.jpg",
                     "repetitions":10
                 }
@@ -275,7 +275,7 @@
         "Council Room":{
             "cards":[
                 {
-                    "alt_text":"Council Room",
+                    "alt_text":"Council Room: +4 Cards +1 Buy. Each other player draws a card. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/council_room.jpg",
                     "repetitions":10
                 }
@@ -284,7 +284,7 @@
         "Festival":{
             "cards":[
                 {
-                    "alt_text":"Festival",
+                    "alt_text":"Festival: +2 Actions +1 Buy +2 Money. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/festival.jpg",
                     "repetitions":10
                 }
@@ -293,7 +293,7 @@
         "Gardens":{
             "cards":[
                 {
-                    "alt_text":"Gardens",
+                    "alt_text":"Gardens: Worth 1 VP per 10 cards you have (rounded down). Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/gardens.jpg",
                     "repetitions":10
                 }
@@ -302,7 +302,7 @@
         "Harbinger":{
             "cards":[
                 {
-                    "alt_text":"Harbinger",
+                    "alt_text":"Harbinger: +1 Card +1 Action. Look through your discard pile. You may put a card from it onto your deck. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/harbinger.jpg",
                     "repetitions":10
                 }
@@ -311,7 +311,7 @@
         "Laboratory":{
             "cards":[
                 {
-                    "alt_text":"Laboratory",
+                    "alt_text":"Laboratory: +2 Cards +1 Action. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/laboratory.jpg",
                     "repetitions":10
                 }
@@ -320,7 +320,7 @@
         "Library":{
             "cards":[
                 {
-                    "alt_text":"Library",
+                    "alt_text":"Library: Draw until you have 7 cards in hand, skipping any Action cards you choose to; set those aside, discarding them afterwards. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/library.jpg",
                     "repetitions":10
                 }
@@ -329,7 +329,7 @@
         "Market":{
             "cards":[
                 {
-                    "alt_text":"Market",
+                    "alt_text":"Market: +1 Card +1 Action +1 Buy +1 Money. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/market.jpg",
                     "repetitions":10
                 }
@@ -338,7 +338,7 @@
         "Merchant":{
             "cards":[
                 {
-                    "alt_text":"Merchant",
+                    "alt_text":"Merchant: +1 Card +1 Action. The first time you play a Silver this turn, +1 Money. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/merchant.jpg",
                     "repetitions":10
                 }
@@ -347,7 +347,7 @@
         "Militia":{
             "cards":[
                 {
-                    "alt_text":"Militia",
+                    "alt_text":"Militia: +2 Money. Each other player discards down to 3 cards in hand. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/militia.jpg",
                     "repetitions":10
                 }
@@ -356,7 +356,7 @@
         "Mine":{
             "cards":[
                 {
-                    "alt_text":"Mine",
+                    "alt_text":"Mine: You may trash a Treasure from your hand. Gain a Treasure to your hand costing up to 3 more than it. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/mine.jpg",
                     "repetitions":10
                 }
@@ -365,7 +365,7 @@
         "Moat":{
             "cards":[
                 {
-                    "alt_text":"Moat",
+                    "alt_text":"Moat: Action: +2 Cards. Reaction: When another player plays an Attack card, you may first reveal this from your hand, to be unaffected by it. Cost: 2",
                     "front_image_url":"/static/images/freeplay/dominion/moat.jpg",
                     "repetitions":10
                 }
@@ -374,7 +374,7 @@
         "Moneylender":{
             "cards":[
                 {
-                    "alt_text":"Moneylender",
+                    "alt_text":"Moneylender: You may trash a Copper from your hand for +3 Money. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/moneylender.jpg",
                     "repetitions":10
                 }
@@ -383,7 +383,7 @@
         "Poacher":{
             "cards":[
                 {
-                    "alt_text":"Poacher",
+                    "alt_text":"Poacher: +1 Card +1 Action +1 Money. Discard a card per empty Supply pile. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/poacher.jpg",
                     "repetitions":10
                 }
@@ -392,7 +392,7 @@
         "Remodel":{
             "cards":[
                 {
-                    "alt_text":"Remodel",
+                    "alt_text":"Remodel: Trash a card from your hand. Gain a card costing up to 2 more than it. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/remodel.jpg",
                     "repetitions":10
                 }
@@ -401,7 +401,7 @@
         "Sentry":{
             "cards":[
                 {
-                    "alt_text":"Sentry",
+                    "alt_text":"Sentry: +1 Card +1 Action. Look at the top 2 cards of your deck. Trash and/or discard any number of them. Put the rest back on top in any order. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/sentry.jpg",
                     "repetitions":10
                 }
@@ -410,7 +410,7 @@
         "Smithy":{
             "cards":[
                 {
-                    "alt_text":"Smithy",
+                    "alt_text":"Smithy: +3 Cards. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/smithy.jpg",
                     "repetitions":10
                 }
@@ -419,7 +419,7 @@
         "Throne Room":{
             "cards":[
                 {
-                    "alt_text":"Throne Room",
+                    "alt_text":"Throne Room: You may play an Action card from your hand twice. Cost: 4",
                     "front_image_url":"/static/images/freeplay/dominion/throne_room.jpg",
                     "repetitions":10
                 }
@@ -428,7 +428,7 @@
         "Vassal":{
             "cards":[
                 {
-                    "alt_text":"Vassal",
+                    "alt_text":"Vassal: +2 Money. Discard the top card of your deck. If it's an Action card, you may play it. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/vassal.jpg",
                     "repetitions":10
                 }
@@ -437,7 +437,7 @@
         "Village":{
             "cards":[
                 {
-                    "alt_text":"Village",
+                    "alt_text":"Village: +1 Card +2 Actions. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/village.jpg",
                     "repetitions":10
                 }
@@ -446,7 +446,7 @@
         "Witch":{
             "cards":[
                 {
-                    "alt_text":"Witch",
+                    "alt_text":"Witch: +2 Cards. Each other player gains a Curse. Cost: 5",
                     "front_image_url":"/static/images/freeplay/dominion/witch.jpg",
                     "repetitions":10
                 }
@@ -455,7 +455,7 @@
         "Workshop":{
             "cards":[
                 {
-                    "alt_text":"Workshop",
+                    "alt_text":"Workshop: Gain a card costing up to 4. Cost: 3",
                     "front_image_url":"/static/images/freeplay/dominion/workshop.jpg",
                     "repetitions":10
                 }
