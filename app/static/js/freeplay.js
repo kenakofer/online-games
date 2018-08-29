@@ -682,6 +682,8 @@ $( document ).ready(function () {
                 apm_dep.sync_position(0);
             });
             apm_top.sync_position(0);
+            // Prevent more calls to emit_continue_moe
+            apm_top.player_moving_index = -1;
             // Move the action buttons
             sync_action_buttons();
             // Tell the server to combine the two
@@ -1052,6 +1054,8 @@ $( document ).ready(function () {
             }
             private_pos[0] -= apm_top.position_offset()[0];
             private_pos[1] -= apm_top.position_offset()[1];
+            // Prevent more calls to emit_continue_moe
+            apm_top.player_moving_index = -1;
             socket.emit('STOP MOVE', {
                 gameid:template_gameid,
                 obj_id:apm_top.id,
