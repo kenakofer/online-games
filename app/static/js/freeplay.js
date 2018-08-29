@@ -833,6 +833,8 @@ $( document ).ready(function () {
                 }
                 // Remove from html
                 apm_obj.html_elem.remove();
+                // Prevent more calls to emit_continue_moe
+                apm_obj.player_moving_index = -1;
                 // Remove from the movables array
                 delete apm.public_movables[obj_data.id];
                 return;
