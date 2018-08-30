@@ -204,7 +204,7 @@ div.ui-tabs .ui-tabs-panel {
 }
 #chat-window {
     width: 255px;
-    height: 255px;
+    height: 380px;
     z-index: 100000000;
     position: fixed;
     right: 0px;
