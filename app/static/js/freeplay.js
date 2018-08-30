@@ -376,8 +376,6 @@ $( document ).ready(function () {
                 // Do the tooltip as well
                 if (apm_obj.display_name && apm_obj.current_image === 0) {
                     // Move the tooltip to centered just below the card
-                    console.log(html_obj.width());
-                    console.log(apm_obj.tooltip_elem.width());
                     apm_obj.tooltip_elem.css({
                         'visibility':'visible',
                         'left':html_pos.left + html_obj.width()/2 - apm_obj.tooltip_elem.width()/2,
