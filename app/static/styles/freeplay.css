@@ -267,7 +267,8 @@ div.ui-tabs .ui-tabs-panel {
     box-decoration-break: clone; /* Makes the margin apply to each line of a multiline span */
 }
 #custom-text {
-    width: 100%
+    width: auto;
+    min-width: 100px;
 }
 .player-color-0 {
     font-weight: bold;
