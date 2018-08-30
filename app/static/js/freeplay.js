@@ -20,6 +20,7 @@ var clickable_settings;
 var get_apm_obj;
 var apm;
 var send_message = function () {};
+var tooltips;
 
 var nocolor = function (qm) {
     if (qm.startsWith("$*"))
@@ -47,6 +48,12 @@ $( document ).ready(function () {
         }
       };
     }
+
+    /* Allow simulating hover events on mobile */
+    $('.Card').on('touchstart touchend', function(e) {
+        e.preventDefault();
+        $(this).toggleClass('hover_effect');
+    });
 
     // Keeps undesired operations away
     function deepFreeze(obj) {
@@ -103,6 +110,7 @@ $( document ).ready(function () {
         self.dfuo = [];                     // Default face up per card offset. [public, private]
         self.dfdo = [];                     //              down
         self.html_elem = false;             // Store the jquery selector for this object id
+        self.tooltip_elem = false;          // Store the jquery selector for this object's tooltip id
 
         self.drop_time = 0;
         self.has_synced_once = false;
@@ -118,10 +126,13 @@ $( document ).ready(function () {
             span.html(text);
         } else {
             // Put the display name as the hover text with title
+            var span = this.tooltip_elem;
             if (this.current_image == 0) {
-                this.html_elem.attr('title', this.display_name);
+                // Update the html
+                span.html(this.display_name);
+                //this.html_elem.attr('title', this.display_name);
             } else {
-                this.html_elem.removeAttr('title');
+                span.empty();
             }
         }
     };
@@ -317,6 +328,10 @@ $( document ).ready(function () {
         var html_obj = $( '#'+apm.show_action_buttons_for_id);
         var apm_obj = get_apm_obj(apm.show_action_buttons_for_id);
         var html_pos = html_obj.position();
+
+        // Hide all tooltips (to possibly enable one later on)
+        tooltips.css({"visibility":"hidden"});
+
         if (!should_hide && html_pos) {
             var position_type = 'absolute';
             if (apm_obj.privacy !== -1) {
@@ -358,6 +373,17 @@ $( document ).ready(function () {
 
             } else if (apm_obj.type == "Card") {
                 action_button_panel.append(flip_button);
+                // Do the tooltip as well
+                if (apm_obj.display_name && apm_obj.current_image === 0) {
+                    // Move the tooltip to centered just below the card
+                    console.log(html_obj.width());
+                    console.log(apm_obj.tooltip_elem.width());
+                    apm_obj.tooltip_elem.css({
+                        'visibility':'visible',
+                        'left':html_pos.left + html_obj.width()/2 - apm_obj.tooltip_elem.width()/2,
+                        'top': html_pos.top  + html_obj.height() + 10
+                    });
+                }
             } else if (apm_obj.type == "Dice") {
                 action_button_panel.prepend(action_button_br);
                 action_button_panel.prepend(up_button);
@@ -376,6 +402,7 @@ $( document ).ready(function () {
                 "display": "none"
             });
         }
+
     };
 
     // Careful, it places this on top of the pid stack
@@ -509,9 +536,12 @@ $( document ).ready(function () {
         // Add it to the public list
         apm.public_movables[id] = apm_obj;
         // Add it to the html
-        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span></div>');
+        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span></div><span id="'+id+'-tooltip" class="display-name tooltiptext"></span>');
         // Give it its html_elem
         apm_obj.html_elem = $( '#'+apm_obj.id );
+        apm_obj.tooltip_elem = $( '#'+apm_obj.id+'-tooltip' );
+        // Update the global tooltip selector
+        tooltips = $('.tooltiptext');
         // Make it draggable and droppable
         apm_obj.html_elem.draggable(draggable_settings);
         apm_obj.html_elem.droppable(droppable_settings);
@@ -522,21 +552,17 @@ $( document ).ready(function () {
     }
 
     clickable_settings =  function () {
-        console.log('clickable_settings');
         // If we clicked on the same one again, hide the button
         var target_id = this.id;
         var apm_obj = get_apm_obj(this.id);
         if (apm_obj && apm_obj.dependent_ids && apm_obj.dependent_ids.length === 1) {
-            console.log(1);
             target_id = apm_obj.dependent_ids[0];
         }
         if (apm.show_action_buttons_for_id === target_id) {
-            console.log(2);
             apm.show_action_buttons_for_id = false;
             sync_action_buttons();
         }
         else {
-            console.log(3);
             apm.show_action_buttons_for_id = target_id;
             sync_action_buttons();
         }
@@ -931,6 +957,7 @@ $( document ).ready(function () {
                         apm_dep.sync_position(position_sync_time);
                     });
                 }
+                setTimeout(sync_action_buttons, 400);
             } else {
                 //console.log("Not syncing position because of player_moving_index");
             }

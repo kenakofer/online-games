@@ -11,7 +11,6 @@
     min-width: 97px;
     height: 125px;
     position: absolute;
-    z-index: 0;
     transition: box-shadow 0.3s;
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
@@ -309,4 +308,31 @@ div.ui-tabs .ui-tabs-panel {
 #instructions-tab p {
     margin: 5px 0 5px 0;
     font-size: 16px;
+}
+
+.display-name.tooltiptext {
+    display: inline-block;
+    visibility: hidden;
+    max-width: 140px;
+    background-color: black;
+    color: #eee;
+    text-align: center;
+    border-radius: 6px;
+    padding: 2px 3px;
+    position: absolute;
+    font-family: Sans-Serif;
+    font-size: 11px;
+    white-space: initial;
+    z-index: 90000000; /* just below message window */
+}
+/* Make the arrow on the tooltip */
+.display-name.tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px; /* keep these two the same to stay centered. Size of the arrow */
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent; /* This makes the arrow shape by only having a top border */
 }
