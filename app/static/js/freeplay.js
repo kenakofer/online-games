@@ -540,6 +540,7 @@ $( document ).ready(function () {
         // Give it its html_elem
         apm_obj.html_elem = $( '#'+apm_obj.id );
         apm_obj.tooltip_elem = $( '#'+apm_obj.id+'-tooltip' );
+        apm_obj.tooltip_elem.on('click', function(){ $(this).css({'visibility':'hidden'}); });
         // Update the global tooltip selector
         tooltips = $('.tooltiptext');
         // Make it draggable and droppable
