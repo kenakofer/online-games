@@ -337,3 +337,13 @@ div.ui-tabs .ui-tabs-panel {
     border-style: solid;
     border-color: transparent transparent black transparent; /* This makes the arrow shape by only having a top border */
 }
+.ui-resizable-handle.ui-resizable-sw {
+    z-index: -1 !important;
+    border-radius: 0 0 0 7px;
+    width: 16px;
+    height: 16px;
+    left: 0px;
+    bottom: 0px;
+    /* Steal the background image from se */
+    background-position: -64px -224px;
+}

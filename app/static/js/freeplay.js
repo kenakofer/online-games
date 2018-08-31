@@ -1111,14 +1111,19 @@ $( document ).ready(function () {
         var y = html_pos.top;
         return [x, y];
     };
-    $(".resizable").resizable({
+    $("#private-hand").resizable({
         handles: {
             'n':'#handle'
         }
     });
     chat_window.tabs();
     chat_window.draggable();
-    chat_window.resizable();
+    chat_window.resizable({
+        handles: 's, w, sw',
+    });
+    // Since jquery doesn't want to show a sw handle, let's make it from the se!"
+    $('.ui-resizable-sw').addClass('ui-icon').addClass('ui-icon-gripsmall-diagonal-se').addClass('rotate');
+
     var message_waiting_to_send = false;
     var add_message_spinner = function () {
         if (message_waiting_to_send) {
