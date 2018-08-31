@@ -50,7 +50,7 @@
 #handle {
     width: 110%;
     left: -3px;
-    height: 12px;
+    height: 13px;
     top: -13px;
     background: #9b7;
     border-top: 1px solid #242;
@@ -191,17 +191,23 @@ li.ui-tabs-tab.ui-corner-top.ui-tab {
     border-width: 1px !important;
     padding: 0px !important;
     margin-bottom: 0px !important;
-    font-size: 14px;
+    font-size: 13px;
 }
 div.ui-tabs .ui-tabs-panel {
     padding: 0px;
-    margin-top: 10px;
+    margin-top: 8px;
     display: flex;
     flex-flow: column;
     flex-grow: 1;
     overflow-y: auto;
 }
+.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+    padding: .5em .2em !important;
+}
 #chat-window {
+    /* Permanently stuck to left of screen */
+    right: 0 !important;
+    left: initial !important;
     width: 255px;
     height: 380px;
     z-index: 100000000;
@@ -209,7 +215,7 @@ div.ui-tabs .ui-tabs-panel {
     right: 0px;
     top: 70px;
     background: #ffa;
-    padding: 10px;
+    padding: 8px;
     border: 2px solid #663;
     border-radius: 7px;
     display: flex;
