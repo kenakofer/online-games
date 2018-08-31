@@ -1117,12 +1117,22 @@ $( document ).ready(function () {
         }
     });
     chat_window.tabs();
-    chat_window.draggable();
+    chat_window.draggable({
+       stop: function( event, ui ) {
+           containment: ".content",
+	   $(this).css("top",parseInt($(this).css("top")) / ($(".content").height() / 100)+"%");
+           console.log('here');
+       }
+    });
     chat_window.resizable({
         handles: 's, w, sw',
     });
     // Since jquery doesn't want to show a sw handle, let's make it from the se!"
     $('.ui-resizable-sw').addClass('ui-icon').addClass('ui-icon-gripsmall-diagonal-se').addClass('rotate');
+    // Draggability breaks the input focusability on mobile I guess, so this fixes it for mobile
+    $('#chat-window input').click(function() {
+        $(this).focus();
+    });
 
     var message_waiting_to_send = false;
     var add_message_spinner = function () {
