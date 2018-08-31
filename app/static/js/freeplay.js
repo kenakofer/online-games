@@ -330,7 +330,13 @@ $( document ).ready(function () {
         var html_pos = html_obj.position();
 
         // Hide all tooltips (to possibly enable one later on)
-        tooltips.css({"visibility":"hidden"});
+        if (tooltips) {
+            tooltips.css({"visibility":"hidden"});
+        } else {
+            // The cards haven't loaded yet. We should get out.
+            return;
+        }
+
 
         if (!should_hide && html_pos) {
             var position_type = 'absolute';
@@ -977,6 +983,7 @@ $( document ).ready(function () {
     var up_button = $( "#up-button" );
     var down_button = $( "#down-button" );
     var custom_text = $( "#custom-text" );
+    var minimize_button = $( "#minimize-button" );
     var chat_window = $( "#chat-window" );
     var action_button_br = $( "#action-button-br" );
     var instructions_tab = $( "#instructions-tab" );
@@ -1121,7 +1128,6 @@ $( document ).ready(function () {
        stop: function( event, ui ) {
            containment: ".content",
 	   $(this).css("top",parseInt($(this).css("top")) / ($(".content").height() / 100)+"%");
-           console.log('here');
        }
     });
     chat_window.resizable({
@@ -1159,5 +1165,40 @@ $( document ).ready(function () {
             custom_text.val("");
             return false;
         }
+    });
+
+    var maximize = function(){};
+
+    minimize_button.on('click', function() {
+        // Make the maximize function, which when called later will
+        // resume the current dimensions
+        var w = chat_window.width();
+        var h = chat_window.height();
+        maximize = function(){
+            chat_window.css({
+                'width':w,
+                'height':h
+            });
+            minimize_button.show();
+            //Disable the ability to hide a tab by clicking it
+            chat_window.tabs('option', 'collapsible', false);
+            chat_window.resizable('enable');
+            maximize = function(){};
+        };
+        minimize_button.hide();
+        // Shrink the chat_window and disable its resizable
+        chat_window.css({
+            'width':'80px',
+            'height':'67px'
+        });
+        $('.ui-tabs-panel', chat_window).hide();
+        chat_window.tabs('option', 'collapsible', true);
+        chat_window.tabs('option', 'active', false);
+        //chat_window.tabs('option', 'active', false);
+        //$('.ui-tabs-active', chat_window).removeClass('ui-tabs-active ui-state-active');
+        chat_window.resizable('disable');
+    });
+    $('.ui-tabs-tab', chat_window).on('click', function() {
+        maximize();
     });
 });

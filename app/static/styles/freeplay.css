@@ -230,6 +230,23 @@ div.ui-tabs .ui-tabs-panel {
     font-size: 12px;
     flex-grow: 1;
 }
+#minimize-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    background: #ff4848;
+    border-radius: 3px;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 26px;
+    line-height: 15px;
+    color: #ffffab;
+    margin: 3px;
+    border: 1px solid #a8966c;
+}
 .quick-message-button {
     padding: 2px;
     margin: 1px;
