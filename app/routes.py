@@ -169,6 +169,7 @@ def freeplay_lobby():
 @app.route('/freeplay/<game_name>/<gameid>/')
 @login_required
 def freeplay(game_name, gameid):
+    game_name = game_name.lower()
     # Current_user now will be the same object as current_user, so we get user here
     user = get_stable_user()
     print("{} is requesting to join freeplay gameid {}".format(user, gameid))
