@@ -738,7 +738,7 @@ $( document ).ready(function () {
 
     socket.on('connect', function () {
         socket.emit('JOIN ROOM', {room:template_gameid});
-        request_update();
+        // The server will ask us to request_update
     });
 
     socket.on('UPDATE', function (d) {

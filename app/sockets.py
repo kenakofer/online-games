@@ -118,16 +118,20 @@ def connect_freeplay():
 
 @socketio.on('UPDATE REQUEST', namespace='/freeplay')
 def update_request(data):
-    print('Client UPDATE REQUEST: {}'.format(data))
+    print('Client {}: UPDATE REQUEST: {}'.format(get_stable_user(), data))
     print('The games are {}'.format(freeplay_games))
     g = freeplay_games[data['gameid']]
-    g.send_update(instructions=True)
+    g.send_update(keys=['all'], broadcast=False)
     g.time_of_last_update = time()
 
 @socketio.on('JOIN ROOM', namespace='/freeplay')
 def join(data):
     join_room(data['room'])
-    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
+    g = freeplay_games[data['room']]
+    # Send the newly joined client all the stuff
+    g.send_update(keys=['all'], broadcast=False)
+    # Send everyone the new player list
+    g.send_update(keys=['players'])
 
 @socketio.on('START MOVE', namespace='/freeplay')
 def start_move(data):

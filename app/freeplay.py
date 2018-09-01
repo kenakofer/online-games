@@ -88,7 +88,7 @@ class TableMovable:
         # If it was inside something, take it out (only if the user if moving the dependent and not the container)
         if self.parent and not recursive:
             self.parent.dependents.remove(self)
-            self.game.send_update([self, self.parent], messages = False, include_self=False )
+            self.game.send_update([self, self.parent], include_self=False )
             p = self.parent
             self.parent = None
             p.check_should_destroy()
@@ -275,7 +275,7 @@ class Card(TableMovable):
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
-            self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
+            self.game.send_update(which_movables = [self, other] + other.dependents)
 
         # Single Card dropped onto single card
         #elif type(other) is Card:
@@ -291,7 +291,7 @@ class Card(TableMovable):
             other.stop_move(None, self.position, no_check=True, no_update=True)
             print(self.position)
             print(other.position)
-            self.game.send_update(which_movables = [self, other, new_deck], messages = False)
+            self.game.send_update([self, other, new_deck])
 
     def roll(self, no_update=True):
         print("Can't roll card! "+self.id)
@@ -386,7 +386,7 @@ class Deck(TableMovable):
             d.push_to_top(moving=False)
         # Update all clients
         if not no_update:
-            self.game.send_update([self]+self.dependents, messages = False)
+            self.game.send_update([self]+self.dependents)
 
     def shuffle_cards(self, no_update=False):
         # In place shuffle
@@ -395,7 +395,7 @@ class Deck(TableMovable):
             d.push_to_top(moving=False)
         # Update all clients
         if not no_update:
-            self.game.send_update([self]+self.dependents, messages = False)
+            self.game.send_update([self]+self.dependents)
 
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position
@@ -421,7 +421,7 @@ class Deck(TableMovable):
             for o in other_deps:
                 o.stop_move(None, self.position, no_check=True, no_update=True)
             # Update only the new parent deck and those cards which were added to it
-            self.game.send_update(which_movables = [self] + self.dependents, messages = False)
+            self.game.send_update([self] + self.dependents)
 
         # Single Card dropped onto Deck
         #elif type(other) is Card:
@@ -433,7 +433,7 @@ class Deck(TableMovable):
                 other.current_image = self.dependents[0].current_image
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
-            self.game.send_update(which_movables = [self, other] + other.dependents, messages = False)
+            self.game.send_update([self, other] + other.dependents)
 
     def roll(self, no_update=False):
         for d in self.dependents:
@@ -450,7 +450,7 @@ class Deck(TableMovable):
         for d in self.dependents:
             d.push_to_top(moving=False)
         if not no_update:
-            self.game.send_update([self]+self.dependents, messages = False)
+            self.game.send_update([self]+self.dependents)
             return
 
     def get_standard_deck(game):
@@ -599,7 +599,7 @@ class Deck(TableMovable):
                 if not which_face == "same face":
                     card.current_image = 0 if (which_face == 'face up') else 1
         new_deck.push_to_top(moving = False)
-        self.game.send_update(which_movables = [new_deck] + new_deck.dependents + [self], messages = False)
+        self.game.send_update([new_deck] + new_deck.dependents + [self])
         # If the deck has 1 or fewer cards, destroy it
         new_deck.check_should_destroy()
 
@@ -630,11 +630,8 @@ class FreeplayGame:
         self.sort_index = 0
         self.private_hand_height = None;
 
-        #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/san_juan/game.json')
-        #Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/rook/game.json')
         Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/'+deck_name+'/game.json')
         self.get_instructions_from_markdown(app.root_path+'/static/images/freeplay/'+deck_name+'/instructions.md')
-        self.send_update()
 
     def get_sort_index(self):
         self.sort_index += 1
@@ -672,7 +669,7 @@ class FreeplayGame:
         # It doesn't exist, so let's tell the clients
         self.thread_lock.acquire()
 
-        print('Can\'t find {}, telling clients to destroy...'.format(id))
+        print('Can\'t find {}, telling client to destroy...'.format(id))
 
         data = {'movables_info':[]}
         data['movables_info'].append({
@@ -680,10 +677,10 @@ class FreeplayGame:
             "destroy":True,
         })
         with app.test_request_context('/'):
-            socketio.emit('UPDATE', data, broadcast=True, room=self.gameid, namespace='/freeplay')
+            socketio.emit('UPDATE', data, broadcast=False, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
-        # And since things might be royally messed up client side, update everything
-        self.send_update()
+        # And since things might be royally messed up client side, update their movables
+        self.send_update(broadcast=False)
         return False
 
     def get_instructions_from_markdown(self, path_to_md):
@@ -711,34 +708,40 @@ class FreeplayGame:
         self.thread_lock.release()
         return all_data
 
-    def send_update(self, which_movables=None, messages=True, include_self=True, instructions=False):
-        print("sending update")
+    def send_update(self, which_movables=None, keys=None, include_self=True, broadcast=True):
+        print("sending update:")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
             print("blocked...")
             self.thread_lock.acquire()
-        which_movables = list(set(which_movables or self.all_movables.values()))
-        print("updating {} objects".format(len(which_movables)))
-        TableMovable.sort_movables_for_sending(which_movables)
-        # Most of the info needed in the cards
-        movables_info = [m.get_info() for m in which_movables]
-        # Only send first names
-        player_names = [p.get_display_name().split()[0] for p in self.players if p.session_user]
+            print("released.");
 
-        all_data = {
-            "movables_info":movables_info,
-            "players":player_names
-            }
-        if messages:
+        if keys == None:
+            keys = ['movables_info']
+
+        all_data = {}
+        if 'movables_info' in keys or 'all' in keys:
+            # Most of the info needed in the cards
+            which_movables = list(set(which_movables or self.all_movables.values()))
+            TableMovable.sort_movables_for_sending(which_movables)
+            movables_info = [m.get_info() for m in which_movables]
+            all_data["movables_info"] = movables_info
+        if 'players' in keys or 'all' in keys:
+            # Only send first names
+            player_names = [p.get_display_name().split()[0] for p in self.players if p.session_user]
+            all_data['players'] = player_names
+        if 'messages' in keys or 'all' in keys:
             all_data['messages'] = self.messages
+        if 'quick_messages' in keys or 'all' in keys:
             all_data['quick_messages'] = self.quick_messages
-        if instructions and self.instructions_html:
+        if 'instructions_html' in keys or 'all' in keys:
             all_data['instructions_html'] = self.instructions_html
-        if self.private_hand_height != None:
+        if 'private_hand_height' in keys or 'all' in keys:
             all_data['private_hand_height'] = self.private_hand_height
+        print('updated keys: '+str(list(all_data.keys())))
 
         #with app.test_request_context('/'):
-        socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
+        socketio.emit('UPDATE', all_data, broadcast=broadcast, room=self.gameid, namespace='/freeplay', include_self=include_self)
         self.thread_lock.release()
         return all_data
 
@@ -761,4 +764,3 @@ class FreeplayGame:
         if time() - self.time_of_last_update > 60*60:
             self.game_over = True
             print("Stopping game {} due to inactivity".format(self.gameid))
-            self.send_update()
