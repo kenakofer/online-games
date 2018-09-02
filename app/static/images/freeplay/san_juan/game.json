@@ -9,274 +9,274 @@
             "shuffle":true,
             "cards":[
                 {
-                    "alt_text":"indigo",
+                    "alt_text":"Indigo plant: Producer phase - Owner produces 1 indigo.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/001.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":11
                 },
                 {
-                    "alt_text":"sugar",
+                    "alt_text":"Sugar mill: Producer phase - Owner produces 1 sugar.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/002.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":9
                 },
                 {
-                    "alt_text":"tobacco",
+                    "alt_text":"Tobacco storage: Producer phase - Owner produces 1 tobacco.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/003.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":9
                 },
                 {
-                    "alt_text":"coffee",
+                    "alt_text":"Coffee roaster: Producer phase - Owner produces 1 coffee.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/004.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":9
                 },
                 {
-                    "alt_text":"silver",
+                    "alt_text":"Silver smelter: Producer phase - Owner produces 1 silver.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/005.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":9
                 },
                 {
-                    "alt_text":"hut",
+                    "alt_text":"Hut: Trader phase - Owner draws 1 card if no good was sold.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/006.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"guard_room",
+                    "alt_text":"Guard room: Beginning of a round - All players wiouthout a guard room reduce their hand to 6 cards (tower owners ignore this).",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/007.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"office building",
+                    "alt_text":"Office building: Beginning of a round - Owner may discard 1 or 2 cards and then draw that many new cards.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/008.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"gold mine",
+                    "alt_text":"Gold mine: Prospector phase - Owner draws 4 cards. If all have different costs, keep the cheapest.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/009.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"archive",
+                    "alt_text":"Archive: Councillor phase - Owner may discard cards from their hand and/or cards that were just drawn.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/010.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"smithy",
+                    "alt_text":"Smithy: Builder phase - Owner pays 1 card less when building production buildings.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/011.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"tavern",
+                    "alt_text":"Tavern: Builder phase - Owner draws 1 card only when having the fewest buildings after building.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/012.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"poor house",
+                    "alt_text":"Poor house: Builder phase - Owner draws a card only if holding 0 or 1 cards after building.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/013.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"crane",
+                    "alt_text":"Crane: Builder phase - Owner may build over one building and pay only the difference.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/014.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"trading post",
+                    "alt_text":"Trading post: Trader phase - Owner may sell one additional good.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/015.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"market stand",
+                    "alt_text":"Market stand: Trader phase - Owner draws 1 card more when selling at least 2 goods.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/016.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"black market",
+                    "alt_text":"Black market: Builder phase - Owner may discard any 1 or 2 goods and reduce the building cost by 1 or 2 respectively.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/017.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"well",
+                    "alt_text":"Well: Producer phase - Owner draws 1 card when producing at least 2 goods.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/018.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"bank",
+                    "alt_text":"Bank: Beginning of a round - Once in the game, the owner may put any number of cards from their hand under the bank. Each is worth 1 VP at game end.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/019.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"park",
+                    "alt_text":"Park: Builder phase - When the owner builds over a park using a crane, it lowers the cost of the new building by 6.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/020.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"customs office",
+                    "alt_text":"Customs office: Councillor phase - Put one good on the customs office. Trader phase - Sell this good for 2 cards.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/021.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"statue",
+                    "alt_text":"Statue: Monument - No function",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/022.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"carpenter",
+                    "alt_text":"Carpenter: Builder phase - Owner draws 1 card after building a city building.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/023.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"aqueduct",
+                    "alt_text":"Aquaduct: Producer phase - Owner produces 1 good more.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/024.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"tower",
+                    "alt_text":"Tower: Beginning of a round - Owner may keep up to 12 cards.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/025.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"chapel",
+                    "alt_text":"Chapel: Beginning of a round - Owner may place 1 card from their hand under the chapel (worth 1 VP at game end).",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/026.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"quarry",
+                    "alt_text":"Quarry: Builder phase - Owner pays 1 card less when building a city building.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/027.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"prefecture",
+                    "alt_text":"Prefecture: Councillor phase - Owner keeps 1 card more from those drawn.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/028.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"harbor",
+                    "alt_text":"Harbor: Trader phase - Owner puts one just-sold good under the harbor (worth 1 VP at game end).",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/029.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"market hall",
+                    "alt_text":"Market hall: Trader phase - Owner draws one card more when selling at least one good.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/030.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"victory column",
+                    "alt_text":"Victory column: Monument - No special function.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/031.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"residence",
-                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/032.jpg",
-                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
-                    "back_image_style":"100% 100%",
-                    "repetitions":3
-                },
-                {
-                    "alt_text":"guild hall",
-                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/033.jpg",
-                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
-                    "back_image_style":"100% 100%",
-                    "repetitions":3
-                },
-                {
-                    "alt_text":"triumphal arch",
-                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/034.jpg",
-                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
-                    "back_image_style":"100% 100%",
-                    "repetitions":3
-                },
-                {
-                    "alt_text":"palace",
-                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/035.jpg",
-                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
-                    "back_image_style":"100% 100%",
-                    "repetitions":3
-                },
-                {
-                    "alt_text":"city hall",
-                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/036.jpg",
-                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
-                    "back_image_style":"100% 100%",
-                    "repetitions":3
-                },
-                {
-                    "alt_text":"goldsmith",
+                    "alt_text":"Hero: Monument - No special function.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/037.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"hero",
+                    "alt_text":"Library: All phases - Owner doubles the privilege for every role selector.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/038.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
                 },
                 {
-                    "alt_text":"library",
+                    "alt_text":"Goldsmith: Prospector phase - Owner draws 1 card and keeps it only if it is a building that no player has yet built.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/039.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"Residence: Game end - Owner earns 4-7-9-10 VP for 1-2-3-4 sets of 3 different buildings of the same cost.",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/032.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"Guild hall: Game end - Owner earns 1 additional VP for each production building and 1 VP for each type of production building.",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/033.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"Triumphal arch: Game end - Owner earns 4-6-8 VP for 1-2-3 monuments.",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/034.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"Palace: Game end - Owner earns 1 additional VP for every 4 VP.",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/035.jpg",
+                    "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":3
+                },
+                {
+                    "alt_text":"City hall: Game end - Owner earns 1 additional VP for each city building.",
+                    "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/036.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/000.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":3
@@ -289,7 +289,7 @@
             "face_up":true,
             "cards": [
                 {
-                    "alt_text":"cathedral",
+                    "alt_text":"Cathedral: Game end - Owner earns 4-7-9-10 VP for 1-2-3-4 opponent-owner 6-cost buildings.",
                     "front_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/040.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/main_deck_jpg/040.jpg",
                     "back_image_style":"100% 100%",
@@ -305,37 +305,37 @@
             "default_face_down_offset":[37,0],
             "cards":[
                 {
-                    "alt_text":"governor",
+                    "alt_text":"Governor: Reminds owners of office buildings, banks, and chapels of building functions. Checks players' hand limits (6, 7, or 12 cards). Starts the new round.",
                     "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/000.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/000.jpg",
                     "back_image_style":"100% 100%"
                 },
                 {
-                    "alt_text":"builder",
+                    "alt_text":"Builder: Action - Each player can build one building. Privilege - Builder pays one card less.",
                     "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/001.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/001.jpg",
                     "back_image_style":"100% 100%"
                 },
                 {
-                    "alt_text":"councillor",
+                    "alt_text":"Councillor: Action - Each player draws 2 cards and chooses one to keep. Privilege - Councillor draws an additional 3 cards.",
                     "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/002.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/002.jpg",
                     "back_image_style":"100% 100%"
                 },
                 {
-                    "alt_text":"producer",
+                    "alt_text":"Producer: Action - Each player can produce one good. Privilege - Producer car produce one additional good.",
                     "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/003.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/003.jpg",
                     "back_image_style":"100% 100%"
                 },
                 {
-                    "alt_text":"prospector",
+                    "alt_text":"Prospector: Action - None. Privilege - Prospector draws one card.",
                     "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/004.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/004.jpg",
                     "back_image_style":"100% 100%"
                 },
                 {
-                    "alt_text":"trader",
+                    "alt_text":"Trader: Action - Each player can sell one good. Privilege. Trader can sell one additional good.",
                     "front_image_url":"/static/images/freeplay/san_juan/roles_jpg/005.jpg",
                     "back_image_url":"/static/images/freeplay/san_juan/roles_jpg/005.jpg",
                     "back_image_style":"100% 100%"
@@ -351,23 +351,23 @@
             "default_face_down_offset":[3,2],
             "cards":[
                 {
-                    "alt_text":"12233",
+                    "alt_text":"Indigo: 1, Sugar: 2, Tobacco: 2, Coffee: 3, Silver: 3",
                     "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/000.jpg"
                 },
                 {
-                    "alt_text":"12223",
+                    "alt_text":"Indigo: 1, Sugar: 2, Tobacco: 2, Coffee: 2, Silver: 3",
                     "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/001.jpg"
                 },
                 {
-                    "alt_text":"11223",
+                    "alt_text":"Indigo: 1, Sugar: 1, Tobacco: 2, Coffee: 2, Silver: 3",
                     "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/002.jpg"
                 },
                 {
-                    "alt_text":"11222",
+                    "alt_text":"Indigo: 1, Sugar: 1, Tobacco: 2, Coffee: 2, Silver: 2",
                     "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/003.jpg"
                 },
                 {
-                    "alt_text":"11122",
+                    "alt_text":"Indigo: 1, Sugar: 1, Tobacco: 1, Coffee: 2, Silver: 2",
                     "front_image_url":"/static/images/freeplay/san_juan/trades_jpg/004.jpg"
                 }
             ]
