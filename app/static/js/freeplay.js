@@ -136,6 +136,13 @@ $( document ).ready(function () {
             }
         }
     };
+    TableMovable.prototype.refresh_html_elem = function () {
+        if (! this.html_elem || this.html_elem.closest('body').length == 0)
+            if ([-1, template_player_index].includes(this.privacy) && $( '#'+this.id).length ) {
+                this.html_elem = $( '#'+this.id );
+                console.log('switching the html elem');
+            }
+    };
     TableMovable.prototype.dimension_offset = function () {
         if (this.type == 'Deck') {
             return [15, 36];
@@ -287,10 +294,14 @@ $( document ).ready(function () {
         this.privacy = privacy_index;
         var new_container;
         this.html_elem.detach();
-        if (privacy_index == -1)
+        console.log(this.html_elem);
+        if (privacy_index == -1) {
             new_container = public_movables;
-        else if (privacy_index == template_player_index)
+            console.log('putting in public');
+        } else if (privacy_index == template_player_index) {
             new_container = my_private_movables;
+            console.log('putting in my_private');
+        }
         if (new_container) {
             this.html_elem = this.html_elem.appendTo(new_container);
         }
@@ -452,8 +463,10 @@ $( document ).ready(function () {
      */
     TableMovable.prototype.set_droppability = function () {
         // If the html_elem doesn't exist or is outdated (like from a private/public switch)
-        if (! this.html_elem || this.html_elem.closest('body').length == 0)
-            this.html_elem = $('#'+this.id);
+        if (! this.html_elem || this.html_elem.closest('body').length == 0) {
+            return;
+            //this.html_elem = $('#'+this.id);
+        }
         if ( this.parent_id === false || this.parent_id === undefined ) {
             this.html_elem.droppable(droppable_settings);
         } else {
@@ -817,7 +830,7 @@ $( document ).ready(function () {
 
         }
         //Set private hand height
-        if (data.private_hand_height !== undefined) {
+        if (! [undefined, null].includes(data.private_hand_height)) {
             set_private_hand_once(data.private_hand_height, parseInt(private_hand.css('bottom'), 10));
         }
         //Movables changes
@@ -835,9 +848,7 @@ $( document ).ready(function () {
                 position_sync_time = 0;
                 should_sync_position = true;
             }
-            // If the html_elem doesn't exist or is outdated (like from a private/public switch)
-            if (! apm_obj.html_elem || apm_obj.html_elem.closest('body').length == 0)
-                apm_obj.html_elem = $('#'+apm_obj.id);
+            apm_obj.refresh_html_elem();
 
             //Update its info
             if ('dependents' in obj_data) {
@@ -891,7 +902,7 @@ $( document ).ready(function () {
                     }
                 });
                 // The html_elem has changed
-                apm_obj.html_elem = $('#'+apm_obj.id);
+                apm_obj.refresh_html_elem();
             }
             if ('type' in obj_data) {
                 apm_obj.type = obj_data.type;

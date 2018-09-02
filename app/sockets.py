@@ -126,8 +126,10 @@ def update_request(data):
 
 @socketio.on('JOIN ROOM', namespace='/freeplay')
 def join(data):
+    print('Client {}: JOIN ROOM: {}'.format(get_stable_user(), data))
     join_room(data['room'])
     g = freeplay_games[data['room']]
+    print('just tested broadcast')
     # Send the newly joined client all the stuff
     g.send_update(keys=['all'], broadcast=False)
     # Send everyone the new player list
