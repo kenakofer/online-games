@@ -256,11 +256,7 @@ $( document ).ready(function () {
             "min-width": width,
             "height": height
         };
-        if (time === 0) {
-            this.html_elem.css( css_obj );
-        } else {
-            this.html_elem.stop(true, false).animate( css_obj, {duration:time, queue:false} );
-        }
+        this.html_elem.stop(true, false).animate( css_obj, {duration:time, queue:false} );
         // Make the height of the content window big enough to scroll down and see it
         // Was having an issue with html_elem.position(...) is undefined, so check that
         if (! currently_dragging && this.html_elem.position()) {
@@ -294,13 +290,15 @@ $( document ).ready(function () {
         this.privacy = privacy_index;
         var new_container;
         this.html_elem.detach();
-        console.log(this.html_elem);
         if (privacy_index == -1) {
             new_container = public_movables;
             console.log('putting in public');
         } else if (privacy_index == template_player_index) {
             new_container = my_private_movables;
             console.log('putting in my_private');
+        } else {
+            new_container = hidden_movables;
+            console.log('putting in hidden');
         }
         if (new_container) {
             this.html_elem = this.html_elem.appendTo(new_container);
@@ -1001,6 +999,7 @@ $( document ).ready(function () {
     var message_box = $( "#message-box" );
     var public_movables = $('#public-movables');
     var my_private_movables = $('#my-private-movables');
+    var hidden_movables = $('#hidden-movables');
 
     apm.set_other_players_info_text();
     apm.set_private_hand_label_text();

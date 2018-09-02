@@ -370,3 +370,6 @@ div.ui-tabs .ui-tabs-panel {
     /* Steal the background image from se */
     background-position: -64px -224px;
 }
+#hidden-movables {
+    display: none;
+}
