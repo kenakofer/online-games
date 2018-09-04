@@ -231,6 +231,7 @@ div.ui-tabs .ui-tabs-panel {
     width: auto;
     font-size: 12px;
     flex-grow: 1;
+    padding-left: 20px;
 }
 #minimize-button {
     position: absolute;
@@ -279,6 +280,7 @@ div.ui-tabs .ui-tabs-panel {
 .message-time {
     color: gray;
     font-family: "Courier New", Courier, monospace;
+    margin-left: -18px;
 }
 .message-name {
     color: #f9f;
@@ -286,7 +288,6 @@ div.ui-tabs .ui-tabs-panel {
     font-weight: bold;
 }
 .message-text {
-    margin-left: 20px;
     color: #000;
     font-size: 15px;
     box-decoration-break: clone; /* Makes the margin apply to each line of a multiline span */

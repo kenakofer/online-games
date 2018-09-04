@@ -5,6 +5,7 @@ from time import sleep, time
 from json import load
 from collections import OrderedDict
 from markdown2 import markdown
+from flask_login import current_user
 
 #The dict to be filled with freeplay_games
 freeplay_games = {}
@@ -24,6 +25,17 @@ class FreeplayPlayer():
         if self.session_user:
             return self.session_user.fullname
         return None
+
+    def get_short_display_name(self):
+        if self.session_user:
+            return self.session_user.fullname.split()[0]
+        return None
+
+    def get_colored_tag(self):
+        dn = self.get_short_display_name()
+        if (dn):
+            return '$*'+str(self.player_index)+dn
+        return ""
 
     def __repr__(self):
         return self.session_user.fullname
@@ -586,9 +598,8 @@ class Deck(TableMovable):
         new_position[0] += self.dimensions[0]+40
         new_deck = Deck(self.game, new_position, self.dimensions[:], cards=[], text="", offset_per_dependent=[30,0])
         new_deck.privacy = self.privacy
+        count = min(count, len(self.dependents))
         for i in range(count):
-            if len(self.dependents) == 0:
-                break
             card = self.dependents[-1]
             self.dependents = self.dependents[:-1]
             card.parent = new_deck
@@ -600,6 +611,11 @@ class Deck(TableMovable):
                     card.current_image = 0 if (which_face == 'face up') else 1
         new_deck.push_to_top(moving = False)
         self.game.send_update([new_deck] + new_deck.dependents + [self])
+        player = self.game.get_player_from_session(current_user)
+        deck_name = ' from ' + self.display_name if self.display_name else ""
+        if (self.privacy == -1):
+            self.game.add_message(None, "{} just dealt {} cards{}".format(player.get_colored_tag(), count, deck_name))
+            self.game.send_messages()
         # If the deck has 1 or fewer cards, destroy it
         new_deck.check_should_destroy()
 
@@ -649,7 +665,7 @@ class FreeplayGame:
         self.messages.append({
             'id':           'MESS'+str(self.message_counter).zfill(4),
             'timestamp':    time(),
-            'player_index': player.player_index,
+            'player_index': player.player_index if player else -1, # It's the server (-1) if player is None
             'text':         text,
         })
         self.message_counter += 1;
@@ -734,7 +750,7 @@ class FreeplayGame:
             all_data["movables_info"] = movables_info
         if 'players' in keys or 'all' in keys:
             # Only send first names
-            player_names = [p.get_display_name().split()[0] for p in self.players if p.session_user]
+            player_names = [p.get_short_display_name()for p in self.players if p.session_user]
             all_data['players'] = player_names
         if 'messages' in keys or 'all' in keys:
             all_data['messages'] = self.messages

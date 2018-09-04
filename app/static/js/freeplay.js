@@ -787,9 +787,19 @@ $( document ).ready(function () {
         if (data.messages) {
             $('.loader').remove();
             var messages = data.messages.slice()
-            var start_message = messages.shift();
-            var last_time = start_message.timestamp;
-            var last_player_index = start_message.player_index;
+            // If we already have some messages client side, don't display the first one sent
+            // from the server. Use it instead to see if we need to print message headers on
+            // the subsequent one
+            var last_time = -1;
+            var last_player_index = -10;
+            if (! jQuery.isEmptyObject(apm.messages)) {
+                console.log('cutting it off');
+                var start_message = messages.shift();
+                if (start_message) {
+                    last_time = start_message.timestamp;
+                    last_player_index = start_message.player_index;
+                }
+            }
             var html_string = "";
             messages.forEach(function (m) {
                 var id = m.id;
@@ -811,7 +821,8 @@ $( document ).ready(function () {
                       seconds = seconds;
                     html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
                     var i = m.player_index;
-                    html_string += '<span class="message-name player-color-'+(i%6)+'">'+apm.players[m.player_index]+':</span><br>';
+                    var player_name = m.player_index >= 0 ? apm.players[m.player_index] : 'Server';
+                    html_string += '<span class="message-name player-color-'+((i+6)%6)+'">'+player_name+':</span><br>';
                 }
                 last_time = m.timestamp;
                 last_player_index = m.player_index;
@@ -821,12 +832,16 @@ $( document ).ready(function () {
                 // decode utf8 stuff so emojis and stuff are right (this has to come after)
                 text = decodeURIComponent(escape(text));
                 // If there is a color prefix, add that class
-                var class_string = "message-text";
-                if (text.startsWith("$*")) {
-                    class_string += ' player-color-'+(text.substring(2, 3) % 6);
-                    text = text.substring(3);
+                var words = text.split(' ');
+                for (var i in words) {
+                    if (words[i].startsWith("$*")) {
+                        var class_string = 'player-color-'+(words[i].substring(2, 3) % 6);
+                        words[i] = '</span><span class="message-text '+class_string+'">'+words[i].substring(3)+'</span><span class="message-text">';
+                    }
                 }
-                html_string += '<span class="'+class_string+'">'+text+'</span><br>';
+                text = words.join(' ');
+                text = '<span class="message-text">'+text+'</span>'
+                html_string += text;
                 html_string += '</div>';
             });
             message_box.append(html_string);
