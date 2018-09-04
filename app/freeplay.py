@@ -620,6 +620,7 @@ class FreeplayGame:
         self.all_movables = {}
         self.gameid = gameid
         self.id_counter = 0
+        self.message_counter = 0
         self.time_of_last_update = time()
         self.game_over=False
         self.messages = []
@@ -646,10 +647,12 @@ class FreeplayGame:
 
     def add_message(self, player, text):
         self.messages.append({
+            'id':           'MESS'+str(self.message_counter).zfill(4),
             'timestamp':    time(),
             'player_index': player.player_index,
             'text':         text,
         })
+        self.message_counter += 1;
 
     def get_new_id(self):
         self.id_counter += 1
@@ -696,13 +699,16 @@ class FreeplayGame:
             print(path_to_md+" does not exist or could not be loaded. Error:")
             print(e)
 
-    def send_messages(self):
+    def send_messages(self, send_all=False):
         print("sending message update")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
             print("blocked...")
             self.thread_lock.acquire()
-        all_data = {'messages':self.messages}
+        if send_all:
+            all_data = {'messages':self.messages}
+        else:
+            all_data = {'messages':self.messages[-5:]}
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()

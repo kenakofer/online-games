@@ -479,7 +479,7 @@ $( document ).ready(function () {
         var self = this;
         self.players = [];
         self.quick_messages = ["I win!", "Good game", "Your turn"];
-        self.messages = [];
+        self.messages = {}
         //self.movables = {};
         self.show_action_buttons_for_id = false;
         self.public_movables = {};
@@ -785,11 +785,17 @@ $( document ).ready(function () {
         }
         //Messages update
         if (data.messages) {
-            apm.messages = data.messages;
+            $('.loader').remove();
+            var messages = data.messages.slice()
+            var start_message = messages.shift();
+            var last_time = start_message.timestamp;
+            var last_player_index = start_message.player_index;
             var html_string = "";
-            var last_time = 0;
-            var last_player_index = -1;
-            data.messages.forEach(function (m) {
+            messages.forEach(function (m) {
+                var id = m.id;
+                apm.messages[id] = m;
+                $('#'+id, message_box).remove();
+                html_string += '<div id="'+id+'">';
                 if (m.timestamp - last_time > 15 || last_player_index != m.player_index) {
                     var date = new Date(m.timestamp*1000);
                     var hours = date.getHours();
@@ -821,8 +827,9 @@ $( document ).ready(function () {
                     text = text.substring(3);
                 }
                 html_string += '<span class="'+class_string+'">'+text+'</span><br>';
+                html_string += '</div>';
             });
-            message_box.html(html_string);
+            message_box.append(html_string);
             // Scroll to the bottom:
             message_box.stop(true, false).animate({scrollTop:message_box[0].scrollHeight}, {duration:300, queue:false});
             // Remove the bar on sending more messages
