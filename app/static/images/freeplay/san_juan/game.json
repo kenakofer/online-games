@@ -1,8 +1,8 @@
 {
     "decks": {
         "main deck":{
-            "width":110,
-            "height":175,
+            "width":90,
+            "height":143,
             "face_up":false,
             "default_face_up_offset":[37,0],
             "default_face_down_offset":[2,1],
@@ -284,8 +284,8 @@
             ]
         },
         "cathedral":{
-            "width":110,
-            "height":175,
+            "width":90,
+            "height":143,
             "face_up":true,
             "cards": [
                 {
@@ -298,10 +298,10 @@
             ]
         },
         "roles":{
-            "width":86,
-            "height":137,
+            "width":70,
+            "height":111,
             "face_up":true,
-            "default_face_up_offset":[37,0],
+            "default_face_up_offset":[33,0],
             "default_face_down_offset":[37,0],
             "cards":[
                 {
@@ -343,11 +343,11 @@
             ]
         },
         "trades":{
-            "width":33,
-            "height":137,
+            "width":25,
+            "height":103,
             "face_up":true,
             "shuffle":true,
-            "default_face_up_offset":[21,0],
+            "default_face_up_offset":[18,0],
             "default_face_down_offset":[3,2],
             "cards":[
                 {
