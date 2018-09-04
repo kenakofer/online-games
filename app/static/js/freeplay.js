@@ -1140,8 +1140,7 @@ $( document ).ready(function () {
     chat_window.tabs();
     chat_window.draggable({
        stop: function( event, ui ) {
-           containment: ".content",
-	   $(this).css("top",parseInt($(this).css("top")) / ($(".content").height() / 100)+"%");
+	   $(this).css("top",parseInt($(this).css("top")) / ($(window).height() / 100)+"%");
        }
     });
     chat_window.resizable({
