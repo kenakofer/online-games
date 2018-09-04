@@ -22,7 +22,9 @@
     padding-top: 3px;
     padding-left: 5px;
 }
-
+#tooltips-panel {
+    position: absolute;
+}
 #action-button-panel {
     position: absolute;
     white-space: nowrap;
@@ -347,7 +349,7 @@ div.ui-tabs .ui-tabs-panel {
     font-family: Sans-Serif;
     font-size: 11px;
     white-space: initial;
-    z-index: 90000000; /* just below message window */
+    z-index: 110000000; /* above everything else */
 }
 /* Make the arrow on the tooltip */
 .display-name.tooltiptext::after {

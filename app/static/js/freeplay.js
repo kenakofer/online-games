@@ -394,7 +394,8 @@ $( document ).ready(function () {
                     apm_obj.tooltip_elem.css({
                         'visibility':'visible',
                         'left':html_pos.left + html_obj.width()/2 - apm_obj.tooltip_elem.width()/2,
-                        'top': html_pos.top  + html_obj.height() + 10
+                        'top': html_pos.top  + html_obj.height() + 10,
+                        'position': position_type
                     });
                 }
             } else if (apm_obj.type == "Dice") {
@@ -551,8 +552,9 @@ $( document ).ready(function () {
         // Add it to the public list
         apm.public_movables[id] = apm_obj;
         // Add it to the html
-        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span></div><span id="'+id+'-tooltip" class="display-name tooltiptext"></span>');
-        // Give it its html_elem
+        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span></div>');
+        tooltip_panel.append('<span id="'+id+'-tooltip" class="display-name tooltiptext"></span>');
+        // Give it its html_elem and tooltip
         apm_obj.html_elem = $( '#'+apm_obj.id );
         apm_obj.tooltip_elem = $( '#'+apm_obj.id+'-tooltip' );
         apm_obj.tooltip_elem.on('click', function(){ $(this).css({'visibility':'hidden'}); });
@@ -875,6 +877,7 @@ $( document ).ready(function () {
                 }
                 // Remove from html
                 apm_obj.html_elem.remove();
+                apm_obj.tooltip_elem.remove();
                 // Prevent more calls to emit_continue_moe
                 apm_obj.player_moving_index = -1;
                 // Remove from the movables array
@@ -1000,6 +1003,7 @@ $( document ).ready(function () {
     var public_movables = $('#public-movables');
     var my_private_movables = $('#my-private-movables');
     var hidden_movables = $('#hidden-movables');
+    var tooltip_panel = $('#tooltip-panel');
 
     apm.set_other_players_info_text();
     apm.set_private_hand_label_text();
