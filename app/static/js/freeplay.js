@@ -292,13 +292,10 @@ $( document ).ready(function () {
         this.html_elem.detach();
         if (privacy_index == -1) {
             new_container = public_movables;
-            console.log('putting in public');
         } else if (privacy_index == template_player_index) {
             new_container = my_private_movables;
-            console.log('putting in my_private');
         } else {
             new_container = hidden_movables;
-            console.log('putting in hidden');
         }
         if (new_container) {
             this.html_elem = this.html_elem.appendTo(new_container);
@@ -793,7 +790,6 @@ $( document ).ready(function () {
             var last_time = -1;
             var last_player_index = -10;
             if (! jQuery.isEmptyObject(apm.messages)) {
-                console.log('cutting it off');
                 var start_message = messages.shift();
                 if (start_message) {
                     last_time = start_message.timestamp;
@@ -885,11 +881,12 @@ $( document ).ready(function () {
             if ('destroy' in obj_data && obj_data.destroy == true) {
                 console.log('destroying '+apm_obj.id);
                 // Make all the dependents orphans
-                apm_obj.dependent_ids.forEach(function (did) {
+                // As it is, destroying a parent destroys the child too, so this is unnecessary
+                /*apm_obj.dependent_ids.forEach(function (did) {
                     var dep_obj = get_apm_obj(did);
                     if (dep_obj)
                         dep_obj.set_parent_id(false);
-                });
+                });*/
                 // Make the parent lose the child
                 apm_obj.set_parent_id(false);
                 // If the action buttons were attached to it, detach them

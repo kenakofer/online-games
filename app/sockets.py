@@ -114,7 +114,6 @@ def card_move(data):
 @socketio.on('connect', namespace='/freeplay')
 def connect_freeplay():
     print('Client {}: Connected to freeplay'.format(current_user))
-    emit('NOTIFICATION', {'data':'Welcome to freeplay, {}!'.format(current_user)})
 
 @socketio.on('UPDATE REQUEST', namespace='/freeplay')
 def update_request(data):
@@ -129,7 +128,9 @@ def join(data):
     print('Client {}: JOIN ROOM: {}'.format(get_stable_user(), data))
     join_room(data['room'])
     g = freeplay_games[data['room']]
-    print('just tested broadcast')
+    # Add a welcome message
+    name = g.get_active_player_tag()
+    g.add_message(None, name+' has joined the game')
     # Send the newly joined client all the stuff
     g.send_update(keys=['all'], broadcast=False)
     # Send everyone the new player list
@@ -266,8 +267,18 @@ def destroy(data):
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
+    # Add a message
+    if (obj.privacy == -1):
+        name = g.get_active_player_tag()
+        obj_name = str(1+len(obj.dependents))+ ' thing'
+        if (len(obj.dependents)):
+            obj_name += 's'
+        g.add_message(None, name+' has deleted '+obj_name)
+        g.send_messages()
+    # Really destroy the object and dependents
     obj.destroy(destroy_dependents=True)
     g.time_of_last_update = time()
+
 @socketio.on('PCO SET', namespace='/freeplay')
 def pco_set(data):
     g = freeplay_games[data['gameid']]

@@ -396,15 +396,28 @@ class Deck(TableMovable):
         self.dependents.sort(key=lambda card: card.sort_index)
         for d in self.dependents:
             d.push_to_top(moving=False)
+        # Add a message
+        if (self.privacy == -1):
+            name = self.game.get_active_player_tag()
+            deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
+            self.game.add_message(None, name+' has sorted '+deck_name)
+            self.game.send_messages()
         # Update all clients
         if not no_update:
             self.game.send_update([self]+self.dependents)
+
 
     def shuffle_cards(self, no_update=False):
         # In place shuffle
         shuffle(self.dependents)
         for d in self.dependents:
             d.push_to_top(moving=False)
+        # Add a message
+        if (self.privacy == -1):
+            name = self.game.get_active_player_tag()
+            deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
+            self.game.add_message(None, name+' has shuffled '+deck_name)
+            self.game.send_messages()
         # Update all clients
         if not no_update:
             self.game.send_update([self]+self.dependents)
@@ -649,6 +662,13 @@ class FreeplayGame:
 
         Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/'+deck_name+'/game.json')
         self.get_instructions_from_markdown(app.root_path+'/static/images/freeplay/'+deck_name+'/instructions.md')
+
+    def get_active_player_tag(self):
+        player = self.get_player_from_session(current_user)
+        if player:
+            name = player.get_colored_tag()
+            return name
+        return "Someone"
 
     def get_sort_index(self):
         self.sort_index += 1
