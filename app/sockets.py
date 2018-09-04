@@ -268,13 +268,12 @@ def destroy(data):
         return False
     obj = g.all_movables[data['obj_id']]
     # Add a message
-    if (obj.privacy == -1):
-        name = g.get_active_player_tag()
-        obj_name = str(1+len(obj.dependents))+ ' thing'
-        if (len(obj.dependents)):
-            obj_name += 's'
-        g.add_message(None, name+' has deleted '+obj_name)
-        g.send_messages()
+    name = g.get_active_player_tag()
+    obj_name = str(1+len(obj.dependents))+ ' thing'
+    if (len(obj.dependents)):
+        obj_name += 's'
+    g.add_message(None, name+' has deleted '+obj_name)
+    g.send_messages()
     # Really destroy the object and dependents
     obj.destroy(destroy_dependents=True)
     g.time_of_last_update = time()
