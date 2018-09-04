@@ -827,16 +827,17 @@ $( document ).ready(function () {
                 text = escapeHtml(m.text);
                 // decode utf8 stuff so emojis and stuff are right (this has to come after)
                 text = decodeURIComponent(escape(text));
+                var span_classes = m.player_index === -1 ? "" : "message-text "
                 // If there is a color prefix, add that class
                 var words = text.split(' ');
                 for (var i in words) {
                     if (words[i].startsWith("$*")) {
                         var class_string = 'player-color-'+(words[i].substring(2, 3) % 6);
-                        words[i] = '</span><span class="message-text '+class_string+'">'+words[i].substring(3)+'</span><span class="message-text">';
+                        words[i] = '</span><span class="'+span_classes+class_string+'">'+words[i].substring(3)+'</span><span class="'+span_classes+'">';
                     }
                 }
                 text = words.join(' ');
-                text = '<span class="message-text">'+text+'</span>'
+                text = '<span class="'+span_classes+'">'+text+'</span>'
                 html_string += text;
                 html_string += '</div>';
             });

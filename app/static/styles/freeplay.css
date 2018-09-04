@@ -281,6 +281,8 @@ div.ui-tabs .ui-tabs-panel {
     color: gray;
     font-family: "Courier New", Courier, monospace;
     margin-left: -18px;
+    display: inline-block; /* to get vertical margin effect */
+    margin-top: 10px;
 }
 .message-name {
     color: #f9f;
