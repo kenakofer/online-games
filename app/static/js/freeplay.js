@@ -120,7 +120,7 @@ $( document ).ready(function () {
             var text = this.display_name;
             var l = this.dependent_ids.length;
             var opd = this.offset_per_dependent();
-            var easily_counted = (opd[0] > 12 || opd[1] > 12) && l <= 5
+            var easily_counted = opd && (opd[0] > 12 || opd[1] > 12) && l <= 5
             if (l > 1 && !easily_counted)
                 text = "("+l+") "+text;
             var span = $( 'span.display-name', this.html_elem );
