@@ -222,13 +222,16 @@ $( document ).ready(function () {
         if (time === undefined) {
             time = 200;
         }
+        // The first syncing when the user loads the page should be instant
         if (this.has_synced_once === false) {
             this.has_synced_once = true;
             time = 0;
         }
         // If the html_elem doesn't exist or is outdated (like from a private/public switch)
-        if (! this.html_elem || this.html_elem.closest('body').length == 0)
+        if (! this.html_elem || this.html_elem.closest('body').length == 0) {
             this.html_elem = $('#'+this.id);
+            console.log('refreshing html elem');
+        }
         // Make the dimensions of a containing parent big enough to encompass its deps
         var width = this.dimensions[0];
         var height = this.dimensions[1];
@@ -256,7 +259,19 @@ $( document ).ready(function () {
             "min-width": width,
             "height": height
         };
-        this.html_elem.stop(true, false).animate( css_obj, {duration:time, queue:false} );
+        var current_position = this.html_elem.position();
+        // A ballpark estimate of the changes to the card position and dimensions
+        var distance_to_move =
+            Math.abs(css_obj['left'] - current_position.left) +
+            Math.abs(css_obj['top'] - current_position.top) +
+            Math.abs(css_obj['height'] - this.html_elem.height());
+        if (time <= 0 || distance_to_move < 10) {
+            // This is significantly faster than even a 0ms animation,
+            // so we'll use it if the changes are minor enough
+            this.html_elem.css(css_obj);
+        } else {
+            this.html_elem.stop(true, false).animate( css_obj, {duration:time, queue:false} );
+        }
         // Make the height of the content window big enough to scroll down and see it
         // Was having an issue with html_elem.position(...) is undefined, so check that
         if (! currently_dragging && this.html_elem.position()) {
@@ -437,12 +452,14 @@ $( document ).ready(function () {
             obj_old_parent.update_full_display_name();
             obj_old_parent.sync_position(); //To update dimensions 
             // This doesn't look good if we don't also sync position on siblings
-            obj_old_parent.dependent_ids.forEach(function (d_id) {
+            // Only sync siblings that have a higher index in parent, since they are the only ones that will shift
+            for (var i = index; i < obj_old_parent.dependent_ids.length; i++) {
+                var d_id = obj_old_parent.dependent_ids[i];
                 var apm_dep = get_apm_obj(d_id);
                 if (! apm_dep)
                     return;
                 apm_dep.sync_position();
-            });
+            }
         }
         // Set new parent
         this.parent_id = pid;
@@ -593,9 +610,8 @@ $( document ).ready(function () {
     draggable_settings = {
             start: function (elem) {
                 var html_elem = $('#'+elem.target.id);
-                // This will prevent a click event being triggered at drop time
-                socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
                 var apm_obj = get_apm_obj(elem.target.id);
+                socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
                 html_elem.css({'z-index':get_dragging_depth()});
                 currently_dragging = apm_obj;
                 // Start all of the dependents dragging as well
