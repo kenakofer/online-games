@@ -368,6 +368,9 @@ $( document ).ready(function () {
             flip_button.detach();
             sort_button.detach();
 
+            var obj_height = html_obj.height();
+            var obj_width = html_obj.width();
+
             // Put in specific buttons
             if (apm_obj.type == "Deck") {
                 // If it's a deck of cards, put shuffle/flip/sort button, if it's dice put roll button
@@ -393,21 +396,25 @@ $( document ).ready(function () {
                     // Move the tooltip to centered just below the card
                     apm_obj.tooltip_elem.css({
                         'visibility':'visible',
-                        'left':html_pos.left + html_obj.width()/2 - apm_obj.tooltip_elem.width()/2,
-                        'top': html_pos.top  + html_obj.height() + 10,
+                        'left':html_pos.left + obj_width/2 - apm_obj.tooltip_elem.width()/2,
+                        'top': html_pos.top  + obj_height + 10,
                         'position': position_type
                     });
                 }
             } else if (apm_obj.type == "Dice") {
                 action_button_panel.prepend(action_button_br);
                 action_button_panel.prepend(up_button);
-                action_button_panel.prepend(down_button);
-                action_button_panel.append(roll_button);
+                action_button_panel.prepend(roll_button);
+                action_button_panel.append(down_button);
             }
-            var height = action_button_panel.height();
+
+            var panel_height = action_button_panel.height();
+            var panel_width = action_button_panel.width();
+
+            // For deck, place the action buttons above
             action_button_panel.css({
-                "left":html_pos.left+1,
-                "top": html_pos.top-height - 2,
+                "left":html_pos.left + obj_width/2 - panel_width/2,
+                "top": html_pos.top - panel_height - 2,
                 "display": "inline",
                 "position": position_type
             });
