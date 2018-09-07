@@ -8,7 +8,7 @@ Victory Cards (Estates, Duchies, and Provinces): *8* of each in a 2 player game,
 
 Curses: *10* for 2 players, *20* for 3, *30* for 4.
 
-Kingdom cards: Choose *10* of these decks however you like, and delete the unchosen ones. Th
+Kingdom cards: Choose *10* of these decks however you like, and delete the unchosen ones.
 
 ## Gameplay
 

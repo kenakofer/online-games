@@ -9,13 +9,13 @@
         "back_image_url":"/static/images/freeplay/dominion/back_brown.jpg",
         "default_face_up_offset": {
             "public":[3,2],
-            "private":[40,0]
+            "private":[35,0]
         },
         "default_face_down_offset":[3,2],
         "front_image_style":"100% 100%",
         "back_image_style":"100% 100%",
-        "width":121,
-        "height":194,
+        "width":90,
+        "height":144,
         "face_up":true,
         "shuffle":false,
         "stack_group":"play_cards"
@@ -57,36 +57,10 @@
                 }
             ]
         },
-        "Estate":{
-            "cards":[
-                {
-                    "alt_text":"Estate: Victory. Cost: 2; VP: 1",
-                    "front_image_url":"/static/images/freeplay/dominion/estate.jpg",
-                    "repetitions":24
-                }
-            ]
-        },
-        "Duchy":{
-            "cards":[
-                {
-                    "alt_text":"Duchy: Victory. Cost: 5; VP: 3",
-                    "front_image_url":"/static/images/freeplay/dominion/duchy.jpg",
-                    "repetitions":12
-                }
-            ]
-        },
-        "Province":{
-            "cards":[
-                {
-                    "alt_text":"Province: Victory. Cost: 8; VP: 6",
-                    "front_image_url":"/static/images/freeplay/dominion/province.jpg",
-                    "repetitions":12
-                }
-            ]
-        },
         "Randomizers":{
             "back_image_url":"/static/images/freeplay/dominion/back_blue.jpg",
             "face_up":false,
+            "default_face_up_offset":[35,0],
             "shuffle":true,
             "stack_group":"randomizer_cards",
             "cards":[
@@ -111,7 +85,7 @@
                     "front_image_url":"/static/images/freeplay/dominion/chapel.jpg"
                 },
                 {
-                    "alt_text":"Copper",
+                    "alt_text":"Copper: Treasure. Cost: 0; Worth: 1",
                     "front_image_url":"/static/images/freeplay/dominion/copper.jpg"
                 },
                 {
@@ -139,7 +113,7 @@
                     "front_image_url":"/static/images/freeplay/dominion/gardens.jpg"
                 },
                 {
-                    "alt_text":"Gold",
+                    "alt_text":"Gold: Treasure. Cost: 6; Worth: 3",
                     "front_image_url":"/static/images/freeplay/dominion/gold.jpg"
                 },
                 {
@@ -224,8 +198,36 @@
                 }
             ]
         },
+        "Estate":{
+            "cards":[
+                {
+                    "alt_text":"Estate: Victory. Cost: 2; VP: 1",
+                    "front_image_url":"/static/images/freeplay/dominion/estate.jpg",
+                    "repetitions":24
+                }
+            ]
+        },
+        "Duchy":{
+            "cards":[
+                {
+                    "alt_text":"Duchy: Victory. Cost: 5; VP: 3",
+                    "front_image_url":"/static/images/freeplay/dominion/duchy.jpg",
+                    "repetitions":12
+                }
+            ]
+        },
+        "Province":{
+            "cards":[
+                {
+                    "alt_text":"Province: Victory. Cost: 8; VP: 6",
+                    "front_image_url":"/static/images/freeplay/dominion/province.jpg",
+                    "repetitions":12
+                }
+            ]
+        },
         "Trash":{
-            "cards":[]
+            "cards":[],
+            "last_in_row":true
         },
         "Artisan":{
             "cards":[
