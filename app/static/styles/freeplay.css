@@ -8,7 +8,7 @@
     background: white;
     border-radius: 6px;
     border: 2px solid #474;
-    min-width: 97px;
+    width: 97px;
     height: 125px;
     position: absolute;
     transition: box-shadow 0.3s;
@@ -21,6 +21,8 @@
     opacity: .7;
     padding-top: 3px;
     padding-left: 5px;
+    padding-right: 5px;
+    overflow-x: hidden;
 }
 #tooltips-panel {
     position: absolute;

@@ -119,8 +119,10 @@ $( document ).ready(function () {
         if (this.type == 'Deck') {
             var text = this.display_name;
             var l = this.dependent_ids.length;
-            if (l > 1)
-                text += " ("+l+")";
+            var opd = this.offset_per_dependent();
+            var easily_counted = (opd[0] > 12 || opd[1] > 12) && l <= 5
+            if (l > 1 && !easily_counted)
+                text = "("+l+") "+text;
             var span = $( 'span.display-name', this.html_elem );
             // Update the html
             span.html(text);
@@ -256,7 +258,7 @@ $( document ).ready(function () {
         var css_obj = {
             "left":this.position[0]+this.position_offset()[0],
             "top": this.position[1]+this.position_offset()[1],
-            "min-width": width,
+            "width": width,
             "height": height
         };
         var current_position = this.html_elem.position();
