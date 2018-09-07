@@ -1,4 +1,18 @@
 {
+    "quick_messages":[
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "I'm done",
+        "I choose:",
+        "Governor",
+        "Builder",
+        "Councillor",
+        "Producer",
+        "Prospector",
+        "Trader",
+        "All done?"
+    ],
     "decks": {
         "roles":{
             "width":70,
