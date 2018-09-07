@@ -5,6 +5,7 @@ from time import sleep, time
 from json import load
 from collections import OrderedDict
 from markdown2 import markdown
+from flask_login import current_user
 
 #The dict to be filled with freeplay_games
 freeplay_games = {}
@@ -24,6 +25,17 @@ class FreeplayPlayer():
         if self.session_user:
             return self.session_user.fullname
         return None
+
+    def get_short_display_name(self):
+        if self.session_user:
+            return self.session_user.fullname.split()[0]
+        return None
+
+    def get_colored_tag(self):
+        dn = self.get_short_display_name()
+        if (dn):
+            return '$*'+str(self.player_index)+dn
+        return ""
 
     def __repr__(self):
         return self.session_user.fullname
@@ -353,6 +365,11 @@ class Dice(Card):
         self.current_image = randint(0,len(self.images)-1)
         if not no_update:
             self.game.update_current_image([self], rolling=True)
+            if (self.privacy == -1):
+                name = self.game.get_active_player_tag()
+                dice_name = self.display_name if self.display_name else "a dice"
+                self.game.add_message(None, name+' has rolled '+dice_name)
+                self.game.send_messages()
         return self.current_image
 
     def increment(self, amount, no_update=False):
@@ -380,19 +397,32 @@ class Deck(TableMovable):
         game.decks[self.id] = self
 
     def sort_cards(self, no_update=False):
-        # In place shuffle
+        # In place sort
         self.dependents.sort(key=lambda card: card.sort_index)
         for d in self.dependents:
             d.push_to_top(moving=False)
+        # Add a message
+        if (self.privacy == -1):
+            name = self.game.get_active_player_tag()
+            deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
+            self.game.add_message(None, name+' has sorted '+deck_name)
+            self.game.send_messages()
         # Update all clients
         if not no_update:
             self.game.send_update([self]+self.dependents)
+
 
     def shuffle_cards(self, no_update=False):
         # In place shuffle
         shuffle(self.dependents)
         for d in self.dependents:
             d.push_to_top(moving=False)
+        # Add a message
+        if (self.privacy == -1):
+            name = self.game.get_active_player_tag()
+            deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
+            self.game.add_message(None, name+' has shuffled '+deck_name)
+            self.game.send_messages()
         # Update all clients
         if not no_update:
             self.game.send_update([self]+self.dependents)
@@ -438,6 +468,11 @@ class Deck(TableMovable):
     def roll(self, no_update=False):
         for d in self.dependents:
             d.roll(no_update=True)
+        if (self.privacy == -1 and type(self.dependents[0]) is Dice):
+            name = self.game.get_active_player_tag()
+            deck_name = self.display_name if self.display_name else str(len(self.dependents))+" dice"
+            self.game.add_message(None, name+' has rolled '+deck_name)
+            self.game.send_messages()
         if not no_update:
             self.game.update_current_image(self.dependents, rolling=True)
             return
@@ -451,7 +486,12 @@ class Deck(TableMovable):
             d.push_to_top(moving=False)
         if not no_update:
             self.game.send_update([self]+self.dependents)
-            return
+            # Add a message
+            if (self.privacy == -1):
+                name = self.game.get_active_player_tag()
+                deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
+                self.game.add_message(None, name+' has flipped over '+deck_name)
+                self.game.send_messages()
 
     def get_standard_deck(game):
         print('standard deck')
@@ -586,9 +626,8 @@ class Deck(TableMovable):
         new_position[0] += self.dimensions[0]+40
         new_deck = Deck(self.game, new_position, self.dimensions[:], cards=[], text="", offset_per_dependent=[30,0])
         new_deck.privacy = self.privacy
+        count = min(count, len(self.dependents))
         for i in range(count):
-            if len(self.dependents) == 0:
-                break
             card = self.dependents[-1]
             self.dependents = self.dependents[:-1]
             card.parent = new_deck
@@ -600,6 +639,11 @@ class Deck(TableMovable):
                     card.current_image = 0 if (which_face == 'face up') else 1
         new_deck.push_to_top(moving = False)
         self.game.send_update([new_deck] + new_deck.dependents + [self])
+        player = self.game.get_player_from_session(current_user)
+        deck_name = ' from ' + self.display_name if self.display_name else ""
+        if (self.privacy == -1):
+            self.game.add_message(None, "{} just dealt {} cards{}".format(player.get_colored_tag(), count, deck_name))
+            self.game.send_messages()
         # If the deck has 1 or fewer cards, destroy it
         new_deck.check_should_destroy()
 
@@ -620,6 +664,7 @@ class FreeplayGame:
         self.all_movables = {}
         self.gameid = gameid
         self.id_counter = 0
+        self.message_counter = 0
         self.time_of_last_update = time()
         self.game_over=False
         self.messages = []
@@ -632,6 +677,13 @@ class FreeplayGame:
 
         Deck.get_decks_from_json(self, app.root_path+'/static/images/freeplay/'+deck_name+'/game.json')
         self.get_instructions_from_markdown(app.root_path+'/static/images/freeplay/'+deck_name+'/instructions.md')
+
+    def get_active_player_tag(self):
+        player = self.get_player_from_session(current_user)
+        if player:
+            name = player.get_colored_tag()
+            return name
+        return "Someone"
 
     def get_sort_index(self):
         self.sort_index += 1
@@ -646,10 +698,12 @@ class FreeplayGame:
 
     def add_message(self, player, text):
         self.messages.append({
+            'id':           'MESS'+str(self.message_counter).zfill(4),
             'timestamp':    time(),
-            'player_index': player.player_index,
+            'player_index': player.player_index if player else -1, # It's the server (-1) if player is None
             'text':         text,
         })
+        self.message_counter += 1;
 
     def get_new_id(self):
         self.id_counter += 1
@@ -696,13 +750,16 @@ class FreeplayGame:
             print(path_to_md+" does not exist or could not be loaded. Error:")
             print(e)
 
-    def send_messages(self):
+    def send_messages(self, send_all=False):
         print("sending message update")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
             print("blocked...")
             self.thread_lock.acquire()
-        all_data = {'messages':self.messages}
+        if send_all:
+            all_data = {'messages':self.messages}
+        else:
+            all_data = {'messages':self.messages[-5:]}
         with app.test_request_context('/'):
             socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
@@ -728,7 +785,7 @@ class FreeplayGame:
             all_data["movables_info"] = movables_info
         if 'players' in keys or 'all' in keys:
             # Only send first names
-            player_names = [p.get_display_name().split()[0] for p in self.players if p.session_user]
+            player_names = [p.get_short_display_name()for p in self.players if p.session_user]
             all_data['players'] = player_names
         if 'messages' in keys or 'all' in keys:
             all_data['messages'] = self.messages

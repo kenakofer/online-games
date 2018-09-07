@@ -292,13 +292,10 @@ $( document ).ready(function () {
         this.html_elem.detach();
         if (privacy_index == -1) {
             new_container = public_movables;
-            console.log('putting in public');
         } else if (privacy_index == template_player_index) {
             new_container = my_private_movables;
-            console.log('putting in my_private');
         } else {
             new_container = hidden_movables;
-            console.log('putting in hidden');
         }
         if (new_container) {
             this.html_elem = this.html_elem.appendTo(new_container);
@@ -486,7 +483,7 @@ $( document ).ready(function () {
         var self = this;
         self.players = [];
         self.quick_messages = ["I win!", "Good game", "Your turn"];
-        self.messages = [];
+        self.messages = {}
         //self.movables = {};
         self.show_action_buttons_for_id = false;
         self.public_movables = {};
@@ -792,11 +789,26 @@ $( document ).ready(function () {
         }
         //Messages update
         if (data.messages) {
-            apm.messages = data.messages;
+            $('.loader').remove();
+            var messages = data.messages.slice()
+            // If we already have some messages client side, don't display the first one sent
+            // from the server. Use it instead to see if we need to print message headers on
+            // the subsequent one
+            var last_time = -1;
+            var last_player_index = -10;
+            if (! jQuery.isEmptyObject(apm.messages)) {
+                var start_message = messages.shift();
+                if (start_message) {
+                    last_time = start_message.timestamp;
+                    last_player_index = start_message.player_index;
+                }
+            }
             var html_string = "";
-            var last_time = 0;
-            var last_player_index = -1;
-            data.messages.forEach(function (m) {
+            messages.forEach(function (m) {
+                var id = m.id;
+                apm.messages[id] = m;
+                $('#'+id, message_box).remove();
+                html_string += '<div id="'+id+'">';
                 if (m.timestamp - last_time > 15 || last_player_index != m.player_index) {
                     var date = new Date(m.timestamp*1000);
                     var hours = date.getHours();
@@ -812,7 +824,8 @@ $( document ).ready(function () {
                       seconds = seconds;
                     html_string += '<span class="message-time">'+hours+':'+minutes+':'+seconds+'</span> ';
                     var i = m.player_index;
-                    html_string += '<span class="message-name player-color-'+(i%6)+'">'+apm.players[m.player_index]+':</span><br>';
+                    var player_name = m.player_index >= 0 ? apm.players[m.player_index] : 'Server';
+                    html_string += '<span class="message-name player-color-'+((i+6)%6)+'">'+player_name+':</span><br>';
                 }
                 last_time = m.timestamp;
                 last_player_index = m.player_index;
@@ -821,15 +834,21 @@ $( document ).ready(function () {
                 text = escapeHtml(m.text);
                 // decode utf8 stuff so emojis and stuff are right (this has to come after)
                 text = decodeURIComponent(escape(text));
+                var span_classes = m.player_index === -1 ? "" : "message-text "
                 // If there is a color prefix, add that class
-                var class_string = "message-text";
-                if (text.startsWith("$*")) {
-                    class_string += ' player-color-'+(text.substring(2, 3) % 6);
-                    text = text.substring(3);
+                var words = text.split(' ');
+                for (var i in words) {
+                    if (words[i].startsWith("$*")) {
+                        var class_string = 'player-color-'+(words[i].substring(2, 3) % 6);
+                        words[i] = '</span><span class="'+span_classes+class_string+'">'+words[i].substring(3)+'</span><span class="'+span_classes+'">';
+                    }
                 }
-                html_string += '<span class="'+class_string+'">'+text+'</span><br>';
+                text = words.join(' ');
+                text = '<span class="'+span_classes+'">'+text+'</span>'
+                html_string += text;
+                html_string += '</div>';
             });
-            message_box.html(html_string);
+            message_box.append(html_string);
             // Scroll to the bottom:
             message_box.stop(true, false).animate({scrollTop:message_box[0].scrollHeight}, {duration:300, queue:false});
             // Remove the bar on sending more messages
@@ -870,11 +889,12 @@ $( document ).ready(function () {
             if ('destroy' in obj_data && obj_data.destroy == true) {
                 console.log('destroying '+apm_obj.id);
                 // Make all the dependents orphans
-                apm_obj.dependent_ids.forEach(function (did) {
+                // As it is, destroying a parent destroys the child too, so this is unnecessary
+                /*apm_obj.dependent_ids.forEach(function (did) {
                     var dep_obj = get_apm_obj(did);
                     if (dep_obj)
                         dep_obj.set_parent_id(false);
-                });
+                });*/
                 // Make the parent lose the child
                 apm_obj.set_parent_id(false);
                 // If the action buttons were attached to it, detach them
