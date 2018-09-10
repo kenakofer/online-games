@@ -133,8 +133,6 @@ span.ui-selectmenu-text {
     background: white;
     transition: box-shadow 0.3s;
     position: absolute;
-    transform: scale(1);
-    transform-origin: top left;
     float: left;
     color: #555;
     font-size: 35px;
@@ -381,4 +379,9 @@ div.ui-tabs .ui-tabs-panel {
 }
 #hidden-movables {
     display: none;
+}
+.Dice .image,
+.Card .image {
+    width: 100%;
+    height: 100%;
 }
