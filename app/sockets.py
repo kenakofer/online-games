@@ -238,6 +238,17 @@ def increment(data):
     obj.increment(data['amount'])
     g.time_of_last_update = time()
 
+@socketio.on('ROTATE', namespace='/freeplay')
+def rotate(data):
+    g = freeplay_games[data['gameid']]
+    player = g.get_player_from_session(current_user)
+    print('Client {}, event {}: {}'.format(get_stable_user(), 'rotate', data))
+    if not g.confirm_or_destroy_id(data['obj_id']):
+        return False
+    obj = g.all_movables[data['obj_id']]
+    obj.rotate(data['amount'])
+    g.time_of_last_update = time()
+
 @socketio.on('FLIP', namespace='/freeplay')
 def flip(data):
     g = freeplay_games[data['gameid']]

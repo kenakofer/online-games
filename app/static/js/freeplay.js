@@ -381,6 +381,8 @@ $( document ).ready(function () {
             down_button.detach();
             flip_button.detach();
             sort_button.detach();
+            right_button.detach();
+            left_button.detach();
 
             var obj_height = html_obj.height();
             var obj_width = html_obj.width();
@@ -577,7 +579,7 @@ $( document ).ready(function () {
         // Add it to the public list
         apm.public_movables[id] = apm_obj;
         // Add it to the html
-        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span></div>');
+        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span><div class="image"></div></div>');
         tooltip_panel.append('<span id="'+id+'-tooltip" class="display-name tooltiptext"></span>');
         // Give it its html_elem and tooltip
         apm_obj.html_elem = $( '#'+apm_obj.id );
@@ -611,6 +613,7 @@ $( document ).ready(function () {
         }
     };
 
+    var recoupLeft, recoupTop;
     draggable_settings = {
             start: function (elem) {
                 var html_elem = $('#'+elem.target.id);
@@ -1119,6 +1122,18 @@ $( document ).ready(function () {
         var id = apm.show_action_buttons_for_id;
         if (id) {
             socket.emit('SORT', {gameid:template_gameid, obj_id:id});
+        }
+    });
+    right_button.click(function () {
+        var id = apm.show_action_buttons_for_id;
+        if (id) {
+            socket.emit('ROTATE', {gameid:template_gameid, obj_id:id, amount: 1});
+        }
+    });
+    left_button.click(function () {
+        var id = apm.show_action_buttons_for_id;
+        if (id) {
+            socket.emit('ROTATE', {gameid:template_gameid, obj_id:id, amount: -1});
         }
     });
     // If the user clicks on the background, take away the action buttons

@@ -59,8 +59,6 @@ class TableMovable:
         # Otherwise
         return 0
 
-
-
     def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", force_card_depth=None):
         self.id = id
         self.sort_index = game.get_sort_index()
@@ -69,6 +67,7 @@ class TableMovable:
         self.dimensions = dimensions
         self.dependents = dependents or []
         self.parent = parent
+        self.rotation = 0
         if self.parent:
             self.parent.dependents.append(self)
         for d in dependents:
@@ -174,6 +173,19 @@ class TableMovable:
             socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
         self.game.thread_lock.release()
 
+    def rotate(self, amount, update=True):
+        self.rotation += amount;
+        self.rotation %= 4;
+
+        if update:
+            self.game.thread_lock.acquire()
+            data = {'movables_info':[{
+                "id":self.id,
+                "rotation":self.rotation
+            }]}
+            with app.test_request_context('/'):
+                socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+            self.game.thread_lock.release()
 
     def get_info(self):
         d = {
