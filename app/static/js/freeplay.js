@@ -405,6 +405,8 @@ $( document ).ready(function () {
 
             } else if (apm_obj.type == "Card") {
                 action_button_panel.append(flip_button);
+                action_button_panel.prepend(right_button);
+                action_button_panel.append(left_button);
                 // Do the tooltip as well
                 if (apm_obj.display_name && apm_obj.current_image === 0) {
                     // Move the tooltip to centered just below the card
@@ -1046,6 +1048,8 @@ $( document ).ready(function () {
     var roll_button = $( "#roll-button" );
     var up_button = $( "#up-button" );
     var down_button = $( "#down-button" );
+    var right_button = $( "#right-button" );
+    var left_button = $( "#left-button" );
     var custom_text = $( "#custom-text" );
     var minimize_button = $( "#minimize-button" );
     var chat_window = $( "#chat-window" );
