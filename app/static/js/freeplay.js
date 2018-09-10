@@ -109,8 +109,9 @@ $( document ).ready(function () {
         self.stack_group = "";              // Cards and dice in the same stack group can be put into a deck with each other
         self.dfuo = [];                     // Default face up per card offset. [public, private]
         self.dfdo = [];                     //              down
-        self.html_elem = false;             // Store the jquery selector for this object id
-        self.tooltip_elem = false;          // Store the jquery selector for this object's tooltip id
+        self.html_elem = false;             // Store the jquery selector for this object
+        self.tooltip_elem = false;          // Store the jquery selector for this object's tooltip
+        self.image_elem = false;            // Store the jquery selector for this object's image
 
         self.drop_time = 0;
         self.has_synced_once = false;
@@ -296,7 +297,7 @@ $( document ).ready(function () {
             return;
         }
         var image = this.images[this.current_image];
-        this.html_elem.css({
+        this.image_elem.css({
             'background-image': "url("+image['url']+")",
             'background-size': image['style']
         });
@@ -582,8 +583,9 @@ $( document ).ready(function () {
         // Add it to the html
         public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span><div class="image"></div></div>');
         tooltip_panel.append('<span id="'+id+'-tooltip" class="display-name tooltiptext"></span>');
-        // Give it its html_elem and tooltip
+        // Give it its html_elem and tooltip and image_elem
         apm_obj.html_elem = $( '#'+apm_obj.id );
+        apm_obj.image_elem = $('.image', apm_obj.html_elem);
         apm_obj.tooltip_elem = $( '#'+apm_obj.id+'-tooltip' );
         apm_obj.tooltip_elem.on('click', function(){ $(this).css({'visibility':'hidden'}); });
         // Update the global tooltip selector
