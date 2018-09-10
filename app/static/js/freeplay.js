@@ -112,6 +112,7 @@ $( document ).ready(function () {
         self.html_elem = false;             // Store the jquery selector for this object
         self.tooltip_elem = false;          // Store the jquery selector for this object's tooltip
         self.image_elem = false;            // Store the jquery selector for this object's image
+        self.rotation = 0;                  // int from 0 to 3 CW
 
         self.drop_time = 0;
         self.has_synced_once = false;
@@ -167,6 +168,15 @@ $( document ).ready(function () {
         setTimeout(function (){
             obj.start_roll(number_left-1, final_val);
         }, 50);
+    }
+    TableMovable.prototype.sync_rotation = function () {
+        this.image_elem.removeClass('rotate1').removeClass('rotate2').removeClass('rotate3');
+        this.rotation = (this.rotation + 4) % 4;
+        if (this.rotation !== 0) {
+            this.image_elem.addClass('rotate'+this.rotation);
+        }
+        //TODO width and height need to switch. Maybe add rotation independent width/height to apm_objs?
+
     }
     TableMovable.prototype.offset_per_dependent = function () {
         if (this.dependent_ids.length === 0) {
@@ -615,7 +625,6 @@ $( document ).ready(function () {
         }
     };
 
-    var recoupLeft, recoupTop;
     draggable_settings = {
             start: function (elem) {
                 var html_elem = $('#'+elem.target.id);
@@ -975,6 +984,10 @@ $( document ).ready(function () {
             }
             if ('default_face_down_offset' in obj_data) {
                 apm_obj.dfdo = obj_data.default_face_down_offset;
+            }
+            if ('rotation' in obj_data) {
+                apm_obj.rotation = obj_data.rotation;
+                apm_obj.sync_rotation();
             }
             if ('current_image' in obj_data) {
                 if (apm_obj.type === "Dice") {
