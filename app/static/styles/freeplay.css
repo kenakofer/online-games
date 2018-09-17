@@ -172,6 +172,7 @@ span.ui-selectmenu-text {
     color: white;
     font-size: 20px;
 }
+.rotate1,
 .rotate {
     /* Safari */
     -webkit-transform: rotate(90deg);
@@ -183,6 +184,42 @@ span.ui-selectmenu-text {
     -o-transform: rotate(90deg);
     /* Internet Explorer */
     filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+}
+.rotate2 {
+    /* Safari */
+    -webkit-transform: rotate(180deg);
+    /* Firefox */
+    -moz-transform: rotate(180deg);
+    /* IE */
+    -ms-transform: rotate(180deg);
+    /* Opera */
+    -o-transform: rotate(180deg);
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+}
+.rotate3 {
+    /* Safari */
+    -webkit-transform: rotate(270deg);
+    /* Firefox */
+    -moz-transform: rotate(270deg);
+    /* IE */
+    -ms-transform: rotate(270deg);
+    /* Opera */
+    -o-transform: rotate(270deg);
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+.rotate0 {
+    /* Safari */
+    -webkit-transform: rotate(0deg);
+    /* Firefox */
+    -moz-transform: rotate(0deg);
+    /* IE */
+    -ms-transform: rotate(0deg);
+    /* Opera */
+    -o-transform: rotate(0deg);
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
 }
 ul.ui-tabs-nav.ui-widget-header {
     border: none;

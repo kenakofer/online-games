@@ -113,6 +113,7 @@ $( document ).ready(function () {
         self.tooltip_elem = false;          // Store the jquery selector for this object's tooltip
         self.image_elem = false;            // Store the jquery selector for this object's image
         self.rotation = 0;                  // int from 0 to 3 CW
+        self.previous_rotation = 0;         // int from 0 to 3 CW
 
         self.drop_time = 0;
         self.has_synced_once = false;
@@ -169,14 +170,28 @@ $( document ).ready(function () {
             obj.start_roll(number_left-1, final_val);
         }, 50);
     }
-    TableMovable.prototype.sync_rotation = function () {
-        this.image_elem.removeClass('rotate1').removeClass('rotate2').removeClass('rotate3');
-        this.rotation = (this.rotation + 4) % 4;
-        if (this.rotation !== 0) {
-            this.image_elem.addClass('rotate'+this.rotation);
+    TableMovable.prototype.get_rotation_transform_origin = function() {
+        if (this.rotation == 1) {
+            var half_height = this.dimensions[1] / 2;
+            return half_height+'px '+half_height+'px';
+        } else if (this.rotation == 3) {
+            var half_width = this.dimensions[0] / 2;
+            return half_width+'px '+half_width+'px';
         }
-        //TODO width and height need to switch. Maybe add rotation independent width/height to apm_objs?
-
+        return "initial";
+    }
+    TableMovable.prototype.sync_rotation = function () {
+        this.image_elem.removeClass('rotate').removeClass('rotate0').removeClass('rotate1').removeClass('rotate2').removeClass('rotate3');
+        this.rotation = (this.rotation + 4) % 4;
+        this.image_elem.addClass('rotate'+this.rotation);
+        // Get the rotation transform correct
+        this.image_elem.css({'transform-origin': this.get_rotation_transform_origin()});
+        // If it was a rotation of 90 degrees in either direction, switch the width and height
+        if ( (4 + this.rotation - this.previous_rotation) % 2 == 1) {
+            this.sync_position(0);
+            console.log('rotated and synced');
+        }
+        this.previous_rotation = this.rotation;
     }
     TableMovable.prototype.offset_per_dependent = function () {
         if (this.dependent_ids.length === 0) {
@@ -262,6 +277,19 @@ $( document ).ready(function () {
         }
         width += this.dimension_offset()[0];
         height += this.dimension_offset()[1];
+
+        // make the contained image div the correct width and height before the posible rotational switch
+        if (this.type == 'Card') {
+            this.image_elem.css({'width': width, 'height': height});
+
+            // Rotational switch
+            if (this.rotation % 2 == 1) {
+                var s = width;
+                width = height;
+                height = s;
+                this.previous_rotation = this.rotation;
+            }
+        }
 
         this.html_elem.css({
             "z-index": this.depth
