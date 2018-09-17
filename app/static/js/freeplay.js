@@ -506,6 +506,7 @@ $( document ).ready(function () {
         //self.movables = {};
         self.show_action_buttons_for_id = false;
         self.public_movables = {};
+        self.have_received_update = false;
         self.private_card_count = function (player_index) {
             var filtered = Object.keys(self.public_movables).reduce(function (filtered, key) {
                     if (self.public_movables[key].type !== 'Deck' && self.public_movables[key].privacy == player_index)
@@ -770,15 +771,21 @@ $( document ).ready(function () {
     var request_update = function () {
         socket.emit('UPDATE REQUEST', {gameid:template_gameid});
     };
-
-    socket.on('connect', function () {
-        socket.emit('JOIN ROOM', {room:template_gameid});
-        // The server will ask us to request_update
-    });
+    var join_room = function() {
+        console.log('Attempting to join room '+template_gameid);
+        if (! apm.have_received_update) {
+            socket.emit('JOIN ROOM', {room:template_gameid});
+            setTimeout(join_room, 1000);
+        } else {
+            console.log('Joined room.');
+        }
+    }
+    join_room();
 
     socket.on('UPDATE', function (d) {
         const data = d;
         deepFreeze(data);
+        apm.have_received_update = true;
         if (data.players) {
             apm.players = data.players.slice();
         }
