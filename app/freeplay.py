@@ -200,6 +200,7 @@ class TableMovable:
             "type":                 self.__class__.__name__,
             "privacy":              self.privacy,
             "force_card_depth":     False if self.force_card_depth == None else self.force_card_depth,
+            "rotation":self.rotation,
             }
         return d
 
