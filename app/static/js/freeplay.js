@@ -1020,6 +1020,10 @@ $( document ).ready(function () {
             if ('default_face_down_offset' in obj_data) {
                 apm_obj.dfdo = obj_data.default_face_down_offset;
             }
+            if ('dimensions' in obj_data) {
+                apm_obj.dimensions = obj_data.dimensions.slice();
+                should_sync_position = true;
+            }
             if ('rotation' in obj_data) {
                 apm_obj.rotation = obj_data.rotation;
                 apm_obj.sync_rotation();
@@ -1054,10 +1058,6 @@ $( document ).ready(function () {
                 }
                 if ('position' in obj_data) {
                     apm_obj.position = obj_data.position;
-                    should_sync_position = true;
-                }
-                if ('dimensions' in obj_data) {
-                    apm_obj.dimensions = obj_data.dimensions.slice();
                     should_sync_position = true;
                 }
                 // Make changes to position visible in html
