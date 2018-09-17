@@ -368,7 +368,7 @@ class Dice(Card):
             if (self.privacy == -1):
                 name = self.game.get_active_player_tag()
                 dice_name = self.display_name if self.display_name else "a dice"
-                self.game.add_message(None, name+' has rolled '+dice_name)
+                self.game.add_message(None, name+' rolled '+dice_name)
                 self.game.send_messages()
         return self.current_image
 
@@ -405,7 +405,7 @@ class Deck(TableMovable):
         if (self.privacy == -1):
             name = self.game.get_active_player_tag()
             deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
-            self.game.add_message(None, name+' has sorted '+deck_name)
+            self.game.add_message(None, name+' sorted '+deck_name)
             self.game.send_messages()
         # Update all clients
         if not no_update:
@@ -421,7 +421,7 @@ class Deck(TableMovable):
         if (self.privacy == -1):
             name = self.game.get_active_player_tag()
             deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
-            self.game.add_message(None, name+' has shuffled '+deck_name)
+            self.game.add_message(None, name+' shuffled '+deck_name)
             self.game.send_messages()
         # Update all clients
         if not no_update:
@@ -471,7 +471,7 @@ class Deck(TableMovable):
         if (self.privacy == -1 and type(self.dependents[0]) is Dice):
             name = self.game.get_active_player_tag()
             deck_name = self.display_name if self.display_name else str(len(self.dependents))+" dice"
-            self.game.add_message(None, name+' has rolled '+deck_name)
+            self.game.add_message(None, name+' rolled '+deck_name)
             self.game.send_messages()
         if not no_update:
             self.game.update_current_image(self.dependents, rolling=True)
@@ -490,7 +490,7 @@ class Deck(TableMovable):
             if (self.privacy == -1):
                 name = self.game.get_active_player_tag()
                 deck_name = self.display_name if self.display_name else str(len(self.dependents))+" items"
-                self.game.add_message(None, name+' has flipped over '+deck_name)
+                self.game.add_message(None, name+' flipped over '+deck_name)
                 self.game.send_messages()
 
     def get_standard_deck(game):

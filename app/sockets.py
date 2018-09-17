@@ -130,7 +130,7 @@ def join(data):
     g = freeplay_games[data['room']]
     # Add a welcome message
     name = g.get_active_player_tag()
-    g.add_message(None, name+' has joined the game')
+    g.add_message(None, name+' joined the game')
     # Send the newly joined client all the stuff
     g.send_update(keys=['all'], broadcast=False)
     # Send everyone the new player list
@@ -272,7 +272,7 @@ def destroy(data):
     obj_name = str(1+len(obj.dependents))+ ' thing'
     if (len(obj.dependents)):
         obj_name += 's'
-    g.add_message(None, name+' has deleted '+obj_name)
+    g.add_message(None, name+' deleted '+obj_name)
     g.send_messages()
     # Really destroy the object and dependents
     obj.destroy(destroy_dependents=True)
