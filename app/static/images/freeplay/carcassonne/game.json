@@ -1,4 +1,5 @@
 {
+    "private_hand_height":100,
     "quick_messages":[
         "Your turn",
         "My turn",
@@ -9,8 +10,8 @@
     ],
     "decks": {
         "base":{
-            "width":60,
-            "height":60,
+            "width":65,
+            "height":65,
             "face_up":false,
             "default_face_up_offset":[10,9],
             "default_face_down_offset":[3,2],
@@ -194,8 +195,8 @@
             ]
         },
         "inns and cathedrals":{
-            "width":60,
-            "height":60,
+            "width":65,
+            "height":65,
             "face_up":false,
             "default_face_up_offset":[10,9],
             "default_face_down_offset":[3,2],
@@ -308,13 +309,14 @@
             ]
         },
         "river":{
-            "width":60,
-            "height":60,
+            "width":65,
+            "height":65,
             "face_up":true,
             "default_face_up_offset":[10,9],
             "default_face_down_offset":[3,2],
             "can_rotate":true,
             "stack_group":"base",
+            "last_in_row":"true",
             "cards":[
                 {
                     "alt_text":"",
@@ -367,7 +369,7 @@
                     "back_image_style":"100% 100%"
                 },
                 {
-                    "alt_text":"",
+                    "alt_text":"End tile",
                     "front_image_url":"/static/images/freeplay/carcassonne/river/tile-9.jpg",
                     "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
                     "back_image_style":"100% 100%"
@@ -376,6 +378,252 @@
                     "alt_text":"Source Tile",
                     "front_image_url":"/static/images/freeplay/carcassonne/river/tile-0.jpg",
                     "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "blue meeples":{
+            "width":30,
+            "height":30,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[15,0],
+            "can_rotate":false,
+            "background":false,
+            "last_in_row":"true",
+            "cards":[
+                {
+                    "alt_text":"Big meeple (blue)",
+                    "width": 40,
+                    "height": 40,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_blue.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_blue.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Meeple (blue)",
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_blue.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_blue.png",
+                    "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Builder (blue)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_blue.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/builder_blue.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Pig (blue)",
+                    "height": 20,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/pig_blue.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/pig_blue.png",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "yellow meeples":{
+            "width":30,
+            "height":30,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[15,0],
+            "can_rotate":false,
+            "background":false,
+            "last_in_row":"true",
+            "cards":[
+                {
+                    "alt_text":"Big meeple (yellow)",
+                    "width": 40,
+                    "height": 40,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_yellow.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_yellow.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Meeple (yellow)",
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_yellow.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_yellow.png",
+                    "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Builder (yellow)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_yellow.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/builder_yellow.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Pig (yellow)",
+                    "height": 20,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/pig_yellow.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/pig_yellow.png",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "green meeples":{
+            "width":30,
+            "height":30,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[15,0],
+            "can_rotate":false,
+            "background":false,
+            "last_in_row":"true",
+            "cards":[
+                {
+                    "alt_text":"Big meeple (green)",
+                    "width": 40,
+                    "height": 40,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_green.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_green.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Meeple (green)",
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_green.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_green.png",
+                    "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Builder (green)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_green.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/builder_green.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Pig (green)",
+                    "height": 20,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/pig_green.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/pig_green.png",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "red meeples":{
+            "width":30,
+            "height":30,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[15,0],
+            "can_rotate":false,
+            "background":false,
+            "last_in_row":"true",
+            "cards":[
+                {
+                    "alt_text":"Big meeple (red)",
+                    "width": 40,
+                    "height": 40,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_red.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_red.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Meeple (red)",
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_red.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_red.png",
+                    "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Builder (red)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_red.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/builder_red.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Pig (red)",
+                    "height": 20,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/pig_red.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/pig_red.png",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "white meeples":{
+            "width":30,
+            "height":30,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[15,0],
+            "can_rotate":false,
+            "background":false,
+            "last_in_row":"true",
+            "cards":[
+                {
+                    "alt_text":"Big meeple (white)",
+                    "width": 40,
+                    "height": 40,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_white.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_white.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Meeple (white)",
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_white.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_white.png",
+                    "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Builder (white)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_white.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/builder_white.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Pig (white)",
+                    "height": 20,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/pig_white.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/pig_white.png",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "black meeples":{
+            "width":30,
+            "height":30,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[15,0],
+            "can_rotate":false,
+            "background":false,
+            "last_in_row":"true",
+            "cards":[
+                {
+                    "alt_text":"Big meeple (black)",
+                    "width": 40,
+                    "height": 40,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_black.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_black.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Meeple (black)",
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_black.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_black.png",
+                    "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Builder (black)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_black.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/builder_black.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Pig (black)",
+                    "height": 20,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/pig_black.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/pig_black.png",
                     "back_image_style":"100% 100%"
                 }
             ]

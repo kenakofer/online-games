@@ -552,9 +552,9 @@ class Deck(TableMovable):
             # Allow specific deck settings to take precedence
             for k in deck_data_copy:
                 deck_data[k] = deck_data_copy[k]
-            w = deck_data['width'] if 'width' in deck_data else 69
-            h = deck_data['height'] if 'height' in deck_data else 75
-            maxheight = max(maxheight, h)
+            deck_w = deck_data['width'] if 'width' in deck_data else 69
+            deck_h = deck_data['height'] if 'height' in deck_data else 75
+            maxheight = max(maxheight, deck_h)
             shuffle = deck_data['shuffle'] if 'shuffle' in deck_data else False
             x = deck_data['x'] if 'x' in deck_data else x
             y = deck_data['y'] if 'y' in deck_data else y
@@ -562,7 +562,7 @@ class Deck(TableMovable):
             # Perform mathematical adjustment on opd:
             opd = Deck.opd_conversion(opd)
             face_up = deck_data['face_up'] if 'face_up' in deck_data else True
-            deck = Deck(game, [x,y], [w,h], text=deck_name, offset_per_dependent=opd)
+            deck = Deck(game, [x,y], [deck_w,deck_h], text=deck_name, offset_per_dependent=opd)
             # Get the card info for this deck
             for card_data in deck_data['cards']:
                 card_data_copy = card_data.copy()
@@ -591,6 +591,8 @@ class Deck(TableMovable):
                 force_card_depth = card_data['force_card_depth'] if 'force_card_depth' in card_data else None
                 rotation = card_data['rotation'] if 'rotation' in card_data else 0
                 can_rotate = card_data['can_rotate'] if 'can_rotate' in card_data else False
+                card_w = card_data['width'] if 'width' in card_data else deck_w
+                card_h = card_data['height'] if 'height' in card_data else deck_h
                 if (object_type == "Dice"):
                     # Create the dice
                     for i in range(reps):
@@ -599,6 +601,7 @@ class Deck(TableMovable):
                                 deck,
                                 images,
                                 current_image,
+                                dims = [card_w, card_h],
                                 alt_text = at,
                                 dfuo = dfuo,
                                 dfdo = dfdo,
@@ -614,6 +617,7 @@ class Deck(TableMovable):
                                 deck,
                                 images,
                                 current_image,
+                                dims = [card_w, card_h],
                                 alt_text = at,
                                 dfuo = dfuo,
                                 dfdo = dfdo,
@@ -627,7 +631,7 @@ class Deck(TableMovable):
             if shuffle:
                 deck.shuffle_cards(no_update=True)
             # Move over the width of the deck, considering its dependents
-            shift = w
+            shift = deck_w
             if len(deck.dependents) > 0:
                 d = deck.dependents[0]
                 offset = (d.dfuo if d.current_image == 0 else d.dfdo)
