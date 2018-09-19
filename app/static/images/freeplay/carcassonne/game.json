@@ -1,0 +1,384 @@
+{
+    "quick_messages":[
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "I'm done",
+        "Meeple?",
+        "All done?"
+    ],
+    "decks": {
+        "base":{
+            "width":60,
+            "height":60,
+            "face_up":false,
+            "default_face_up_offset":[10,9],
+            "default_face_down_offset":[3,2],
+            "can_rotate":true,
+            "cards":[
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-0.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":4,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-1.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-2.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":1,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-3.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-4.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":1,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-5.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":1,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-6.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-7.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-8.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-9.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-10.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-11.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":1,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-12.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-13.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-14.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-15.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":5,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-16.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-17.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-18.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-19.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":3,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-20.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":8,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-21.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":9,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-22.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":4,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-23.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":1,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/base/tile-24.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":1,
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "inns and cathedrals":{
+            "width":60,
+            "height":60,
+            "face_up":false,
+            "default_face_up_offset":[10,9],
+            "default_face_down_offset":[3,2],
+            "can_rotate":true,
+            "stack_group":"base",
+            "cards":[
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-0.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-1.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-2.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-3.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-4.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-5.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-6.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-7.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-8.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-9.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-10.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-11.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-12.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-13.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-14.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-15.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/inns_and_cathedrals/tile-16.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_dark.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "river":{
+            "width":60,
+            "height":60,
+            "face_up":true,
+            "default_face_up_offset":[10,9],
+            "default_face_down_offset":[3,2],
+            "can_rotate":true,
+            "stack_group":"base",
+            "cards":[
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-1.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-2.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "repetitions":2,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-3.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-4.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-5.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-6.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-7.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-8.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-9.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Source Tile",
+                    "front_image_url":"/static/images/freeplay/carcassonne/river/tile-0.jpg",
+                    "back_image_url":"/static/images/freeplay/carcassonne/back_light.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        }
+    }
+}
