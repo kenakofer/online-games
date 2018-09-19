@@ -59,7 +59,7 @@ class TableMovable:
         # Otherwise
         return 0
 
-    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", force_card_depth=None):
+    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", force_card_depth=None, can_rotate=False, rotation=0):
         self.id = id
         self.sort_index = game.get_sort_index()
         self.game = game
@@ -67,7 +67,6 @@ class TableMovable:
         self.dimensions = dimensions
         self.dependents = dependents or []
         self.parent = parent
-        self.rotation = 0
         if self.parent:
             self.parent.dependents.append(self)
         for d in dependents:
@@ -78,6 +77,8 @@ class TableMovable:
         self.privacy = -1
         self.force_card_depth = force_card_depth
         self.push_to_top(moving=False)
+        self.can_rotate = can_rotate
+        self.rotation = rotation
 
     def push_to_top(self, moving=True):
         if self.parent == None and self.privacy == -1 and self.force_card_depth != None:
@@ -174,6 +175,9 @@ class TableMovable:
         self.game.thread_lock.release()
 
     def rotate(self, amount, update=True):
+        if not self.can_rotate:
+            print("{} cannot be rotated".format(self))
+            return
         self.rotation += amount;
         self.rotation %= 4;
 
@@ -200,7 +204,8 @@ class TableMovable:
             "type":                 self.__class__.__name__,
             "privacy":              self.privacy,
             "force_card_depth":     False if self.force_card_depth == None else self.force_card_depth,
-            "rotation":self.rotation,
+            "rotation":             self.rotation,
+            "can_rotate":           self.can_rotate,
             }
         return d
 
@@ -246,7 +251,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, rotation=0, can_rotate=False):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -259,7 +264,9 @@ class Card(TableMovable):
                 dependents=[],
                 parent=deck,
                 display_name=alt_text,
-                force_card_depth=force_card_depth
+                force_card_depth=force_card_depth,
+                can_rotate=can_rotate,
+                rotation=rotation,
                 )
         self.stack_group = stack_group or deck.display_name
         self.images = images
@@ -582,6 +589,8 @@ class Deck(TableMovable):
                 object_type = card_data['type'] if 'type' in card_data else "Card"
                 background_color = card_data['background_color'] if 'background_color' in card_data else None
                 force_card_depth = card_data['force_card_depth'] if 'force_card_depth' in card_data else None
+                rotation = card_data['rotation'] if 'rotation' in card_data else 0
+                can_rotate = card_data['can_rotate'] if 'can_rotate' in card_data else False
                 if (object_type == "Dice"):
                     # Create the dice
                     for i in range(reps):
@@ -610,7 +619,9 @@ class Deck(TableMovable):
                                 dfdo = dfdo,
                                 stack_group = stack_group,
                                 background_color = background_color,
-                                force_card_depth = force_card_depth
+                                force_card_depth = force_card_depth,
+                                rotation = rotation,
+                                can_rotate = can_rotate,
                                 )
 
             if shuffle:

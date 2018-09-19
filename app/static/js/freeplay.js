@@ -113,6 +113,7 @@ $( document ).ready(function () {
         self.tooltip_elem = false;          // Store the jquery selector for this object's tooltip
         self.image_elem = false;            // Store the jquery selector for this object's image
         self.rotation = 0;                  // int from 0 to 3 CW
+        self.can_rotate = false;            // Whether or not the rotation buttons will be shown
         self.previous_rotation = 0;         // int from 0 to 3 CW
 
         self.drop_time = 0;
@@ -446,8 +447,10 @@ $( document ).ready(function () {
 
             } else if (apm_obj.type == "Card") {
                 action_button_panel.append(flip_button);
-                action_button_panel.prepend(right_button);
-                action_button_panel.append(left_button);
+                if (apm_obj.can_rotate) {
+                    action_button_panel.prepend(right_button);
+                    action_button_panel.append(left_button);
+                }
                 // Do the tooltip as well
                 if (apm_obj.display_name && apm_obj.current_image === 0) {
                     // Move the tooltip to centered just below the card
@@ -1027,6 +1030,9 @@ $( document ).ready(function () {
             if ('rotation' in obj_data) {
                 apm_obj.rotation = obj_data.rotation;
                 apm_obj.sync_rotation();
+            }
+            if ('can_rotate' in obj_data) {
+                apm_obj.can_rotate = obj_data.can_rotate;
             }
             if ('current_image' in obj_data) {
                 if (apm_obj.type === "Dice") {
