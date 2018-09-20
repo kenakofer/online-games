@@ -1006,7 +1006,6 @@ $( document ).ready(function () {
             }
             if ('type' in obj_data) {
                 apm_obj.type = obj_data.type;
-                apm_obj.html_elem.removeClass('Deck').removeClass('Card').removeClass('Dice');
                 apm_obj.html_elem.addClass(obj_data.type);
             }
             if ('display_name' in obj_data) {
@@ -1016,6 +1015,14 @@ $( document ).ready(function () {
             // Update card image
             if ('images' in obj_data) {
                 apm_obj.images = obj_data.images;
+            }
+            if ('background' in obj_data) {
+                if (obj_data.background) {
+                    apm_obj.html_elem.removeClass('nobackground');
+                } else {
+                    apm_obj.html_elem.addClass('nobackground');
+                    console.log('nobackground');
+                }
             }
             if ('default_face_up_offset' in obj_data) {
                 apm_obj.dfuo = obj_data.default_face_up_offset;
