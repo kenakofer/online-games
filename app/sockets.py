@@ -283,7 +283,10 @@ def destroy(data):
     obj_name = str(1+len(obj.dependents))+ ' thing'
     if (len(obj.dependents)):
         obj_name += 's'
+    if obj.display_name:
+        obj_name = obj.display_name + ' [' + obj_name + ']'
     g.add_message(None, name+' deleted '+obj_name)
+
     g.send_messages()
     # Really destroy the object and dependents
     obj.destroy(destroy_dependents=True)
