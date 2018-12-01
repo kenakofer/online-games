@@ -522,7 +522,7 @@ class Deck(TableMovable):
             assert not other.parent
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
-            if not isinstance(self, Dice):
+            if not isinstance(other, Dice):
                 other.show_face_number = self.dependents[0].show_face_number
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
