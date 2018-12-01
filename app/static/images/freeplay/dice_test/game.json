@@ -27,7 +27,7 @@
         "dice-green":{
             "width":40,
             "height":40,
-            "current_image":3,
+            "show_face_number":3,
             "default_face_up_offset":[27,0],
             "type":"Dice",
             "background_color":"#00cc00",
@@ -67,7 +67,7 @@
         "dice-blue":{
             "width":40,
             "height":40,
-            "current_image":3,
+            "show_face_number":3,
             "default_face_up_offset":[27,0],
             "type":"Dice",
             "background_color":"#0000cc",
@@ -107,7 +107,7 @@
         "dice-red":{
             "width":40,
             "height":40,
-            "current_image":3,
+            "show_face_number":3,
             "default_face_up_offset":[27,0],
             "type":"Dice",
             "background_color":"#cc0000",
@@ -147,7 +147,7 @@
         "dice-yellow":{
             "width":40,
             "height":40,
-            "current_image":3,
+            "show_face_number":3,
             "default_face_up_offset":[27,0],
             "type":"Dice",
             "background_color":"#e0a800",
@@ -187,7 +187,7 @@
         "dice-black":{
             "width":40,
             "height":40,
-            "current_image":3,
+            "show_face_number":3,
             "default_face_up_offset":[27,0],
             "type":"Dice",
             "cards":[

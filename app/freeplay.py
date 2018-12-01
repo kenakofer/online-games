@@ -255,7 +255,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, rotation=0, can_rotate=False, background=True):
+    def __init__(self, game, deck, images, show_face_number, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, rotation=0, can_rotate=False, background=True):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -276,7 +276,7 @@ class Card(TableMovable):
                 )
         self.stack_group = stack_group or deck.display_name
         self.images = images
-        self.current_image = current_image
+        self.show_face_number = show_face_number
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
         self.background_color = background_color
@@ -309,7 +309,7 @@ class Card(TableMovable):
             other.dependents.insert(0,self)
             for d in other.dependents:
                 if not isinstance(d, Dice):
-                    d.current_image = self.current_image
+                    d.show_face_number = self.show_face_number
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -322,7 +322,7 @@ class Card(TableMovable):
             new_deck = Deck(self.game, self.position, self.dimensions, cards=[self, other], text="")
             new_deck.privacy = self.privacy
             if not isinstance(other, Dice):
-                other.current_image = self.current_image
+                other.show_face_number = self.show_face_number
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -337,13 +337,13 @@ class Card(TableMovable):
     def flip(self, no_update=False):
         if (len(self.images) == 2):
             if not isinstance(self, Dice):
-                self.current_image = 0 if self.current_image == 1 else 1
+                self.show_face_number = 0 if self.show_face_number == 1 else 1
             if not no_update:
                 self.game.thread_lock.acquire()
                 data = {
                     "movables_info":[{
                         "id":self.id,
-                        "current_image":self.current_image,
+                        "show_face_number":self.show_face_number,
                         }]
                     }
                 with app.test_request_context('/'):
@@ -353,7 +353,7 @@ class Card(TableMovable):
     def get_info(self):
         info                              =  super().get_info()
         info['images']                    =  self.images
-        info['current_image']             =  self.current_image
+        info['show_face_number']          =  self.show_face_number
         info['default_face_up_offset']    =  self.dfuo
         info['default_face_down_offset']  =  self.dfdo
         info['stack_group']               =  self.stack_group
@@ -362,7 +362,7 @@ class Card(TableMovable):
         return info
 
 class Dice(Card):
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, background=True):
+    def __init__(self, game, deck, images, show_face_number, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, background=True):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -382,30 +382,67 @@ class Dice(Card):
             )
         self.stack_group = stack_group or deck.display_name
         self.images = images
-        self.current_image = current_image
+        self.show_face_number = show_face_number
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
         game.cards[self.id] = self
         self.background_color = background_color
 
     def roll(self, no_update=False):
-        self.current_image = randint(0,len(self.images)-1)
+        self.show_face_number = randint(0,len(self.images)-1)
         if not no_update:
-            self.game.update_current_image([self], rolling=True)
+            self.game.update_show_face_number([self], rolling=True)
             if (self.privacy == -1):
                 name = self.game.get_active_player_tag()
                 dice_name = self.display_name if self.display_name else "a dice"
                 self.game.add_message(None, name+' rolled '+dice_name)
                 self.game.send_messages()
-        return self.current_image
+        return self.show_face_number
 
     def increment(self, amount, no_update=False):
-        self.current_image += amount
-        self.current_image = max(self.current_image, 0)
-        self.current_image = min(self.current_image, len(self.images)-1)
+        self.show_face_number += amount
+        self.show_face_number = max(self.show_face_number, 0)
+        self.show_face_number = min(self.show_face_number, len(self.images)-1)
         if not no_update:
-            self.game.update_current_image([self], rolling=False)
-        return self.current_image
+            self.game.update_show_face_number([self], rolling=False)
+        return self.show_face_number
+
+class NumberCard(Dice):
+    def __init__(self, game, deck, show_face_number=0, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, background=True):
+        dimensions = dims[:]
+        for i,c in enumerate(dimensions):
+            if c<0:
+                dimensions[i] = deck.dimensions[i]
+        TableMovable.__init__(
+            self,
+            'NUM'+str(game.get_new_id()),
+            game,
+            deck.position,
+            dimensions,
+            dependents=[],
+            parent=deck,
+            display_name=alt_text,
+            force_card_depth=force_card_depth,
+            snap_card_to_grid=snap_card_to_grid,
+            background=background,
+            )
+        self.stack_group = stack_group or deck.display_name
+        self.show_face_number = show_face_number
+        self.dfuo = dfuo or [25,0]
+        self.dfdo = dfdo or [3,2]
+        game.cards[self.id] = self
+        self.background_color = background_color
+        self.images=[]
+
+    def roll(self, no_update=False):
+        # Make no change
+        return self.show_face_number
+
+    def increment(self, amount, no_update=False):
+        self.show_face_number += amount
+        if not no_update:
+            self.game.update_show_face_number([self], rolling=False)
+        return self.show_face_number
 
 class Deck(TableMovable):
 
@@ -471,7 +508,7 @@ class Deck(TableMovable):
                 card = other.dependents.pop(0)
                 self.dependents.append(card)
                 if not isinstance(card, Dice):
-                    card.current_image = self.dependents[0].current_image
+                    card.show_face_number = self.dependents[0].show_face_number
                 card.parent = self
             # Delete the other deck
             other.destroy()
@@ -486,7 +523,7 @@ class Deck(TableMovable):
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
             if not isinstance(self, Dice):
-                other.current_image = self.dependents[0].current_image
+                other.show_face_number = self.dependents[0].show_face_number
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
             self.game.send_update([self, other] + other.dependents)
@@ -500,7 +537,7 @@ class Deck(TableMovable):
             self.game.add_message(None, name+' rolled '+deck_name)
             self.game.send_messages()
         if not no_update:
-            self.game.update_current_image(self.dependents, rolling=True)
+            self.game.update_show_face_number(self.dependents, rolling=True)
             return
 
     def flip(self, no_update=False):
@@ -583,7 +620,15 @@ class Deck(TableMovable):
                 # Defaults if nothing specified
                 biu = card_data['back_image_url'] if 'back_image_url' in card_data else '/static/images/freeplay/red_back.png'
                 bis = card_data['back_image_style'] if 'back_image_style' in card_data else 'initial'
-                images = card_data['images'] if 'images' in card_data else [{'url':card_data['front_image_url'], 'style':'100% 100%'},{'url':biu, 'style':bis}]
+                if 'images' in card_data:
+                    images = card_data['images']
+                elif 'front_image_url' in card_data:
+                    images = [{'url':card_data['front_image_url'], 'style':'100% 100%'},{'url':biu, 'style':bis}]
+                else:
+                    #This had better be a NumberCard since it has no images
+                    pass
+
+
                 at = card_data['alt_text'] if 'alt_text' in card_data else ""
                 reps = card_data['repetitions'] if 'repetitions' in card_data else 1
                 dfuo = card_data['default_face_up_offset'] if 'default_face_up_offset' in card_data else [24,0]
@@ -591,7 +636,7 @@ class Deck(TableMovable):
                 dfdo = card_data['default_face_down_offset'] if 'default_face_down_offset' in card_data else [3,2]
                 dfdo = Deck.opd_conversion(dfdo)
                 stack_group = card_data['stack_group'] if 'stack_group' in card_data else deck_name
-                current_image = card_data['current_image'] if 'current_image' in card_data else (0 if face_up else 1)
+                show_face_number = card_data['show_face_number'] if 'show_face_number' in card_data else (0 if face_up else 1)
                 object_type = card_data['type'] if 'type' in card_data else "Card"
                 background_color = card_data['background_color'] if 'background_color' in card_data else None
                 force_card_depth = card_data['force_card_depth'] if 'force_card_depth' in card_data else None
@@ -608,7 +653,23 @@ class Deck(TableMovable):
                                 game,
                                 deck,
                                 images,
-                                current_image,
+                                show_face_number,
+                                dims = [card_w, card_h],
+                                alt_text = at,
+                                dfuo = dfuo,
+                                dfdo = dfdo,
+                                stack_group = stack_group,
+                                background_color = background_color,
+                                force_card_depth = force_card_depth,
+                                snap_card_to_grid = snap_card_to_grid,
+                                background=background,
+                                )
+                elif (object_type == "NumberCard"):
+                    for i in range(reps):
+                        number_card = NumberCard(
+                                game,
+                                deck,
+                                show_face_number,
                                 dims = [card_w, card_h],
                                 alt_text = at,
                                 dfuo = dfuo,
@@ -626,7 +687,7 @@ class Deck(TableMovable):
                                 game,
                                 deck,
                                 images,
-                                current_image,
+                                show_face_number,
                                 dims = [card_w, card_h],
                                 alt_text = at,
                                 dfuo = dfuo,
@@ -646,7 +707,7 @@ class Deck(TableMovable):
             shift = deck_w
             if len(deck.dependents) > 0:
                 d = deck.dependents[0]
-                offset = (d.dfuo if d.current_image == 0 else d.dfdo)
+                offset = (d.dfuo if d.show_face_number == 0 else d.dfdo)
                 if isinstance(offset, dict):
                     offset = offset['public']
                 shift = (len(deck.dependents) - 1) * offset[0] + d.dimensions[0]
@@ -676,7 +737,7 @@ class Deck(TableMovable):
             # If 'same face' keep the same direction, otherwise set face up or down
             if not isinstance(self, Dice):
                 if not which_face == "same face":
-                    card.current_image = 0 if (which_face == 'face up') else 1
+                    card.show_face_number = 0 if (which_face == 'face up') else 1
         new_deck.push_to_top(moving = False)
         self.game.send_update([new_deck] + new_deck.dependents + [self])
         player = self.game.get_player_from_session(current_user)
@@ -844,14 +905,14 @@ class FreeplayGame:
         self.thread_lock.release()
         return all_data
 
-    def update_current_image(self, which_movables, rolling=False, include_self=True):
+    def update_show_face_number(self, which_movables, rolling=False, include_self=True):
         print("update roll")
         # Passing the False makes it try to acquire the lock. If it can't it enters the if
         if not self.thread_lock.acquire(False):
             print("blocked...")
             self.thread_lock.acquire()
         which_movables = list(set(which_movables))
-        movables_info = [{'id':m.id, 'current_image':m.current_image, 'roll':rolling} for m in which_movables]
+        movables_info = [{'id':m.id, 'show_face_number':m.show_face_number, 'roll':rolling} for m in which_movables]
         # Only send first names
         all_data = { "movables_info":movables_info }
         socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)

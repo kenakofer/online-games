@@ -396,7 +396,6 @@
             "default_face_down_offset":[15,0],
             "can_rotate":false,
             "background":false,
-            "last_in_row":"true",
             "cards":[
                 {
                     "alt_text":"Big meeple (blue)",
@@ -478,7 +477,6 @@
             "default_face_down_offset":[15,0],
             "can_rotate":false,
             "background":false,
-            "last_in_row":"true",
             "cards":[
                 {
                     "alt_text":"Big meeple (green)",
@@ -560,7 +558,6 @@
             "default_face_down_offset":[15,0],
             "can_rotate":false,
             "background":false,
-            "last_in_row":"true",
             "cards":[
                 {
                     "alt_text":"Big meeple (white)",
@@ -631,6 +628,40 @@
                     "front_image_url":"/static/images/freeplay/carcassonne/meeples/pig_black.png",
                     "back_image_url":"/static/images/freeplay/carcassonne/meeples/pig_black.png",
                     "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "player scores":{
+            "width":60,
+            "height":40,
+            "show_face_number":0,
+            "default_face_up_offset":[33,0],
+            "type":"NumberCard",
+            "can_rotate":false,
+            "cards":[
+                {
+                    "alt_text":"Score (blue)",
+                    "background_color":"#8af"
+                },
+                {
+                    "alt_text":"Score (yellow)",
+                    "background_color":"#ffa"
+                },
+                {
+                    "alt_text":"Score (green)",
+                    "background_color":"#afa"
+                },
+                {
+                    "alt_text":"Score (red)",
+                    "background_color":"#faa"
+                },
+                {
+                    "alt_text":"Score (white)",
+                    "background_color":"#eee"
+                },
+                {
+                    "alt_text":"Score (black)",
+                    "background_color":"#555"
                 }
             ]
         }

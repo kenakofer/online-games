@@ -9,7 +9,7 @@
  *
  *              Stuff that was just dropped on the main content
  *              Stuff that was dropped earlier on the main content
- *              ------- Floor of the main content --------                 
+ *              ------- Floor of the main content --------
  *
  */
 // Any varibles preceded by "template_" are inserted into the html's inline js
@@ -105,7 +105,7 @@ $( document ).ready(function () {
             {},
             {url: '/static/images/freeplay/red_back.png', style: "100% 100%"}
         ];
-        self.current_image = -1;            // Which image is currently being displayed. Cards will have two images: front (index 0) and back (index 1). Dice will have more
+        self.show_face_number = -1;            // Which image is currently being displayed. Cards will have two images: front (index 0) and back (index 1). Dice will have more
         self.stack_group = "";              // Cards and dice in the same stack group can be put into a deck with each other
         self.dfuo = [];                     // Default face up per card offset. [public, private]
         self.dfdo = [];                     //              down
@@ -120,7 +120,7 @@ $( document ).ready(function () {
         self.has_synced_once = false;
     }
     TableMovable.prototype.update_full_display_name = function () {
-        if (this.type == 'Deck') {
+        if (this.type === 'Deck') {
             var text = this.display_name;
             var l = this.dependent_ids.length;
             var opd = this.offset_per_dependent();
@@ -133,7 +133,7 @@ $( document ).ready(function () {
         } else {
             // Put the display name as the hover text with title
             var span = this.tooltip_elem;
-            if (this.current_image == 0) {
+            if (this.show_face_number == 0 || this.type === 'NumberCard') {
                 // Update the html
                 span.html(this.display_name);
                 //this.html_elem.attr('title', this.display_name);
@@ -159,12 +159,12 @@ $( document ).ready(function () {
 
     TableMovable.prototype.start_roll = function (number_left, final_val) {
         if (number_left <= 0) {
-            this.current_image = final_val;
+            this.show_face_number = final_val;
             this.sync_image();
             return
         }
         this.html_elem.toggleClass('rotate');
-        this.current_image = Math.floor(Math.random() * this.images.length);
+        this.show_face_number = Math.floor(Math.random() * this.images.length);
         this.sync_image();
         var obj = this;
         setTimeout(function (){
@@ -203,7 +203,7 @@ $( document ).ready(function () {
             return;
         }
         var result;
-        if (first_dep.current_image === 0 || first_dep.type === "Dice") {
+        if (first_dep.show_face_number === 0 || first_dep.type === "Dice" || first_dep.type === "NumberCard") {
             result = first_dep.dfuo;
         } else {
             result = first_dep.dfdo;
@@ -229,7 +229,7 @@ $( document ).ready(function () {
     TableMovable.prototype.position_offset = function () {
         if (this.type == 'Deck') {
             return [-10, -27];
-        } else if (['Card', 'Dice'].includes(this.type) && this.parent_id) {
+        } else if (['Card', 'Dice', 'NumberCard'].includes(this.type) && this.parent_id) {
             var i = this.get_index_in_parent();
             var p = get_apm_obj(this.parent_id);
             var opd = p.offset_per_dependent() || [0.5, 0.5];
@@ -327,15 +327,21 @@ $( document ).ready(function () {
     TableMovable.prototype.sync_image = function () {
         if (this.type === "Deck")
             return
-        if (this.current_image < 0) {
+        if (this.type === "NumberCard") {
+            // NumberCards just show their number rather than an image
+            var span = $('span.display-content', this.html_elem);
+            span.html(this.show_face_number);
+            return;
+        }
+        if (this.show_face_number < 0) {
             console.error('Card image is less than 0');
             return;
         }
-        if (! this.images[this.current_image]) {
-            console.error('Card has no image '+this.current_image);
+        if (! this.images[this.show_face_number]) {
+            console.error('Card has no image '+this.show_face_number);
             return;
         }
-        var image = this.images[this.current_image];
+        var image = this.images[this.show_face_number];
         this.image_elem.css({
             'background-image': "url("+image['url']+")",
             'background-size': image['style']
@@ -451,8 +457,18 @@ $( document ).ready(function () {
                     action_button_panel.prepend(right_button);
                     action_button_panel.append(left_button);
                 }
-                // Do the tooltip as well
-                if (apm_obj.display_name && apm_obj.current_image === 0) {
+            } else if (apm_obj.type == "Dice") {
+                action_button_panel.prepend(action_button_br);
+                action_button_panel.prepend(up_button);
+                action_button_panel.prepend(roll_button);
+                action_button_panel.append(down_button);
+            } else if (apm_obj.type == "NumberCard") {
+                action_button_panel.append(up_button);
+                action_button_panel.append(down_button);
+            }
+            // Set visible tooltips
+            if (apm_obj.type != "Deck") {
+                if (apm_obj.display_name && (apm_obj.type != "Card" || apm_obj.show_face_number === 0)) {
                     // Move the tooltip to centered just below the card
                     apm_obj.tooltip_elem.css({
                         'visibility':'visible',
@@ -461,12 +477,8 @@ $( document ).ready(function () {
                         'position': position_type
                     });
                 }
-            } else if (apm_obj.type == "Dice") {
-                action_button_panel.prepend(action_button_br);
-                action_button_panel.prepend(up_button);
-                action_button_panel.prepend(roll_button);
-                action_button_panel.append(down_button);
             }
+
 
             var panel_height = action_button_panel.height();
             var panel_width = action_button_panel.width();
@@ -622,7 +634,7 @@ $( document ).ready(function () {
         // Add it to the public list
         apm.public_movables[id] = apm_obj;
         // Add it to the html
-        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span><div class="image"></div></div>');
+        public_movables.append('<div id="'+id+'" class="table-movable droppable noselect ui-widget-content"><span class="display-name"></span><span class="display-content"></span><div class="image"></div></div>');
         tooltip_panel.append('<span id="'+id+'-tooltip" class="display-name tooltiptext"></span>');
         // Give it its html_elem and tooltip and image_elem
         apm_obj.html_elem = $( '#'+apm_obj.id );
@@ -690,7 +702,6 @@ $( document ).ready(function () {
                 apm_obj.emit_continue_move();
             },
             drag: function (elem, ui) {
-                console.log('drag');
                 var html_elem = $('#'+elem.target.id);
                 var apm_obj = get_apm_obj(elem.target.id);
                 // Snap to the grid if specified
@@ -764,7 +775,7 @@ $( document ).ready(function () {
             "ui-droppable-hover": "ui-state-hover"
         },
         accept: function (el) {
-            return el.hasClass('Card') || el.hasClass('Deck') || el.hasClass("Dice");
+            return el.hasClass('Card') || el.hasClass('Deck') || el.hasClass("Dice") || el.hasClass("NumberCard");
         },
         drop: function ( event, ui ) {
             var now = new Date().getTime();
@@ -796,7 +807,7 @@ $( document ).ready(function () {
             time_of_drop_emit = now;
             // Line up the dropped object
             // If either is not a deck or card, ignore the drop
-            if (!['Deck', 'Card', 'Dice'].includes(apm_top.type) || !['Deck', 'Card', 'Dice'].includes(apm_bottom.type))
+            if (!['Deck', 'Card', 'Dice', 'NumberCard'].includes(apm_top.type) || !['Deck', 'Card', 'Dice', 'NumberCard'].includes(apm_bottom.type))
                 return;
             // We want to prevent emitting the stop event after this
             apm_top.drop_time = now;
@@ -1053,14 +1064,14 @@ $( document ).ready(function () {
             if ('can_rotate' in obj_data) {
                 apm_obj.can_rotate = obj_data.can_rotate;
             }
-            if ('current_image' in obj_data) {
+            if ('show_face_number' in obj_data) {
                 if (apm_obj.type === "Dice") {
                     var roll_count = obj_data.roll ? 10 : 0;
                     if (roll_count)
                         roll_count += Math.floor(Math.random() * 10);
-                    apm_obj.start_roll(roll_count, obj_data.current_image);
+                    apm_obj.start_roll(roll_count, obj_data.show_face_number);
                 } else {
-                    apm_obj.current_image = obj_data.current_image;
+                    apm_obj.show_face_number = obj_data.show_face_number;
                     apm_obj.update_full_display_name();
                 }
             }
@@ -1223,7 +1234,7 @@ $( document ).ready(function () {
     });
     private_hand.droppable({
         accept: function (el) {
-            return el.hasClass('Card') || el.hasClass('Deck') || el.hasClass('Dice');
+            return el.hasClass('Card') || el.hasClass('Deck') || el.hasClass('Dice') || el.hasClass('NumberCard');
         },
         drop: function ( elem, ui ) {
             var top_id = ui.draggable.context.id;
