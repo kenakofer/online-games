@@ -658,7 +658,7 @@ $( document ).ready(function () {
     };
 
     draggable_settings = {
-            start: function (elem) {
+            start: function (elem, ui) {
                 var html_elem = $('#'+elem.target.id);
                 var apm_obj = get_apm_obj(elem.target.id);
                 socket.emit('START MOVE', {gameid:template_gameid, obj_id:elem.target.id});
@@ -689,9 +689,11 @@ $( document ).ready(function () {
                 // Start the looping of emit_continue_move
                 apm_obj.emit_continue_move();
             },
-            drag: function (elem) {
+            drag: function (elem, ui) {
+                console.log('drag');
                 var html_elem = $('#'+elem.target.id);
                 var apm_obj = get_apm_obj(elem.target.id);
+                // Snap to the grid if specified
                 var pos = get_position_array_from_html_pos(html_elem.position());
                 pos[0] -= apm_obj.position_offset()[0];
                 pos[1] -= apm_obj.position_offset()[1];
@@ -705,7 +707,7 @@ $( document ).ready(function () {
                     apm_dep.sync_position(0);
                 });
             },
-            stop: function (elem) {
+            stop: function (elem, ui) {
                 var apm_obj = get_apm_obj(elem.target.id);
                 currently_dragging = false;
                 var now = new Date().getTime();
@@ -730,6 +732,17 @@ $( document ).ready(function () {
                     if (apm_obj.privacy !== -1) {
                         pos[0] -= private_hand_horizontal_offset();
                         pos[1] -= private_hand_vertical_offset();
+                    }
+                    if (apm_obj.snap_card_to_grid) {
+                        pos[0] = Math.round(
+                                    (pos[0] - apm_obj.snap_card_to_grid[0][1]) / apm_obj.snap_card_to_grid[0][0]
+                                ) * apm_obj.snap_card_to_grid[0][0] + apm_obj.snap_card_to_grid[0][1];
+                        pos[1] = Math.round(
+                                    (pos[1] - apm_obj.snap_card_to_grid[1][1]) / apm_obj.snap_card_to_grid[1][0]
+                                ) * apm_obj.snap_card_to_grid[1][0] + apm_obj.snap_card_to_grid[1][1];
+                        ui.position.left = pos[0];
+                        ui.position.top = pos[1];
+                        console.log(pos);
                     }
                     // Set the current player moving to none
                     apm_obj.player_moving_index = -1;
@@ -1021,7 +1034,6 @@ $( document ).ready(function () {
                     apm_obj.html_elem.removeClass('nobackground');
                 } else {
                     apm_obj.html_elem.addClass('nobackground');
-                    console.log('nobackground');
                 }
             }
             if ('default_face_up_offset' in obj_data) {
@@ -1057,6 +1069,9 @@ $( document ).ready(function () {
             }
             if ('force_card_depth' in obj_data) {
                 apm_obj.force_card_depth = obj_data.force_card_depth;
+            }
+            if ('snap_card_to_grid' in obj_data) {
+                apm_obj.snap_card_to_grid = obj_data.snap_card_to_grid;
             }
             // Sync card image changes
             apm_obj.sync_image();

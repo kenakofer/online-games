@@ -10,10 +10,11 @@
     ],
     "decks": {
         "base":{
-            "width":65,
-            "height":65,
+            "width":66,
+            "height":66,
             "face_up":false,
             "force_card_depth": 1,
+            "snap_card_to_grid": [[33,0], [33,0]],
             "default_face_up_offset":[10,9],
             "default_face_down_offset":[3,2],
             "can_rotate":true,
@@ -196,10 +197,11 @@
             ]
         },
         "inns and cathedrals":{
-            "width":65,
-            "height":65,
+            "width":66,
+            "height":66,
             "face_up":false,
             "force_card_depth": 1,
+            "snap_card_to_grid": [[33,0], [33,0]],
             "default_face_up_offset":[10,9],
             "default_face_down_offset":[3,2],
             "can_rotate":true,
@@ -311,10 +313,11 @@
             ]
         },
         "river":{
-            "width":65,
-            "height":65,
+            "width":66,
+            "height":66,
             "face_up":true,
             "force_card_depth": 1,
+            "snap_card_to_grid": [[33,0], [33,0]],
             "default_face_up_offset":[10,9],
             "default_face_down_offset":[3,2],
             "can_rotate":true,

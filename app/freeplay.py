@@ -59,7 +59,7 @@ class TableMovable:
         # Otherwise
         return 0
 
-    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", force_card_depth=None, can_rotate=False, rotation=0, background=True):
+    def __init__(self, id, game, position, dimensions, dependents=None, parent=None, display_name="", force_card_depth=None, snap_card_to_grid=None, can_rotate=False, rotation=0, background=True):
         self.id = id
         self.sort_index = game.get_sort_index()
         self.game = game
@@ -76,6 +76,7 @@ class TableMovable:
         self.game.all_movables[self.id] = self
         self.privacy = -1
         self.force_card_depth = force_card_depth
+        self.snap_card_to_grid = snap_card_to_grid
         self.push_to_top(moving=False)
         self.can_rotate = can_rotate
         self.rotation = rotation
@@ -205,6 +206,7 @@ class TableMovable:
             "type":                 self.__class__.__name__,
             "privacy":              self.privacy,
             "force_card_depth":     False if self.force_card_depth == None else self.force_card_depth,
+            "snap_card_to_grid":     False if self.snap_card_to_grid == None else self.snap_card_to_grid,
             "rotation":             self.rotation,
             "can_rotate":           self.can_rotate,
             "background":           self.background,
@@ -253,7 +255,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, rotation=0, can_rotate=False, background=True):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, rotation=0, can_rotate=False, background=True):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -267,6 +269,7 @@ class Card(TableMovable):
                 parent=deck,
                 display_name=alt_text,
                 force_card_depth=force_card_depth,
+                snap_card_to_grid=snap_card_to_grid,
                 can_rotate=can_rotate,
                 rotation=rotation,
                 background=background,
@@ -360,7 +363,7 @@ class Card(TableMovable):
         return info
 
 class Dice(Card):
-    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, background=True):
+    def __init__(self, game, deck, images, current_image, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, background=True):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -375,6 +378,7 @@ class Dice(Card):
             parent=deck,
             display_name=alt_text,
             force_card_depth=force_card_depth,
+            snap_card_to_grid=snap_card_to_grid,
             background=background,
             )
         self.stack_group = stack_group or deck.display_name
@@ -598,6 +602,7 @@ class Deck(TableMovable):
                 card_w = card_data['width'] if 'width' in card_data else deck_w
                 card_h = card_data['height'] if 'height' in card_data else deck_h
                 background = card_data['background'] if 'background' in card_data else True
+                snap_card_to_grid = card_data['snap_card_to_grid'] if 'snap_card_to_grid' in card_data else None
                 if (object_type == "Dice"):
                     # Create the dice
                     for i in range(reps):
@@ -613,6 +618,7 @@ class Deck(TableMovable):
                                 stack_group = stack_group,
                                 background_color = background_color,
                                 force_card_depth = force_card_depth,
+                                snap_card_to_grid = snap_card_to_grid,
                                 background=background,
                                 )
                 else:
@@ -630,6 +636,7 @@ class Deck(TableMovable):
                                 stack_group = stack_group,
                                 background_color = background_color,
                                 force_card_depth = force_card_depth,
+                                snap_card_to_grid = snap_card_to_grid,
                                 rotation = rotation,
                                 can_rotate = can_rotate,
                                 background=background

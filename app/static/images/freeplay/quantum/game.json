@@ -30,6 +30,7 @@
         "planets":{
             "width":150,
             "height":150,
+            "snap_card_to_grid": [[50,0], [50,0]],
             "face_up":true,
             "force_card_depth": 1,
             "default_face_up_offset":[3,2],
@@ -551,6 +552,7 @@
         "B Scrapyard":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -590,6 +592,7 @@
         "B expand":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -669,6 +672,7 @@
         "B Cubes":{
             "width":17,
             "height":17,
+            "snap_card_to_grid": [[10,-4], [10,-4]],
             "current_image":0,
             "last_in_row":true,
             "default_face_up_offset":[13,0],
@@ -726,6 +730,7 @@
         "Y Scrapyard":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -765,6 +770,7 @@
         "Y expand":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -844,6 +850,7 @@
         "Y Cubes":{
             "width":17,
             "height":17,
+            "snap_card_to_grid": [[10,-4], [10,-4]],
             "current_image":0,
             "default_face_up_offset":[13,0],
             "type":"Dice",
@@ -901,6 +908,7 @@
         "G Scrapyard":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -940,6 +948,7 @@
         "G expand":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -1019,6 +1028,7 @@
         "G Cubes":{
             "width":17,
             "height":17,
+            "snap_card_to_grid": [[10,-4], [10,-4]],
             "current_image":0,
             "last_in_row":true,
             "default_face_up_offset":[13,0],
@@ -1076,6 +1086,7 @@
         "R Scrapyard":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -1115,6 +1126,7 @@
         "R expand":{
             "width":35,
             "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
             "current_image":0,
             "default_face_up_offset":[27,0],
             "type":"Dice",
@@ -1194,6 +1206,7 @@
         "R Cubes":{
             "width":17,
             "height":17,
+            "snap_card_to_grid": [[10,-4], [10,-4]],
             "current_image":0,
             "last_in_row":true,
             "default_face_up_offset":[13,0],
