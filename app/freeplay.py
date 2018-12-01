@@ -292,7 +292,7 @@ class Card(TableMovable):
             return self.parent.incorporate(other)
 
         # Deck dropped onto single card
-        elif type(other) is Deck:
+        elif isinstance(other, Deck):
             print("Dropping Deck on single Card...")
             # Set the privacy of all the cards in the dropped deck
             other.recursive_set_privacy(self.privacy)
@@ -308,7 +308,7 @@ class Card(TableMovable):
             self.parent = other
             other.dependents.insert(0,self)
             for d in other.dependents:
-                if type(d) is not Dice:
+                if not isinstance(d, Dice):
                     d.current_image = self.current_image
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
@@ -316,13 +316,12 @@ class Card(TableMovable):
             self.game.send_update(which_movables = [self, other] + other.dependents)
 
         # Single Card dropped onto single card
-        #elif type(other) is Card:
         else:
             assert not self.parent and not other.parent
             print("Dropping single Card on single Card...")
             new_deck = Deck(self.game, self.position, self.dimensions, cards=[self, other], text="")
             new_deck.privacy = self.privacy
-            if type(other) is not Dice:
+            if not isinstance(other, Dice):
                 other.current_image = self.current_image
             # Set the deck's position to be the same as the card, and stop any movement on the two
             self.stop_move(None, self.position, no_check=True, no_update=True)
@@ -337,7 +336,7 @@ class Card(TableMovable):
 
     def flip(self, no_update=False):
         if (len(self.images) == 2):
-            if type(self) is not Dice:
+            if not isinstance(self, Dice):
                 self.current_image = 0 if self.current_image == 1 else 1
             if not no_update:
                 self.game.thread_lock.acquire()
@@ -462,7 +461,7 @@ class Deck(TableMovable):
         if self==other:
             print("You're trying to combine the same thing?")
         # Deck dropped onto deck
-        elif type(other) is Deck:
+        elif isinstance(other, Deck):
             print("Dropping Deck on Deck...")
             other.recursive_set_privacy(self.privacy)
             # Save which dependents are new
@@ -471,7 +470,7 @@ class Deck(TableMovable):
             while len(other.dependents) > 0:
                 card = other.dependents.pop(0)
                 self.dependents.append(card)
-                if type(card) is not Dice:
+                if not isinstance(card, Dice):
                     card.current_image = self.dependents[0].current_image
                 card.parent = self
             # Delete the other deck
@@ -482,12 +481,11 @@ class Deck(TableMovable):
             self.game.send_update([self] + self.dependents)
 
         # Single Card dropped onto Deck
-        #elif type(other) is Card:
         else:
             assert not other.parent
             print("Dropping single Card on Deck...")
             self.dependents.append(other)
-            if type(other) is not Dice:
+            if not isinstance(self, Dice):
                 other.current_image = self.dependents[0].current_image
             other.parent = self
             other.stop_move(None, self.position, no_check=True, no_update=True)
@@ -676,7 +674,7 @@ class Deck(TableMovable):
             card.parent.dependents.append(card)
             card.stop_move(None, new_position, no_check=True, no_update=True)
             # If 'same face' keep the same direction, otherwise set face up or down
-            if type(self) is not Dice:
+            if not isinstance(self, Dice):
                 if not which_face == "same face":
                     card.current_image = 0 if (which_face == 'face up') else 1
         new_deck.push_to_top(moving = False)
