@@ -413,6 +413,13 @@
                     "back_image_style":"100% 100%"
                 },
                 {
+                    "alt_text":"Abbot (blue)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_blue.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_blue.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
                     "alt_text":"Builder (blue)",
                     "width": 24,
                     "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_blue.png",
@@ -454,6 +461,13 @@
                     "back_image_style":"100% 100%"
                 },
                 {
+                    "alt_text":"Abbot (yellow)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_yellow.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_yellow.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
                     "alt_text":"Builder (yellow)",
                     "width": 24,
                     "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_yellow.png",
@@ -491,6 +505,13 @@
                     "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_green.png",
                     "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_green.png",
                     "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Abbot (green)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_green.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_green.png",
                     "back_image_style":"100% 100%"
                 },
                 {
@@ -535,6 +556,13 @@
                     "back_image_style":"100% 100%"
                 },
                 {
+                    "alt_text":"Abbot (red)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_red.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_red.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
                     "alt_text":"Builder (red)",
                     "width": 24,
                     "front_image_url":"/static/images/freeplay/carcassonne/meeples/builder_red.png",
@@ -572,6 +600,13 @@
                     "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_white.png",
                     "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_white.png",
                     "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Abbot (white)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_white.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_white.png",
                     "back_image_style":"100% 100%"
                 },
                 {
@@ -613,6 +648,13 @@
                     "front_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_black.png",
                     "back_image_url":"/static/images/freeplay/carcassonne/meeples/meeple_black.png",
                     "repetitions":7,
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Abbot (black)",
+                    "width": 24,
+                    "front_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_black.png",
+                    "back_image_url":"/static/images/freeplay/carcassonne/meeples/abbot_black.png",
                     "back_image_style":"100% 100%"
                 },
                 {
