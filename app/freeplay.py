@@ -280,7 +280,6 @@ class Card(TableMovable):
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
         self.background_color = background_color
-        game.cards[self.id] = self
 
     # This is called when one object in the client is dropped onto another
     # It combines the two objects, with other taking self's position
@@ -385,7 +384,6 @@ class Dice(Card):
         self.show_face_number = show_face_number
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
-        game.cards[self.id] = self
         self.background_color = background_color
 
     def roll(self, no_update=False):
@@ -430,7 +428,6 @@ class NumberCard(Dice):
         self.show_face_number = show_face_number
         self.dfuo = dfuo or [25,0]
         self.dfdo = dfdo or [3,2]
-        game.cards[self.id] = self
         self.background_color = background_color
         self.images=[]
 
@@ -760,7 +757,6 @@ class FreeplayGame:
         self.thread_lock = threading.Lock()
         self.thread_lock.acquire()
         self.players = []
-        self.cards = {}
         self.decks = {}
         self.all_movables = {}
         self.gameid = gameid
