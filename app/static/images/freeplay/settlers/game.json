@@ -1,0 +1,125 @@
+{
+    "quick_messages":[
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "I'll give",
+        "In exchange for",
+        "Brick",
+        "Ore",
+        "Sheep",
+        "Wheat",
+        "Wood",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12"
+    ],
+    "private_hand_height":200,
+    "decks": {
+        "base game terrain":{
+            "width":104,
+            "height":120,
+            "snap_card_to_grid": [[52,0], [90,0]],
+            "face_up":true,
+            "force_card_depth": 1,
+            "default_face_up_offset":[4,3],
+            "default_face_down_offset":[22,0],
+            "background":false,
+            "can_rotate":true,
+            "rotate_by":60,
+            "shuffle":false,
+            "cards":[
+                {
+                    "alt_text":"Desert (no resource)",
+                    "repetitions":1,
+                    "front_image_url":"/static/images/freeplay/settlers/desert_tile.png",
+                    "back_image_url":"/static/images/freeplay/settlers/desert_tile.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Forest (wood)",
+                    "repetitions":4,
+                    "front_image_url":"/static/images/freeplay/settlers/wood_tile.png",
+                    "back_image_url":"/static/images/freeplay/settlers/wood_tile.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Pasture (sheep)",
+                    "repetitions":4,
+                    "front_image_url":"/static/images/freeplay/settlers/sheep_tile.png",
+                    "back_image_url":"/static/images/freeplay/settlers/sheep_tile.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Mountains (stone)",
+                    "repetitions":3,
+                    "front_image_url":"/static/images/freeplay/settlers/stone_tile.png",
+                    "back_image_url":"/static/images/freeplay/settlers/stone_tile.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Quarry (brick)",
+                    "repetitions":3,
+                    "front_image_url":"/static/images/freeplay/settlers/brick_tile.png",
+                    "back_image_url":"/static/images/freeplay/settlers/brick_tile.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Fields (wheat)",
+                    "repetitions":4,
+                    "front_image_url":"/static/images/freeplay/settlers/wheat_tile.png",
+                    "back_image_url":"/static/images/freeplay/settlers/wheat_tile.png",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "Blue pieces":{
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[15,0],
+            "background":false,
+            "cards":[
+                {
+                    "alt_text":"Road (blue)",
+                    "width": 15,
+                    "height": 40,
+                    "can_rotate":true,
+                    "rotate_by":60,
+                    "front_image_url":"/static/images/freeplay/settlers/road_blue.png",
+                    "back_image_url":"/static/images/freeplay/settlers/road_blue.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":15
+                },
+                {
+                    "alt_text":"City (blue)",
+                    "width": 40,
+                    "height": 40,
+                    "snap_card_to_grid": [[52,-18], [30,0]],
+                    "front_image_url":"/static/images/freeplay/settlers/city_blue.png",
+                    "back_image_url":"/static/images/freeplay/settlers/city_blue.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":4
+                },
+                {
+                    "alt_text":"Settlement (blue)",
+                    "width": 30,
+                    "height": 30,
+                    "snap_card_to_grid": [[52,-14], [30,8]],
+                    "front_image_url":"/static/images/freeplay/settlers/settlement_blue.png",
+                    "back_image_url":"/static/images/freeplay/settlers/settlement_blue.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":5
+                }
+            ]
+        }
+    }
+}

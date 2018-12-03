@@ -181,7 +181,7 @@ class TableMovable:
             print("{} cannot be rotated".format(self))
             return
         self.rotation += amount;
-        self.rotation %= 4;
+        self.rotation %= 360;
 
         if update:
             self.game.thread_lock.acquire()
