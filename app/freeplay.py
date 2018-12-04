@@ -257,7 +257,7 @@ class TableMovable:
 
 class Card(TableMovable):
 
-    def __init__(self, game, deck, images, show_face_number, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, rotation=0, can_rotate=False, rotate_by=90 background=True):
+    def __init__(self, game, deck, images, show_face_number, alt_text="", dims=[-1,-1], dfuo=None, dfdo=None, stack_group=None, background_color=None, force_card_depth=None, snap_card_to_grid=None, rotation=0, can_rotate=False, rotate_by=90, background=True):
         dimensions = dims[:]
         for i,c in enumerate(dimensions):
             if c<0:
@@ -642,7 +642,7 @@ class Deck(TableMovable):
                 force_card_depth = card_data['force_card_depth'] if 'force_card_depth' in card_data else None
                 rotation = card_data['rotation'] if 'rotation' in card_data else 0
                 can_rotate = card_data['can_rotate'] if 'can_rotate' in card_data else False
-                can_rotate = card_data['rotate_by'] if 'rotate_by' in card_data else False
+                rotate_by = card_data['rotate_by'] if 'rotate_by' in card_data else False
                 card_w = card_data['width'] if 'width' in card_data else deck_w
                 card_h = card_data['height'] if 'height' in card_data else deck_h
                 background = card_data['background'] if 'background' in card_data else True
