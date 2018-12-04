@@ -142,7 +142,7 @@ span.ui-selectmenu-text {
 /* On mouse-over, add a deeper shadow */
 .ui-draggable:not(.card):hover,
 .ui-draggable.card .image:hover {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.5);
     border-color: #243;
     cursor: grab;
     cursor: -webkit-grab;
@@ -150,8 +150,8 @@ span.ui-selectmenu-text {
 }
 
 /* When clicked, make the shadow larger as if lifting */
-.ui-draggable.ui-draggable-dragging .image {
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+.ui-draggable.ui-draggable-dragging:not(.card),
+.ui-draggable.ui-draggable-dragging.card .image {
     cursor: grabbing;
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
