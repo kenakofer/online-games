@@ -397,6 +397,7 @@ $( document ).ready(function () {
     var sync_action_buttons = function (should_hide) {
         // If the option buttons are attached to this object, move it too.
         var html_obj = $( '#'+apm.show_action_buttons_for_id);
+        var html_image = $('.image', html_obj);
         var apm_obj = get_apm_obj(apm.show_action_buttons_for_id);
         var html_pos = html_obj.position();
 
@@ -432,8 +433,8 @@ $( document ).ready(function () {
             right_button.detach();
             left_button.detach();
 
-            var obj_height = html_obj.height();
-            var obj_width = html_obj.width();
+            var obj_height = html_image.height();
+            var obj_width = html_image.width();
 
             // Put in specific buttons
             if (apm_obj.type == "Deck") {

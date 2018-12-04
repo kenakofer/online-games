@@ -15,17 +15,18 @@
     font-size: 16px;
     white-space: nowrap;
 }
-.ui-widget-content.table-movable:not(card),
+.ui-widget-content.table-movable:not(.card),
 .ui-widget-content.table-movable .image {
-    transition: box-shadow 0.3s, border-color 0.3s, width 0.3s, height 0.3s;
+    transition: box-shadow 0.3s, border-color 0.3s;
 }
-.ui-widget-content.Deck {
+.ui-widget-content.table-movable.Deck {
     background: #9A7;
     opacity: .7;
     padding-top: 3px;
     padding-left: 5px;
     padding-right: 5px;
-    overflow-x: hidden;
+    overflow: hidden;
+    transition: box-shadow 0.3s, border-color 0.3s, width 0.3s, height 0.3s;
 }
 #tooltips-panel {
     position: absolute;
@@ -128,15 +129,9 @@ span.ui-selectmenu-text {
                                   supported by Chrome and Opera */
 }
 .ui-widget-content.card {
-    display: inline-block;
-    text-align: left;
-    margin: 0px;
-    position: absolute;
-    float: left;
-    font-size: 35px;
-    font-weight: bold;
-    color: #555;
-    background: white;
+    background: none;
+    border: none;
+    overflow: visible !important;
 }
 .ui-widget-content.card .image{
     border: 2px solid #565;
