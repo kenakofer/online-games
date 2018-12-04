@@ -92,6 +92,7 @@
                     "alt_text":"Road (blue)",
                     "width": 15,
                     "height": 40,
+                    "snap_card_to_grid": [[26,-7], [45,-7]],
                     "can_rotate":true,
                     "rotate_by":60,
                     "front_image_url":"/static/images/freeplay/settlers/road_blue.png",

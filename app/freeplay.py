@@ -274,7 +274,7 @@ class Card(TableMovable):
                 snap_card_to_grid=snap_card_to_grid,
                 can_rotate=can_rotate,
                 rotation=rotation,
-                rotate_by=90,
+                rotate_by=rotate_by,
                 background=background,
                 )
         self.stack_group = stack_group or deck.display_name
@@ -642,7 +642,7 @@ class Deck(TableMovable):
                 force_card_depth = card_data['force_card_depth'] if 'force_card_depth' in card_data else None
                 rotation = card_data['rotation'] if 'rotation' in card_data else 0
                 can_rotate = card_data['can_rotate'] if 'can_rotate' in card_data else False
-                rotate_by = card_data['rotate_by'] if 'rotate_by' in card_data else False
+                rotate_by = card_data['rotate_by'] if 'rotate_by' in card_data else 90
                 card_w = card_data['width'] if 'width' in card_data else deck_w
                 card_h = card_data['height'] if 'height' in card_data else deck_h
                 background = card_data['background'] if 'background' in card_data else True
