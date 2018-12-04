@@ -290,6 +290,8 @@ $( document ).ready(function () {
                 height = s;
                 this.previous_rotation = this.rotation;
             }
+            width = 0;
+            height = 0;
         }
 
         this.html_elem.css({

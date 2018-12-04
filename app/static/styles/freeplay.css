@@ -11,10 +11,13 @@
     width: 97px;
     height: 125px;
     position: absolute;
-    transition: box-shadow 0.3s;
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
     white-space: nowrap;
+}
+.ui-widget-content.table-movable:not(card),
+.ui-widget-content.table-movable .image {
+    transition: box-shadow 0.3s, border-color 0.3s, width 0.3s, height 0.3s;
 }
 .ui-widget-content.Deck {
     background: #9A7;
@@ -125,42 +128,34 @@ span.ui-selectmenu-text {
                                   supported by Chrome and Opera */
 }
 .ui-widget-content.card {
-    border-radius: 4px;
     display: inline-block;
-    border: 2px solid #565;
     text-align: left;
     margin: 0px;
-    background: white;
-    transition: box-shadow 0.3s;
     position: absolute;
     float: left;
-    color: #555;
     font-size: 35px;
     font-weight: bold;
+    color: #555;
+    background: white;
 }
-.ui-widget-content.viewblocker {
-    background: #778;
-    border: 4px solid #555;
-    box-shadow: 0 15px 30px 0 rgba(0,0,0,0.7);
+.ui-widget-content.card .image{
+    border: 2px solid #565;
+    border-radius: 4px;
+    color: #555;
 }
-.ui-widget-content.viewblocker:hover {
-    border: 4px solid #333;
-    box-shadow: 0 15px 30px 0 rgba(0,0,0,0.7);
-}
-/*.ui-draggable {
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.8);
-}*/
+
 /* On mouse-over, add a deeper shadow */
-.ui-draggable:hover {
+.ui-draggable:not(.card):hover,
+.ui-draggable.card .image:hover {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.4);
+    border-color: #243;
     cursor: grab;
-    border: 2px solid #243;
     cursor: -webkit-grab;
     cursor: -moz-grab;
 }
 
 /* When clicked, make the shadow larger as if lifting */
-.ui-draggable.ui-draggable-dragging {
+.ui-draggable.ui-draggable-dragging .image {
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
     cursor: grabbing;
     cursor: -webkit-grabbing;
@@ -433,8 +428,8 @@ div.ui-tabs .ui-tabs-panel {
     width: 100%;
     height: 100%;
 }
-.Card.nobackground,
-.Dice.nobackground {
+.Card.nobackground .image,
+.Dice.nobackground .image{
     background: none;
     border-width: 0;
 }
