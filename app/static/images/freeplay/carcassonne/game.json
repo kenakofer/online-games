@@ -322,7 +322,7 @@
             "default_face_down_offset":[3,2],
             "can_rotate":true,
             "stack_group":"base",
-            "last_in_row":"true",
+            "last_in_row":true,
             "cards":[
                 {
                     "alt_text":"",
@@ -443,7 +443,7 @@
             "default_face_down_offset":[15,0],
             "can_rotate":false,
             "background":false,
-            "last_in_row":"true",
+            "last_in_row":true,
             "cards":[
                 {
                     "alt_text":"Big meeple (yellow)",
@@ -538,7 +538,7 @@
             "default_face_down_offset":[15,0],
             "can_rotate":false,
             "background":false,
-            "last_in_row":"true",
+            "last_in_row":true,
             "cards":[
                 {
                     "alt_text":"Big meeple (red)",
@@ -633,7 +633,7 @@
             "default_face_down_offset":[15,0],
             "can_rotate":false,
             "background":false,
-            "last_in_row":"true",
+            "last_in_row":true,
             "cards":[
                 {
                     "alt_text":"Big meeple (black)",
