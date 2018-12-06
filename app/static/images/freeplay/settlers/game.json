@@ -82,6 +82,45 @@
                 }
             ]
         },
+        "Harvest dice":{
+            "width":35,
+            "height":35,
+            "show_face_number":0,
+            "default_face_up_offset":[26,0],
+            "type":"Dice",
+            "cards":[
+                {
+                    "background_color":"#ffffff",
+                    "repetitions":2,
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ]
+                }
+            ]
+        },
         "Harvest Numbers":{
             "width": 50,
             "height": 50,
