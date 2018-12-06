@@ -4,6 +4,7 @@
 *.wsgi
 *.swp
 *.back
+*.xcf
 /venv
 /venv
 /activate

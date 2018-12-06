@@ -37,7 +37,6 @@
             "can_rotate":true,
             "rotate_by":60,
             "shuffle":false,
-            "last_in_row":true,
             "cards":[
                 {
                     "alt_text":"Desert (no resource)",
@@ -80,6 +79,70 @@
                     "front_image_url":"/static/images/freeplay/settlers/wheat_tile.png",
                     "back_image_url":"/static/images/freeplay/settlers/wheat_tile.png",
                     "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "Harvest Numbers":{
+            "width": 50,
+            "height": 50,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[6,0],
+            "back_image_url":"/static/images/freeplay/settlers/token_blank.png",
+            "back_image_style":"100% 100%",
+            "background":false,
+            "last_in_row":true,
+            "snap_card_to_grid": [[52,26], [90,32]],
+            "cards":[
+                {
+                    "alt_text":"2 (probability 1 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_2.png",
+                    "repetitions":1
+                },
+                {
+                    "alt_text":"3 (probability 2 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_3.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"4 (probability 3 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_4.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"5 (probability 4 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_5.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"6 (probability 5 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_6.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"8 (probability 5 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_8.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"9 (probability 4 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_9.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"10 (probability 3 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_10.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"11 (probability 2 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_11.png",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"12 (probability 1 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_12.png",
+                    "repetitions":1
                 }
             ]
         },
