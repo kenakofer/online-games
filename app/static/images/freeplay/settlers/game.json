@@ -185,6 +185,180 @@
                 }
             ]
         },
+        "Wheat":{
+            "face_up":true,
+            "default_face_up_offset":[5,3],
+            "default_face_down_offset":[5,3],
+            "cards":[
+                {
+                    "alt_text":"Wheat",
+                    "width": 50,
+                    "height": 80,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/wheat.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/resource_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":19
+                }
+            ]
+        },
+        "Sheep":{
+            "face_up":true,
+            "default_face_up_offset":[5,3],
+            "default_face_down_offset":[5,3],
+            "stack_group":"Wheat",
+            "cards":[
+                {
+                    "alt_text":"Sheep",
+                    "width": 50,
+                    "height": 80,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/sheep.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/resource_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":19
+                }
+            ]
+        },
+        "Stone":{
+            "face_up":true,
+            "default_face_up_offset":[5,3],
+            "default_face_down_offset":[5,3],
+            "stack_group":"Wheat",
+            "cards":[
+                {
+                    "alt_text":"Stone",
+                    "width": 50,
+                    "height": 80,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/rock.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/resource_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":19
+                }
+            ]
+        },
+        "Wood":{
+            "face_up":true,
+            "default_face_up_offset":[5,3],
+            "default_face_down_offset":[5,3],
+            "stack_group":"Wheat",
+            "cards":[
+                {
+                    "alt_text":"Wood",
+                    "width": 50,
+                    "height": 80,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/wood.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/resource_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":19
+                }
+            ]
+        },
+        "Brick":{
+            "face_up":true,
+            "default_face_up_offset":[5,3],
+            "default_face_down_offset":[5,3],
+            "stack_group":"Wheat",
+            "cards":[
+                {
+                    "alt_text":"Brick",
+                    "width": 50,
+                    "height": 80,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/brick.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/resource_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":19
+                }
+            ]
+        },
+        "Development Cards":{
+            "face_up":false,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[5,3],
+            "shuffle":true,
+            "last_in_row":true,
+            "cards":[
+                {
+                    "alt_text":"Knight: Move the robber. Steal 1 resource card from the owner of an adjacent settlement or city.",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/knight.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":14
+                },
+                {
+                    "alt_text":"Year of Plenty: Take any 2 resources from the bank. Add them to your hand. They can be 2 of the same resource or 2 different resources.",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/monopoly.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"Monopoly: When you play this card, announce 1 type of resource. All other players must give you all all their resource cards of that type.",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/monopoly.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"Road Building: Place 2 new roads as if you had just built them.",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/road_building.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"Market: 1 Victory Point!",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/market.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                },
+                {
+                    "alt_text":"Palace: 1 Victory Point!",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/palace.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                },
+                {
+                    "alt_text":"University: 1 Victory Point!",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/university.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                },
+                {
+                    "alt_text":"Chapel: 1 Victory Point!",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/chapel.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                },
+                {
+                    "alt_text":"Library: 1 Victory Point!",
+                    "width": 75,
+                    "height": 120,
+                    "front_image_url":"/static/images/freeplay/settlers/cards/library.png",
+                    "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                }
+            ]
+        },
         "Blue pieces":{
             "face_up":true,
             "default_face_up_offset":[15,0],
