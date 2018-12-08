@@ -36,7 +36,7 @@
             "background":false,
             "can_rotate":true,
             "rotate_by":60,
-            "shuffle":false,
+            "shuffle":true,
             "cards":[
                 {
                     "alt_text":"Desert (no resource)",
@@ -78,6 +78,63 @@
                     "repetitions":4,
                     "front_image_url":"/static/images/freeplay/settlers/wheat_tile.png",
                     "back_image_url":"/static/images/freeplay/settlers/wheat_tile.png",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "harbors":{
+            "width":104,
+            "height":120,
+            "snap_card_to_grid": [[52,0], [90,0]],
+            "face_up":true,
+            "force_card_depth": 1,
+            "default_face_up_offset":[5,4],
+            "default_face_down_offset":[22,0],
+            "background":false,
+            "can_rotate":true,
+            "rotate_by":60,
+            "shuffle":true,
+            "cards":[
+                {
+                    "alt_text":"Brick Harbor",
+                    "repetitions":1,
+                    "front_image_url":"/static/images/freeplay/settlers/brick_harbor.png",
+                    "back_image_url":"/static/images/freeplay/settlers/brick_harbor.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Sheep Harbor",
+                    "repetitions":1,
+                    "front_image_url":"/static/images/freeplay/settlers/sheep_harbor.png",
+                    "back_image_url":"/static/images/freeplay/settlers/sheep_harbor.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Stone Harbor",
+                    "repetitions":1,
+                    "front_image_url":"/static/images/freeplay/settlers/stone_harbor.png",
+                    "back_image_url":"/static/images/freeplay/settlers/stone_harbor.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Wood Harbor",
+                    "repetitions":1,
+                    "front_image_url":"/static/images/freeplay/settlers/wood_harbor.png",
+                    "back_image_url":"/static/images/freeplay/settlers/wood_harbor.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Wheat Harbor",
+                    "repetitions":1,
+                    "front_image_url":"/static/images/freeplay/settlers/wheat_harbor.png",
+                    "back_image_url":"/static/images/freeplay/settlers/wheat_harbor.png",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"3-of-a-kind Harbor",
+                    "repetitions":4,
+                    "front_image_url":"/static/images/freeplay/settlers/any_harbor.png",
+                    "back_image_url":"/static/images/freeplay/settlers/any_harbor.png",
                     "back_image_style":"100% 100%"
                 }
             ]
@@ -273,13 +330,13 @@
             "face_up":false,
             "default_face_up_offset":[15,0],
             "default_face_down_offset":[5,3],
+            "width": 75,
+            "height": 120,
             "shuffle":true,
-            "last_in_row":true,
+            "last_in_row":false,
             "cards":[
                 {
                     "alt_text":"Knight: Move the robber. Steal 1 resource card from the owner of an adjacent settlement or city.",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/knight.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -287,8 +344,6 @@
                 },
                 {
                     "alt_text":"Year of Plenty: Take any 2 resources from the bank. Add them to your hand. They can be 2 of the same resource or 2 different resources.",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/monopoly.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -296,8 +351,6 @@
                 },
                 {
                     "alt_text":"Monopoly: When you play this card, announce 1 type of resource. All other players must give you all all their resource cards of that type.",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/monopoly.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -305,8 +358,6 @@
                 },
                 {
                     "alt_text":"Road Building: Place 2 new roads as if you had just built them.",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/road_building.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -314,8 +365,6 @@
                 },
                 {
                     "alt_text":"Market: 1 Victory Point!",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/market.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -323,8 +372,6 @@
                 },
                 {
                     "alt_text":"Palace: 1 Victory Point!",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/palace.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -332,8 +379,6 @@
                 },
                 {
                     "alt_text":"University: 1 Victory Point!",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/university.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -341,8 +386,6 @@
                 },
                 {
                     "alt_text":"Chapel: 1 Victory Point!",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/chapel.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
                     "back_image_style":"100% 100%",
@@ -350,10 +393,33 @@
                 },
                 {
                     "alt_text":"Library: 1 Victory Point!",
-                    "width": 75,
-                    "height": 120,
                     "front_image_url":"/static/images/freeplay/settlers/cards/library.png",
                     "back_image_url":"/static/images/freeplay/settlers/cards/development_back.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                }
+            ]
+        },
+        "Victory Cards":{
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[5,3],
+            "shuffle":true,
+            "width": 100,
+            "height": 160,
+            "last_in_row":true,
+            "cards": [
+                {
+                    "alt_text":"Longest Road: 2 Victory Points! This card goes to the player with the longest unbroken road of at least 5 segments. Another player who builds a longer road takes this card.",
+                    "front_image_url":"/static/images/freeplay/settlers/longest_road.jpg",
+                    "back_image_url":"/static/images/freeplay/settlers/longest_road.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":1
+                },
+                {
+                    "alt_text":"Largest Army: 2 Victory Points! The first player to play 3 Knight cards gets this card. Another player who plays more knight cards takes this card.",
+                    "front_image_url":"/static/images/freeplay/settlers/largest_army.jpg",
+                    "back_image_url":"/static/images/freeplay/settlers/largest_army.jpg",
                     "back_image_style":"100% 100%",
                     "repetitions":1
                 }
