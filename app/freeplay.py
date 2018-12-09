@@ -900,9 +900,9 @@ class FreeplayGame:
         print('updated keys: '+str(list(all_data.keys())))
 
         if (broadcast):
-            socketio.emit('UPDATE', all_data, broadcast=broadcast, room=self.gameid, namespace='/freeplay', include_self=include_self)
+            socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
         else:
-            socketio.emit('UPDATE', all_data, broadcast=False, namespace='/freeplay')
+            socketio.emit('UPDATE', all_data, broadcast=False, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
         return all_data
 
