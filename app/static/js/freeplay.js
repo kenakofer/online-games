@@ -286,10 +286,10 @@ $( document ).ready(function () {
             Math.abs(css_obj['left'] - current_position.left) +
             Math.abs(css_obj['top'] - current_position.top) +
             Math.abs(css_obj['height'] - this.html_elem.height());
-        if (time <= 0 || distance_to_move < 10) {
+        if (time <= 0 || distance_to_move < 5) {
             // This is significantly faster than even a 0ms animation,
             // so we'll use it if the changes are minor enough
-            this.html_elem.css(css_obj);
+            this.html_elem.stop(true, false).css(css_obj);
         } else {
             this.html_elem.stop(true, false).animate( css_obj, {duration:time, queue:false} );
         }
