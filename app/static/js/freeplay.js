@@ -496,9 +496,8 @@ $( document ).ready(function () {
             for (var i = index; i < obj_old_parent.dependent_ids.length; i++) {
                 var d_id = obj_old_parent.dependent_ids[i];
                 var apm_dep = get_apm_obj(d_id);
-                if (! apm_dep)
-                    return;
-                apm_dep.sync_position();
+                if (apm_dep)
+                    apm_dep.sync_position();
             }
         }
         // Set new parent
@@ -659,10 +658,10 @@ $( document ).ready(function () {
                 // Start all of the dependents dragging as well
                 apm_obj.dependent_ids.forEach(function (d_id) {
                     var apm_dep = get_apm_obj(d_id);
-                    if (! apm_dep)
-                        return;
-                    apm_dep.depth = get_dragging_depth();
-                    apm_dep.sync_position(0);
+                    if (apm_dep) {
+                        apm_dep.depth = get_dragging_depth();
+                        apm_dep.sync_position(0);
+                    }
                 });
                 // Remove this object from its parents
                 if (apm_obj.parent_id) {
@@ -692,10 +691,10 @@ $( document ).ready(function () {
                 // Move all the dependents as well
                 apm_obj.dependent_ids.forEach(function (d_id) {
                     var apm_dep = get_apm_obj(d_id);
-                    if (! apm_dep)
-                        return;
-                    apm_dep.position = pos;
-                    apm_dep.sync_position(0);
+                    if (apm_dep){
+                        apm_dep.position = pos;
+                        apm_dep.sync_position(0);
+                    }
                 });
             },
             stop: function (elem, ui) {
@@ -713,11 +712,11 @@ $( document ).ready(function () {
                     // Move all the dependents as well
                     apm_obj.dependent_ids.forEach(function (d_id) {
                         var apm_dep = get_apm_obj(d_id);
-                        if (! apm_dep)
-                            return;
-                        apm_dep.depth = get_dropped_public_depth();
-                        apm_dep.position = pos;
-                        apm_dep.sync_position(0);
+                        if (apm_dep) {
+                            apm_dep.depth = get_dropped_public_depth();
+                            apm_dep.position = pos;
+                            apm_dep.sync_position(0);
+                        }
                     });
                     // If the object was private, we need to do a position offset
                     if (apm_obj.privacy !== -1) {
@@ -987,8 +986,9 @@ $( document ).ready(function () {
                 delete apm.public_movables[obj_data.id];
                 return;
             }
-            if ('parent' in obj_data)
+            if ('parent' in obj_data){
                 apm_obj.set_parent_id(obj_data.parent);
+            }
             if ('stack_group' in obj_data)
                 apm_obj.stack_group = obj_data.stack_group;
             if ('player_moving_index' in obj_data) {
