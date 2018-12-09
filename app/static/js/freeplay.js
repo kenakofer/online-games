@@ -410,8 +410,8 @@ $( document ).ready(function () {
             right_button.detach();
             left_button.detach();
 
-            var obj_height = html_image.height();
-            var obj_width = html_image.width();
+            var obj_height = Math.max(html_obj.height(), html_image.height());
+            var obj_width = Math.max(html_obj.width(), html_image.width());
 
             // Put in specific buttons
             if (apm_obj.type == "Deck") {
