@@ -178,6 +178,26 @@
                 }
             ]
         },
+        "Robber":{
+            "width": 50,
+            "height": 50,
+            "face_up":true,
+            "default_face_up_offset":[15,0],
+            "default_face_down_offset":[6,0],
+            "back_image_url":"/static/images/freeplay/settlers/token_blank.png",
+            "back_image_style":"100% 100%",
+            "background":false,
+            "shuffle":true,
+            "last_in_row":true,
+            "snap_card_to_grid": [[52,30], [90,36]],
+            "cards":[
+                {
+                    "alt_text":"The Robber. Moved by a player who rolls a 7. (Probability 6 in 36)",
+                    "front_image_url":"/static/images/freeplay/settlers/token_7.png",
+                    "repetitions":1
+                }
+            ]
+        },
         "Harvest Numbers":{
             "width": 50,
             "height": 50,
@@ -187,6 +207,7 @@
             "back_image_url":"/static/images/freeplay/settlers/token_blank.png",
             "back_image_style":"100% 100%",
             "background":false,
+            "shuffle":true,
             "last_in_row":true,
             "snap_card_to_grid": [[52,26], [90,32]],
             "cards":[
@@ -244,7 +265,10 @@
         },
         "Wheat":{
             "face_up":true,
-            "default_face_up_offset":[5,3],
+            "default_face_up_offset":{
+                "public":[5,3],
+                "private":[22,0]
+            },
             "default_face_down_offset":[5,3],
             "cards":[
                 {
@@ -260,7 +284,10 @@
         },
         "Sheep":{
             "face_up":true,
-            "default_face_up_offset":[5,3],
+            "default_face_up_offset":{
+                "public":[5,3],
+                "private":[22,0]
+            },
             "default_face_down_offset":[5,3],
             "stack_group":"Wheat",
             "cards":[
@@ -277,7 +304,10 @@
         },
         "Stone":{
             "face_up":true,
-            "default_face_up_offset":[5,3],
+            "default_face_up_offset":{
+                "public":[5,3],
+                "private":[22,0]
+            },
             "default_face_down_offset":[5,3],
             "stack_group":"Wheat",
             "cards":[
@@ -294,7 +324,10 @@
         },
         "Wood":{
             "face_up":true,
-            "default_face_up_offset":[5,3],
+            "default_face_up_offset":{
+                "public":[5,3],
+                "private":[22,0]
+            },
             "default_face_down_offset":[5,3],
             "stack_group":"Wheat",
             "cards":[
@@ -311,7 +344,10 @@
         },
         "Brick":{
             "face_up":true,
-            "default_face_up_offset":[5,3],
+            "default_face_up_offset":{
+                "public":[5,3],
+                "private":[22,0]
+            },
             "default_face_down_offset":[5,3],
             "stack_group":"Wheat",
             "cards":[
@@ -328,7 +364,10 @@
         },
         "Development Cards":{
             "face_up":false,
-            "default_face_up_offset":[15,0],
+            "default_face_up_offset":{
+                "public":[15,0],
+                "private":[22,0]
+            },
             "default_face_down_offset":[5,3],
             "width": 75,
             "height": 120,
