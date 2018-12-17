@@ -1,0 +1,453 @@
+{
+    "quick_messages":[
+        "Row",
+        "Who's turn?",
+        "$*0Blue",
+        "$*1Yellow",
+        "$*2Green",
+        "$*3Red",
+        "1",
+        "2",
+        "3",
+        "4",
+        "Points"
+    ],
+    "decks": {
+        "player scores":{
+            "width":60,
+            "height":40,
+            "show_face_number":0,
+            "default_face_up_offset":[33,0],
+            "type":"NumberCard",
+            "can_rotate":false,
+            "cards":[
+                {
+                    "alt_text":"Score (blue)",
+                    "background_color":"#8af"
+                },
+                {
+                    "alt_text":"Score (yellow)",
+                    "background_color":"#ffa"
+                },
+                {
+                    "alt_text":"Score (green)",
+                    "background_color":"#afa"
+                },
+                {
+                    "alt_text":"Score (red)",
+                    "background_color":"#faa"
+                },
+                {
+                    "alt_text":"Score (white)",
+                    "background_color":"#eee"
+                },
+                {
+                    "alt_text":"Score (black)",
+                    "background_color":"#555"
+                }
+            ]
+        },
+        "cards":{
+            "width":100,
+            "height":100,
+            "snap_card_to_grid": [[105,0], [105,0]],
+            "face_up":false,
+            "default_face_down_offset":[3,2],
+            "default_face_up_offset":[30,0],
+            "back_image_url":"/static/images/freeplay/iota/back.png",
+            "shuffle":true,
+            "cards":[
+                {
+                    "alt_text":"Green Square 1",
+                    "front_image_url":"/static/images/freeplay/iota/square1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Square 2",
+                    "front_image_url":"/static/images/freeplay/iota/square2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Square 3",
+                    "front_image_url":"/static/images/freeplay/iota/square3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Square 4",
+                    "front_image_url":"/static/images/freeplay/iota/square4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Cross 1",
+                    "front_image_url":"/static/images/freeplay/iota/cross1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Cross 2",
+                    "front_image_url":"/static/images/freeplay/iota/cross2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Cross 3",
+                    "front_image_url":"/static/images/freeplay/iota/cross3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Cross 4",
+                    "front_image_url":"/static/images/freeplay/iota/cross4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Triangle 1",
+                    "front_image_url":"/static/images/freeplay/iota/triangle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Triangle 2",
+                    "front_image_url":"/static/images/freeplay/iota/triangle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Triangle 3",
+                    "front_image_url":"/static/images/freeplay/iota/triangle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Triangle 4",
+                    "front_image_url":"/static/images/freeplay/iota/triangle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Circle 1",
+                    "front_image_url":"/static/images/freeplay/iota/circle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Circle 2",
+                    "front_image_url":"/static/images/freeplay/iota/circle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Circle 3",
+                    "front_image_url":"/static/images/freeplay/iota/circle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Green Circle 4",
+                    "front_image_url":"/static/images/freeplay/iota/circle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#008800"
+                },
+                {
+                    "alt_text":"Yellow Square 1",
+                    "front_image_url":"/static/images/freeplay/iota/square1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Square 2",
+                    "front_image_url":"/static/images/freeplay/iota/square2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Square 3",
+                    "front_image_url":"/static/images/freeplay/iota/square3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Square 4",
+                    "front_image_url":"/static/images/freeplay/iota/square4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Cross 1",
+                    "front_image_url":"/static/images/freeplay/iota/cross1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Cross 2",
+                    "front_image_url":"/static/images/freeplay/iota/cross2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Cross 3",
+                    "front_image_url":"/static/images/freeplay/iota/cross3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Cross 4",
+                    "front_image_url":"/static/images/freeplay/iota/cross4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Triangle 1",
+                    "front_image_url":"/static/images/freeplay/iota/triangle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Triangle 2",
+                    "front_image_url":"/static/images/freeplay/iota/triangle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Triangle 3",
+                    "front_image_url":"/static/images/freeplay/iota/triangle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Triangle 4",
+                    "front_image_url":"/static/images/freeplay/iota/triangle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Circle 1",
+                    "front_image_url":"/static/images/freeplay/iota/circle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Circle 2",
+                    "front_image_url":"/static/images/freeplay/iota/circle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Circle 3",
+                    "front_image_url":"/static/images/freeplay/iota/circle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Yellow Circle 4",
+                    "front_image_url":"/static/images/freeplay/iota/circle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa8800"
+                },
+                {
+                    "alt_text":"Blue Square 1",
+                    "front_image_url":"/static/images/freeplay/iota/square1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Square 2",
+                    "front_image_url":"/static/images/freeplay/iota/square2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Square 3",
+                    "front_image_url":"/static/images/freeplay/iota/square3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Square 4",
+                    "front_image_url":"/static/images/freeplay/iota/square4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Cross 1",
+                    "front_image_url":"/static/images/freeplay/iota/cross1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Cross 2",
+                    "front_image_url":"/static/images/freeplay/iota/cross2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Cross 3",
+                    "front_image_url":"/static/images/freeplay/iota/cross3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Cross 4",
+                    "front_image_url":"/static/images/freeplay/iota/cross4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Triangle 1",
+                    "front_image_url":"/static/images/freeplay/iota/triangle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Triangle 2",
+                    "front_image_url":"/static/images/freeplay/iota/triangle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Triangle 3",
+                    "front_image_url":"/static/images/freeplay/iota/triangle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Triangle 4",
+                    "front_image_url":"/static/images/freeplay/iota/triangle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Circle 1",
+                    "front_image_url":"/static/images/freeplay/iota/circle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Circle 2",
+                    "front_image_url":"/static/images/freeplay/iota/circle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Circle 3",
+                    "front_image_url":"/static/images/freeplay/iota/circle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Blue Circle 4",
+                    "front_image_url":"/static/images/freeplay/iota/circle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#2222aa"
+                },
+                {
+                    "alt_text":"Red Square 1",
+                    "front_image_url":"/static/images/freeplay/iota/square1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Square 2",
+                    "front_image_url":"/static/images/freeplay/iota/square2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Square 3",
+                    "front_image_url":"/static/images/freeplay/iota/square3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Square 4",
+                    "front_image_url":"/static/images/freeplay/iota/square4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Cross 1",
+                    "front_image_url":"/static/images/freeplay/iota/cross1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Cross 2",
+                    "front_image_url":"/static/images/freeplay/iota/cross2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Cross 3",
+                    "front_image_url":"/static/images/freeplay/iota/cross3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Cross 4",
+                    "front_image_url":"/static/images/freeplay/iota/cross4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Triangle 1",
+                    "front_image_url":"/static/images/freeplay/iota/triangle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Triangle 2",
+                    "front_image_url":"/static/images/freeplay/iota/triangle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Triangle 3",
+                    "front_image_url":"/static/images/freeplay/iota/triangle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Triangle 4",
+                    "front_image_url":"/static/images/freeplay/iota/triangle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Circle 1",
+                    "front_image_url":"/static/images/freeplay/iota/circle1.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Circle 2",
+                    "front_image_url":"/static/images/freeplay/iota/circle2.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Circle 3",
+                    "front_image_url":"/static/images/freeplay/iota/circle3.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Red Circle 4",
+                    "front_image_url":"/static/images/freeplay/iota/circle4.png",
+                    "back_image_style":"100% 100%",
+                    "background_color":"#aa0000"
+                },
+                {
+                    "alt_text":"Wild card: can be any shape, color, or number that fits in context.",
+                    "front_image_url":"/static/images/freeplay/iota/wild.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+                }
+            ]
+        }
+    }
+}
