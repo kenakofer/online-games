@@ -441,8 +441,8 @@
         },
         "Victory Cards":{
             "face_up":true,
-            "default_face_up_offset":[15,0],
-            "default_face_down_offset":[5,3],
+            "default_face_up_offset":[30,0],
+            "default_face_down_offset":[7,5],
             "shuffle":true,
             "width": 100,
             "height": 160,
