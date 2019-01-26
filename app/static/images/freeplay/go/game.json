@@ -30,7 +30,7 @@
         "white stones":{
             "width":25,
             "height":25,
-            "snap_card_to_grid": [[28,-2], [28,-7]],
+            "snap_card_to_grid": [[28,10], [28,9]],
             "face_up":true,
             "default_face_down_offset":[4,0],
             "default_face_up_offset":[4,0],
@@ -48,7 +48,7 @@
         "black stones":{
             "width":25,
             "height":25,
-            "snap_card_to_grid": [[28,-2], [28,-7]],
+            "snap_card_to_grid": [[28,10], [28,9]],
             "face_up":true,
             "default_face_down_offset":[4,0],
             "default_face_up_offset":[4,0],
@@ -66,8 +66,10 @@
         "board":{
             "width":600,
             "height":600,
+            "force_card_depth": 1,
             "snap_card_to_grid": [[28,0], [28,0]],
             "can_rotate":false,
+            "no_deck":true,
             "cards":[
                 {
                     "alt_text":"The Go board",
