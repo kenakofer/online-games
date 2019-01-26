@@ -8,6 +8,7 @@
         "4",
         "Points"
     ],
+    "private_hand_height":0,
     "decks": {
         "player scores":{
             "width":60,
