@@ -965,11 +965,12 @@ $( document ).ready(function () {
                 console.log('destroying '+apm_obj.id);
                 // Make all the dependents orphans
                 // As it is, destroying a parent destroys the child too, so this is unnecessary
-                /*apm_obj.dependent_ids.forEach(function (did) {
+                // ^^^ Wrong. In the case of destroying the deck with a single descendent.
+                apm_obj.dependent_ids.forEach(function (did) {
                     var dep_obj = get_apm_obj(did);
                     if (dep_obj)
                         dep_obj.set_parent_id(false);
-                });*/
+                });
                 // Make the parent lose the child
                 apm_obj.set_parent_id(false);
                 // If the action buttons were attached to it, detach them
