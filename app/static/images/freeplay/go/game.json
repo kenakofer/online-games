@@ -1,0 +1,80 @@
+{
+    "quick_messages":[
+        "Row",
+        "Who's turn?",
+        "1",
+        "2",
+        "3",
+        "4",
+        "Points"
+    ],
+    "decks": {
+        "player scores":{
+            "width":60,
+            "height":40,
+            "show_face_number":0,
+            "default_face_up_offset":[33,0],
+            "type":"NumberCard",
+            "can_rotate":false,
+            "cards":[
+                {
+                    "alt_text":"Score (white)",
+                    "background_color":"#eee"
+                },
+                {
+                    "alt_text":"Score (black)",
+                    "background_color":"#555"
+                }
+            ]
+        },
+        "white stones":{
+            "width":25,
+            "height":25,
+            "snap_card_to_grid": [[28,-2], [28,-7]],
+            "face_up":true,
+            "default_face_down_offset":[4,0],
+            "default_face_up_offset":[4,0],
+            "background":false,
+            "cards":[
+                {
+                    "alt_text":"A white stone",
+                    "front_image_url":"/static/images/freeplay/go/white.png",
+                    "back_image_url":"/static/images/freeplay/go/white.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions": 180
+                }
+            ]
+        },
+        "black stones":{
+            "width":25,
+            "height":25,
+            "snap_card_to_grid": [[28,-2], [28,-7]],
+            "face_up":true,
+            "default_face_down_offset":[4,0],
+            "default_face_up_offset":[4,0],
+            "background":false,
+            "cards":[
+                {
+                    "alt_text":"A black stone",
+                    "front_image_url":"/static/images/freeplay/go/black.png",
+                    "back_image_url":"/static/images/freeplay/go/black.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions": 181
+                }
+            ]
+        },
+        "board":{
+            "width":600,
+            "height":600,
+            "snap_card_to_grid": [[28,0], [28,0]],
+            "can_rotate":false,
+            "cards":[
+                {
+                    "alt_text":"The Go board",
+                    "front_image_url":"/static/images/freeplay/go/board.png",
+                    "back_image_url":"/static/images/freeplay/go/board.png"
+                }
+            ]
+        }
+    }
+}
