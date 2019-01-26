@@ -109,6 +109,21 @@ class TableMovable:
             p.check_should_destroy()
         return True
 
+    # You usually shouldn't call this method, since the JS should do the
+    # snapping most of the time. In constructing the initial state it's ok
+    def snap_to_grid(self):
+        if not self.snap_card_to_grid:
+            return
+        # snap x
+        x = self.position[0]
+        hsnap = self.snap_card_to_grid[0]
+        self.position[0] = round((x - hsnap[1]) / hsnap[0]) * hsnap[0] + hsnap[1]
+        # snap y
+        y = self.position[1]
+        vsnap = self.snap_card_to_grid[1]
+        self.position[1] = round((y - vsnap[1]) / vsnap[0]) * vsnap[0] + vsnap[1]
+
+
     def continue_move(self, player, new_position, no_check=False, no_update=False):
         if not self.player_moving == player and not no_check:
             print("{} can't continue moving {}, because {} is moving it!".format(player, self.id, self.player_moving))
@@ -719,6 +734,16 @@ class Deck(TableMovable):
                 y += maxheight + 60
                 x = xleft
                 maxheight = 0
+
+            # If no deck, destroy the deck now
+            no_deck = deck_data['no_deck'] if 'no_deck' in deck_data else False
+            if (no_deck):
+                #align the children
+                for child in deck.dependents:
+                    child.snap_to_grid()
+                #destroy the parent
+                deck.destroy(destroy_dependents=False, update=False, data=None)
+
 
         return True
 
