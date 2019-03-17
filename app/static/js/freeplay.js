@@ -994,6 +994,12 @@ $( document ).ready(function () {
                 apm_obj.stack_group = obj_data.stack_group;
             if ('player_moving_index' in obj_data) {
                 apm_obj.player_moving_index = obj_data.player_moving_index;
+                // Remove player-moving classes
+                apm_obj.html_elem.removeClass (function (index, className) {
+                        return (className.match (/(^|\s)player-moving\S+/g) || []).join(' ');
+                });
+                // Add the relevant one
+                apm_obj.html_elem.addClass('player-moving'+apm_obj.player_moving_index%6);
             }
             if ('privacy' in obj_data) {
                 if (obj_data.privacy != apm_obj.privacy)

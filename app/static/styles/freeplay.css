@@ -331,25 +331,55 @@ div.ui-tabs .ui-tabs-panel {
     font-weight: bold;
     color: #bbf;
 }
+.ui-draggable.player-moving0:not(.card),
+.ui-draggable.player-moving0.card .image{
+    box-shadow: 0 0 15px 0 #bbf;
+    border-color: #bbf;
+}
 .player-color-1 {
     font-weight: bold;
     color: #d90;
+}
+.ui-draggable.player-moving1:not(.card),
+.ui-draggable.player-moving1.card .image{
+    box-shadow: 0 0 15px 0 #d90;
+    border-color: #d90;
 }
 .player-color-2 {
     font-weight: bold;
     color: #0b0;
 }
+.ui-draggable.player-moving2:not(.card),
+.ui-draggable.player-moving2.card .image{
+    box-shadow: 0 0 15px 0 #0b0;
+    border-color: #0b0;
+}
 .player-color-3 {
     font-weight: bold;
     color: red;
+}
+.ui-draggable.player-moving3:not(.card),
+.ui-draggable.player-moving3.card .image{
+    box-shadow: 0 0 15px 0 #f00;
+    border-color: #f00;
 }
 .player-color-4 {
     font-weight: bold;
     color: #a0a;
 }
+.ui-draggable.player-moving4:not(.card),
+.ui-draggable.player-moving4.card .image{
+    box-shadow: 0 0 15px 0 #a0a;
+    border-color: #a0a;
+}
 .player-color-5 {
     font-weight: bold;
     color: #000;
+}
+.ui-draggable.player-moving5:not(.card),
+.ui-draggable.player-moving5.card .image{
+    box-shadow: 0 0 15px 0 #000;
+    border-color: #000;
 }
 
 #instructions-tab {
