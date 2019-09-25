@@ -104,7 +104,7 @@ $( document ).ready(function(){
             self.label_score   = new Label('LABEL_SCORE'  ,{left:x, top:y},    "Score: 0"),
             self.label_game_over = new Label('LABEL_GAME_OVER',{left:x+130, top:y}, ""),
             self.label_clues   = new Label('LABEL_CLUES'  ,{left:x, top:y+25},    "Clues left: 8"),
-            self.label_strikes = new Label('LABEL_STRIKES',{left:x+130, top:y+25}, "Strikes left: 3"),
+            self.label_strikes = new Label('LABEL_STRIKES',{left:x+150, top:y+25}, "Strikes left: 3"),
         ]);
         y += 25;
     }
