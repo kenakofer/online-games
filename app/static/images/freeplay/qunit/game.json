@@ -1,0 +1,906 @@
+{
+    "quick_messages":[
+        "Your turn",
+        "My turn",
+        "Who's turn?",
+        "$*0Blue",
+        "$*1Yellow",
+        "$*2Green",
+        "$*3Red",
+        "Attacking",
+        "I prevail!",
+        "I fail",
+        "Special ability",
+        "My actions:",
+        "Reconfigure",
+        "Deploy",
+        "Move",
+        "Move/Attack",
+        "Construct Cube",
+        "Research",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+    ],
+    "private_hand_height":200,
+    "decks": {
+        "planets":{
+            "width":150,
+            "height":150,
+            "snap_card_to_grid": [[50,0], [50,0]],
+            "face_up":true,
+            "force_card_depth": 1,
+            "default_face_up_offset":[3,2],
+            "default_face_down_offset":[42,0],
+            "can_rotate":true,
+            "rotate_by":45,
+            "shuffle":false,
+            "cards":[
+                {
+                    "alt_text":"void",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-24.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-24.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-0.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-0.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-1.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-1.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-2.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-2.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-3.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-3.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-4.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-4.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-5.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-5.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-6.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-6.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 7",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-7.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-7.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-8.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-8.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-9.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-9.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-10.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-10.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-11.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-11.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-12.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-12.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-13.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-13.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-14.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-14.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 8",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-15.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-15.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 9",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-16.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-16.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 9",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-17.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-17.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 9",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-18.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-18.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 9",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-19.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-19.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 10",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-20.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-20.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 10",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-21.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-21.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 10",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-22.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-22.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"planet: size 10",
+                    "front_image_url":"/static/images/freeplay/quantum/planet-23.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/planet-23.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "Command Cards":{
+            "width":150,
+            "height":107,
+            "face_up":false,
+            "default_face_up_offset":[0, 42],
+            "default_face_down_offset":[3,2],
+            "shuffle":true,
+            "cards": [
+                {
+                    "alt_text":"Agile: Movement Bonus - Every ship in your fleet has +1 movement.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-0.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Arrogant: Extra Action for Most Ships - If at the start of your turn you have more ships on the map than any other player, take an extra action.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-1.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Clever: Controlled Modification - Whenever you would roll a ship, choose the ship number instead.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-2.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Warlike: Extra Action for Destruction - When you destroy 1 or more enemy ships on your turn, you gain 1 extra action for that turn.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-3.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Brilliant: Research Bonus - Add 2 to your research automatically at the start of your turn.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-4.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Cerebral: Reduce Dominance for Research - Once per turn as a free action, you may reduce your dominance by 1 and gain 3 research.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-5.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Conformist: Extra Action for Matching Ships - If 2 or more of your ships on the map have the same number at the start of your turn, take 1 extra action.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-6.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Cruel: Force Opponent to Reroll - When you attach or defend, you can choose to have your opponent reroll once.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-7.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Curious: Bonus peaceful move - At the end of each turn, you get 1 extra move action for free (you cannot use it to attack).",
+                    "front_image_url":"/static/images/freeplay/quantum/card-8.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Dangerous: Destroy your Attacker - When you defend, before players roll combat dice, you can decide to destroy both ships (there is no dominance effect).",
+                    "front_image_url":"/static/images/freeplay/quantum/card-9.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Energetic: Move more than Once - your ships may move/attack more than once per turn (each one counts as an action).",
+                    "front_image_url":"/static/images/freeplay/quantum/card-10.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Ferocious: Combat Bonus - Subtract 1 from your combat roll when attacking or defending.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-11.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Flexible: Adjust a Ship - Once per turn, you may change one of your ship dice up or down by 1 as a free action.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-12.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Stealthy: Deploy to Isolated Spaces - You have the option of deploying to any space that is not directly adjacent to another ship.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-13.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Resourceful: Sacrifice your Ship to Gain 1 Action - Once per turn, take a ship from the map to your scrapyard, reroll it, and gain 1 action for that turn.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-14.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Eager: Free Deployment - The deploy action does not use up one of your actions.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-15.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Relentless: Reroll in Combat - When you attack or defend, you can roll again once after your opponent rolls.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-16.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Ingenious: Construct from Corners - You can choose to have ships diagonally adjacent to planets count towards cube construction.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-17.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Intelligent: Flexible Construction - You can construct on a planet with an orbital value 1 higher or lower than the planet's number.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-18.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Righteous: Irreducible Dominance - Your dominance is not reduced when one of your ships is destroyed.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-19.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Nomadic: Transport between Planets - Once per turn, spend an action to relocate one of your ships in orbital position to an orbital position on a directly adjacent planet.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-20.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Stubborn: Strong Defense - When you are attacked, ties go in your favor and you destroy your attacker if you win (and gain dominance).",
+                    "front_image_url":"/static/images/freeplay/quantum/card-21.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Plundering: Destruction is Research - If you destroy one or more enemy ships on your turn, increase your research by 2",
+                    "front_image_url":"/static/images/freeplay/quantum/card-22.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Precocious: Rapid Advancement - Gain an advance card when research = 4 or higher (instead of 6).",
+                    "front_image_url":"/static/images/freeplay/quantum/card-23.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Scrappy: Reroll your Die Rolls - On your turn, you may rueroll all die rolls (ship or combat) a second time.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-24.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Rational: Combat rolls fixed at 3 - Instead of rolling for combat, all of your combat die rolls are considered to be 3.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-25.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Cunning: Extra Ship Ability - Once per turn, you may use one of your ship's abilities a second time as a free action.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-26.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Strategic: Combat Support Bonus - Any of your ships directly adjacent to another one of your ships receives a -2 to every combat roll.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-27.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Tactical: Bonus Short Move - Once per turn as a free action, move 1 of your ships to a directly adjacent space (you can attack with the move).",
+                    "front_image_url":"/static/images/freeplay/quantum/card-28.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Tyrannical: Reduce Research for Dominance - Once per turn as a free action, you may reduce your research by 1 and gain 1 dominance.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-29.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                },
+                {
+                    "alt_text":"Ravenous: Dominance Amplification - Gain 2 dominance (total) when you destroy an enemy ship, and lose 2 dominance when one of your ship is destroyed",
+                    "front_image_url":"/static/images/freeplay/quantum/card-30.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-white.jpg",
+                    "back_image_style":"100% 100%"
+                }
+            ]
+        },
+        "Gambit Cards":{
+            "width":150,
+            "height":107,
+            "default_face_up_offset":[0, 42],
+            "default_face_down_offset":[3,2],
+            "face_up":false,
+            "shuffle":true,
+            "stack_group":"Command Cards",
+            "cards": [
+                {
+                    "alt_text":"Expansion: Add a Ship to your Fleet - Immediately roll an expansion ship & either deploy it or put it in your scrapyard.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-31.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":8
+                },
+                {
+                    "alt_text":"Reorganization: Immediately Reroll any or all of your Ships - For each of the rerolled ships, either deploy it or put it in your scrapyard.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-32.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+                },
+                {
+                    "alt_text":"Relocation: Immediately Move a Cube - Move another players cube to a planet without that player's cube that has an open space (you can't move a player's initial cube)",
+                    "front_image_url":"/static/images/freeplay/quantum/card-33.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+
+                },
+                {
+                    "alt_text":"Aggression: Immediately Add 2 to Dominance",
+                    "front_image_url":"/static/images/freeplay/quantum/card-34.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":4
+
+                },
+                {
+                    "alt_text":"Momentum: Take a Bonus 2-Action Turn - Immediately take another turn, with 2 actions instead of 3 actions.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-35.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":4
+
+                },
+                {
+                    "alt_text":"Sabotage: Remove Command Cards - All other players must immediately choose and discard a single Command card.",
+                    "front_image_url":"/static/images/freeplay/quantum/card-36.jpg",
+                    "back_image_url":"/static/images/freeplay/quantum/card-back-black.jpg",
+                    "back_image_style":"100% 100%",
+                    "repetitions":2
+
+                }
+            ]
+        },
+        "Att/Def":{
+            "width":35,
+            "height":35,
+            "show_face_number":0,
+            "last_in_row":true,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "cards":[
+                {
+                    "background_color":"#000000",
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ]
+                },
+                {
+                    "background_color":"#ffffff",
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_black/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ]
+                }
+            ]
+        },
+        "B Dom":{
+            "width":35,
+            "height":35,
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#0055ff55",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "B Scrapyard":{
+            "width":35,
+            "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#0055ffbb",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 3
+                }
+            ]
+        },
+        "B expand":{
+            "width":35,
+            "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#0055ffbb",
+            "stack_group":"B Scrapyard",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 2
+                }
+            ]
+        },
+        "B Res":{
+            "width":35,
+            "height":35,
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#0055ff55",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "B Cubes":{
+            "width":17,
+            "height":17,
+            "snap_card_to_grid": [[10,-4], [10,-4]],
+            "show_face_number":0,
+            "last_in_row":true,
+            "default_face_up_offset":[13,0],
+            "type":"Dice",
+            "background_color":"#0055ff88",
+            "cards":[
+                {
+                    "images":[
+                        {
+                        }
+                    ],
+                    "repetitions": 7
+                }
+            ]
+        },
+        "Y Dom":{
+            "width":35,
+            "height":35,
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ffbb0055",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "Y Scrapyard":{
+            "width":35,
+            "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ffbb00bb",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 3
+                }
+            ]
+        },
+        "Y expand":{
+            "width":35,
+            "height":35,
+            "snap_card_to_grid": [[25,7], [25,7]],
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ffbb00bb",
+            "stack_group":"Y Scrapyard",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 2
+                }
+            ]
+        },
+        "Y Res":{
+            "width":35,
+            "height":35,
+            "show_face_number":0,
+            "default_face_up_offset":[27,0],
+            "type":"Dice",
+            "background_color":"#ffbb0055",
+            "cards":[
+                {
+                    "images":[
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice1.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice2.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice3.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice4.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice5.png",
+                            "style":"100% 100%"
+                        },
+                        {
+                            "url":"/static/images/freeplay/dice_white/dice6.png",
+                            "style":"100% 100%"
+                        }
+                    ],
+                    "repetitions": 1
+                }
+            ]
+        },
+        "Y Cubes":{
+            "width":17,
+            "height":17,
+            "snap_card_to_grid": [[10,-4], [10,-4]],
+            "show_face_number":0,
+            "default_face_up_offset":[13,0],
+            "type":"Dice",
+            "last_in_row":true,
+            "background_color":"#ffbb0088",
+            "cards":[
+                {
+                    "images":[
+                        {
+                        }
+                    ],
+                    "repetitions": 7
+                }
+            ]
+        },
+        "player scores":{
+            "width":60,
+            "height":40,
+            "show_face_number":0,
+            "default_face_up_offset":[33,0],
+            "type":"NumberCard",
+            "can_rotate":false,
+            "cards":[
+                {
+                    "alt_text":"Score (blue)",
+                    "background_color":"#8af"
+                },
+                {
+                    "alt_text":"Score (yellow)",
+                    "background_color":"#ffa"
+                },
+                {
+                    "alt_text":"Score (green)",
+                    "background_color":"#afa"
+                },
+                {
+                    "alt_text":"Score (red)",
+                    "background_color":"#faa"
+                },
+                {
+                    "alt_text":"Score (white)",
+                    "background_color":"#eee"
+                },
+                {
+                    "alt_text":"Score (black)",
+                    "background_color":"#555"
+                }
+            ]
+        }
+    }
+}

@@ -828,6 +828,9 @@ $( document ).ready(function () {
             setTimeout(join_room, 1000);
         } else {
             console.log('Joined room.');
+            if (window.location.search.includes("runtests")) {
+                QUnit.start();
+            }
         }
     }
     join_room();

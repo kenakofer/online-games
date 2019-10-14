@@ -4,6 +4,8 @@
     <link rel='stylesheet' href='{{ url_for("static",filename="styles/freeplay.css") }}'>
     <!-- For jquery and jquery ui-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <!-- For QUnit Testing -->
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
@@ -34,7 +36,10 @@
     </script>
     <!-- freeplay.js, the primary logic for the client -->
     <script type="text/javascript" src='{{ url_for("static",filename="js/freeplay.js") }}'></script>
-
+    <!-- For QUnit Testing --> 
+    <script type="text/javascript" src='{{ url_for("static",filename="js/qunit/jquery.simulate.js") }}'></script>
+    <script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script>
+    <script type="text/javascript" src='{{ url_for("static",filename="js/qunit/freeplay.js") }}'></script>
 
 {% endblock %}
 
@@ -58,6 +63,10 @@
 {% endblock %}
 
 {% block footer %}
+
+<div id="qunit" style='position:absolute; top:600px'></div>
+<div id="qunit-fixture"></div>
+
 <div id="private-hand" class='resizable'>
     <div id='other-players-info'></div>
     <div id='handle' class="ui-resizable-handle ui-resizable-n"></div>
