@@ -1,8 +1,8 @@
 from app import app, db
 from flask import render_template, flash, redirect, jsonify, request, url_for
-from flask_oauth2_login import GoogleLogin
+import flask
+# from flask_oauth2_login import GoogleLogin
 from math import floor
-from .forms import LoginForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, get_stable_user
 from app.hanabi import hanabi_games, HanabiGame
@@ -10,8 +10,15 @@ from app.blitz import blitz_games, BlitzGame
 from app.freeplay import freeplay_games, FreeplayGame
 from datetime import timedelta
 
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+import googleapiclient.discovery
+
+CLIENT_SECRETS_FILE = 'client_secret.json'
+SCOPES = ['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
+
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
-google_login = GoogleLogin(app)
+# google_login = GoogleLogin(app)
 print('starting views...')
 
 @app.errorhandler(404)
@@ -216,18 +223,75 @@ def freeplay(game_name, gameid):
 def login():
     if current_user.is_authenticated:
         return redirect('/')
-    print("Sending to google: "+google_login.authorization_url())
-    return redirect(google_login.authorization_url())
+
+    # Use the client_secret.json file to identify the application requesting
+    # authorization. The client ID (from that file) and access scopes are required.
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+
+    # Indicate where the API server will redirect the user after the user completes
+    # the authorization flow. The redirect URI is required. The value must exactly
+    # match one of the authorized redirect URIs for the OAuth 2.0 client, which you
+    # configured in the API Console. If this value doesn't match an authorized URI,
+    # you will get a 'redirect_uri_mismatch' error.
+    flow.redirect_uri = 'https://games.gc.my/login/google'
+
+    # Generate URL for request to Google's OAuth 2.0 server.
+    # Use kwargs to set optional request parameters.
+    authorization_url, state = flow.authorization_url(access_type='offline')
+
+    # Store the state so the callback can verify the auth server response.
+    print("state:", state)
+    flask.session['state'] = state
+    print("state:", flask.session["state"])
+
+    print("Sending to authorization URL:", authorization_url)
+    return redirect(authorization_url)
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    # Specify the state when creating the flow in the callback so that it can
+    # verified in the authorization server response.
+    state = flask.session['state']
+
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES, state = state)
+    flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
+
+    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+    authorization_response = flask.request.url
+    flow.fetch_token(authorization_response=authorization_response)
+
+    # Store credentials in the session.
+    # ACTION ITEM: In a production app, you likely want to save these
+    #              credentials in a persistent database instead.
+    credentials = flow.credentials
+    flask.session['credentials'] = credentials_to_dict(credentials)
+
+    print("oauth2 credentials:", credentials)
+
+    return flask.redirect(flask.url_for('test_api_request'))
+
 
 @app.route('/login/google')
-@google_login.login_success
-def login_success(token, profile, **params):
+# @google_login.login_success
+def login_success(**params):
+    # Load credentials from the session.
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES, state = flask.session['state'])
+    flow.redirect_uri = 'https://games.gc.my/login/google'
+
+    authorization_response = flask.request.url
+    flow.fetch_token(authorization_response=authorization_response)
+
+    credentials = flow.credentials
+    oauth2_client = googleapiclient.discovery.build('oauth2', 'v2', credentials=credentials)
+    profile = oauth2_client.userinfo().get().execute()
+
     print("login_success")
+    print("Profile:",profile)
     user = User.query.filter_by(email=profile['email']).first()
     print(user)
     # If there is not an entry for the user, create one
     if user is None:
-        user = User(email=profile['email'], fullname=profile['name'])
+        user = User(email=profile['email'], fullname=profile['name'], username=profile['given_name'])
         db.session.add(user)
         db.session.commit()
         message = 'Created and logged in user {}'.format(profile['name'])

@@ -1,6 +1,6 @@
 from random import shuffle
 from app import app, db, socketio
-from app.models import GameScore, User
+from app.models import User
 import threading
 from time import sleep, time
 from random import random, sample
