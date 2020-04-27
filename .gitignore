@@ -5,6 +5,7 @@
 *.swp
 *.back
 *.xcf
+*.zip
 /venv
 /venv
 /activate

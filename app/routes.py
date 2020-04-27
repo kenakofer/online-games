@@ -160,6 +160,15 @@ def blitz_lobby():
                 title='Dutch Blitz Lobby',
             )
 
+@app.route('/cold_waters')
+@app.route('/cold_waters/')
+@login_required
+def cold_waters():
+    return render_template(
+                'cold_waters.html',
+                title='Play Cold Waters',
+            )
+
 #############
 # Free Play #
 #############
