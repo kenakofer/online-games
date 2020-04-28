@@ -5,9 +5,9 @@
 // Minor:
 //  Make seed random on load
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
-//  Refactor rondom creation method(s)
 //  Refactor destroy methods
 //  Depth constants
+//  Refactor update: Maybe use runChildUpdate
 //
 //  Medium:
 //   Add explosion/fire particles
@@ -21,6 +21,12 @@
 // Super Major
 //  Saves, replays, and ghosts
 //
+
+const PLAIN_CRATE_ODDS = 50;
+const BOMB_CRATE_ODDS = 100;
+const METAL_CRATE_ODDS = 100;
+const MISSILE_ODDS = 200;
+const HARD_FACTOR = .5;
 
 const TARGET_FPS = 50;
 
@@ -121,7 +127,7 @@ function preload () {
 }
 
 function create () {
-    this.add.image(400, 300, 'background');
+    this.add.image(380, 280, 'background');
 
     this.anims.create({
 	key: 'left',
@@ -192,6 +198,8 @@ function create () {
     screenText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000' });
     screenText.setDepth(100);
 
+    game.hard = false;
+
     newGame(this);
 }
 
@@ -229,11 +237,12 @@ function newGame(this_thing, last_game_controls_array) {
     splinter_emitter.stop();
 
     crates = this_thing.physics.add.staticGroup();
-    destroyed_crates = this_thing.physics.add.staticGroup();
-    explosions = this_thing.physics.add.staticGroup();
-    metal_crates = this_thing.physics.add.staticGroup();
-    shark_fins = this_thing.physics.add.staticGroup();
-    missiles = this_thing.physics.add.staticGroup();
+    destroyed_crates = this_thing.physics.add.staticGroup({defaultKey: 'plain_crate_destroyed'});
+    explosions = this_thing.physics.add.staticGroup({defaultKey: 'explosion'});
+    metal_crates = this_thing.physics.add.staticGroup({defaultKey: 'metal_crate'});
+    shark_fins = this_thing.physics.add.staticGroup({defaultKey: 'shark_fin'});
+    missiles = this_thing.physics.add.staticGroup({defaultKey: 'missile'});
+    bomb_crates = this_thing.physics.add.staticGroup({defaultKey: 'bomb_crate'});
     explodables = this_thing.physics.add.staticGroup();
 
     boundaries = this_thing.physics.add.staticGroup();
@@ -252,14 +261,15 @@ function newGame(this_thing, last_game_controls_array) {
 
     plain_crates = this_thing.physics.add.staticGroup({
 	key: 'plain_crate',
+	defaultKey: 'plain_crate',
 	repeat: GAME_WIDTH_IN_BOXES - 5,
 	setXY: { x: 2*BOX_SIZE + BOX_SIZE/2, y: 590, stepX: BOX_SIZE }
+
     });
     plain_crates.children.iterate(function (crate) {
         initialize_plain_crate(crate)
     });
 
-    bomb_crates = this_thing.physics.add.staticGroup();
 
     players = this_thing.physics.add.staticGroup();
 
@@ -444,6 +454,7 @@ function update () {
     randomSpawns();
     var text = "Score: "+Math.floor(player.score);
     if (config.physics.arcade.debug) {
+        text += "\nHard mode: " + game.hard;
         text += "\nGame seed: " + game.seed;
         text += '\nFPS: ' + game.loop.actualFps;
         text += "\nObjects: " + object_count();
@@ -453,8 +464,17 @@ function update () {
         text += "\nPress LEFT + RIGHT to play again!";
     screenText.setText(text);
 
-    if (!player.active && cursors.left.isDown && cursors.right.isDown)
+    if (!player.active && cursors.left.isDown && cursors.right.isDown) {
+        game.hard = false;
         newGame(this, player.controls_array);
+        return
+    }
+
+    if (!player.active && cursors.up.isDown && cursors.down.isDown) {
+        game.hard = true;
+        newGame(this, player.controls_array);
+        return
+    }
 }
 
 function checkOverlap(spriteA, spriteB) {
@@ -473,62 +493,39 @@ function checkOverlap(spriteA, spriteB) {
 }
 
 function randomSpawns() {
-    if (random_between(0,50) == 0) {
-        var crate = initialize_plain_crate(plain_crates.create(random_x,-BOX_SIZE, 'plain_crate'))
-    
-        for (var i=0; i<5; i++) {
-            var random_x = random_between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
-            crate.body.x = random_x
-            crate.x = random_x + BOX_SIZE/2
-            if (!checkOverlap(crate, crates))
-                return;
-        }
-        // No space found for it. Destroy
-        crate.destroy(true);
+    var hard_factor = 1 - (game.hard * HARD_FACTOR)
+    if (random_between(0,PLAIN_CRATE_ODDS * hard_factor) == 0) {
+        var crate = initialize_plain_crate(plain_crates.create(0,-BOX_SIZE))
+        move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,100) == 0) {
-        var crate = initialize_bomb_crate(bomb_crates.create(random_x,-BOX_SIZE, 'bomb_crate'))
-    
-        for (var i=0; i<5; i++) {
-            var random_x = random_between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
-            crate.body.x = random_x
-            crate.x = random_x + BOX_SIZE/2
-            if (!checkOverlap(crate, crates))
-                return;
-        }
-        // No space found for it. Destroy
-        crate.destroy(true);
+    if (random_between(0,BOMB_CRATE_ODDS * hard_factor) == 0) {
+        var crate = initialize_bomb_crate(bomb_crates.create(0,-BOX_SIZE))
+        move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,100) == 0) {
-        var crate = initialize_metal_crate(metal_crates.create(random_x,-BOX_SIZE, 'metal_crate'))
-    
-        for (var i=0; i<5; i++) {
-            var random_x = random_between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
-            crate.body.x = random_x
-            crate.x = random_x + BOX_SIZE/2
-            if (!checkOverlap(crate, crates))
-                return;
-        }
-        // No space found for it. Destroy
-        crate.destroy(true);
+    if (random_between(0,METAL_CRATE_ODDS * hard_factor) == 0) {
+        var crate = initialize_metal_crate(metal_crates.create(0,-BOX_SIZE))
+        move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,400) == 0) {
-        var missile = initialize_missile(missiles.create(random_x, -BOX_SIZE, 'missile'))
-    
-        for (var i=0; i<5; i++) {
-            var random_x = random_between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
-            missile.body.x = random_x
-            missile.x = random_x + BOX_SIZE/2
-            if (!checkOverlap(missile, crates))
-                return;
-
-        }
-        // No space found for it. Destroy
-        crate.destroy(true);
+    if (random_between(0,MISSILE_ODDS * hard_factor) == 0) {
+        var missile = initialize_missile(missiles.create(0, -BOX_SIZE))
+        move_to_empty_top_spot(missile); 
     }
-    if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 40) {
+    if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 35) {
         initialize_shark_fin()
     }
+}
+
+function move_to_empty_top_spot(object) {
+    for (var i=0; i<5; i++) {
+        var random_x = random_between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
+        object.body.x = random_x
+        object.x = random_x + BOX_SIZE/2
+        if (!checkOverlap(object, crates))
+            return;
+
+    }
+    // No space found for it. Destroy
+    object.destroy(true);
 }
 
 function object_count() {
@@ -598,7 +595,7 @@ function initialize_bomb_crate(bomb_crate) {
 
 function plain_crate_destroy(crate) {
     for (i=0;i<4;i++) {
-        piece = destroyed_crates.create(crate.x,crate.y,'plain_crate_destroyed');
+        piece = destroyed_crates.create(crate.x,crate.y);
         piece.anims.play('plain_crate_destroyed_'+i);
         piece.setSize(BOX_SIZE * .75, BOX_SIZE * .75);
         piece.setDisplaySize(BOX_SIZE * .75, BOX_SIZE * .75);
@@ -620,7 +617,7 @@ function generic_destroy(object) {
 
 function bomb_crate_destroy(object) {
     object.destroy(true);
-    explosion = explosions.create(object.x, object.y, 'explosion')
+    explosion = explosions.create(object.x, object.y)
     explosion.setSize(EXPLOSION_SIZE, EXPLOSION_SIZE);
     explosion.setDisplaySize(EXPLOSION_SIZE, EXPLOSION_SIZE);
     explosion.created_at = getFrame();
@@ -629,7 +626,7 @@ function bomb_crate_destroy(object) {
 
 function missile_crate_destroy(object) {
     object.destroy(true);
-    explosion = explosions.create(object.x - 12, object.y + 10, 'explosion') // TODO MAGIC#
+    explosion = explosions.create(object.x - 12, object.y + 10) // TODO MAGIC#
     explosion.setSize(BIG_EXPLOSION_SIZE, BIG_EXPLOSION_SIZE);
     explosion.setDisplaySize(BIG_EXPLOSION_SIZE, BIG_EXPLOSION_SIZE);
     explosion.created_at = getFrame();
