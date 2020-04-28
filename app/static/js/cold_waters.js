@@ -1,5 +1,5 @@
 // Benchmarks:
-//  My phone firefox: 40 - 45 FPS
+//  My phone firefox: 25-35 FPS
 //
 // TODO
 // Minor:
@@ -73,7 +73,6 @@ const PLAYER_DASH_SPEED = 10
 const PLAYER_DASH_FRAMES = 15
 const PLAYER_DASH_RECHARGE_FRAMES = 30
 
-
 var config = {
     type: Phaser.AUTO,
     width: GAME_WIDTH,
@@ -89,7 +88,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 1000 },
-            debug: false,
+            debug: true,
             forceX: true
         }
     },
@@ -109,6 +108,7 @@ var screenText;
 
 function preload () {
     this.load.setBaseURL('../static/images/cold_waters');
+    this.load.text('current_source_code', '../../../static/js/cold_waters.js');
     this.load.image('background', 'ice_mountain_bg.png');
     this.load.image('water', 'water_surface_tile.png');
     this.load.image('plain_crate', 'plain_crate.png');
@@ -128,6 +128,7 @@ function preload () {
 
 function create () {
     this.add.image(380, 280, 'background');
+
 
     this.anims.create({
 	key: 'left',
@@ -200,6 +201,9 @@ function create () {
 
     game.hard = false;
 
+    game.current_source_code = this.cache.text.get('current_source_code');
+    game.code_signature = md5(game.current_source_code).slice(0,10)
+
     newGame(this);
 }
 
@@ -208,6 +212,8 @@ function newGame(this_thing, last_game_controls_array) {
     this.physics.world.staticBodies.each(function (object) {
         object.gameObject.destroy(true);
     });
+
+    var filepath;
 
     game.seed = "0";
 
@@ -455,10 +461,11 @@ function update () {
     var text = "Score: "+Math.floor(player.score);
     if (config.physics.arcade.debug) {
         text += "\nHard mode: " + game.hard;
-        text += "\nGame seed: " + game.seed;
         text += '\nFPS: ' + game.loop.actualFps;
         text += "\nObjects: " + object_count();
         text += "\nCrates: " + crates.countActive();
+        text += "\nGame seed: " + game.seed;
+        text += "\nSig: " + game.code_signature;
     }
     if (!player.active)
         text += "\nPress LEFT + RIGHT to play again!";
