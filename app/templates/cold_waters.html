@@ -1,0 +1,10 @@
+{% extends "header_footer.html" %}
+{% block head %}
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.22.0/dist/phaser.min.js"></script> 
+    <script type="text/javascript" src='{{ url_for("static",filename="js/cold_waters.js") }}'></script>
+{% endblock %}
+{% block content %}
+
+    <div id='game_div'></div>
+
+{% endblock %}
