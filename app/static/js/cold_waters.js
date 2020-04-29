@@ -12,6 +12,7 @@
 //  Medium:
 //   Add explosion/fire particles
 //   Add ghost/death animation
+//   Make anomalies cooler
 //
 // Major:
 //  Cloud with lightning
@@ -79,9 +80,8 @@ var config = {
     height: GAME_HEIGHT,
     parent: "game_div",
     fps: {
-        target: TARGET_FPS,
+        target: TARGET_FPS + 2,
         min: TARGET_FPS,
-
         forceSetTimeOut: true
     },
     physics: {
@@ -116,6 +116,7 @@ function preload () {
     this.load.image('star', 'star.png');
     this.load.image('bomb', 'bomb.png');
     this.load.image('splinter', 'splinter2.png');
+    this.load.image('clove', 'clove.png');
     this.load.image('shark_fin', 'shark_fin.png');
     this.load.image('missile', 'missile.png');
     this.load.spritesheet('dude', 'onion_dude.png', { frameWidth: 32, frameHeight: 48 });
@@ -127,7 +128,7 @@ function preload () {
 }
 
 function create () {
-    this.add.image(380, 280, 'background');
+    this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
 
 
     this.anims.create({
@@ -204,18 +205,21 @@ function create () {
     game.current_source_code = this.cache.text.get('current_source_code');
     game.code_signature = md5(game.current_source_code).slice(0,10)
 
+    game.seed = ""+(new Date).getTime();
     newGame(this);
 }
 
-function newGame(this_thing, last_game_controls_array) {
+function newGame(this_thing, last_game_controls_recording) {
     // Remove old bodies
     this.physics.world.staticBodies.each(function (object) {
+        if (object.gameObject.label)
+            object.gameObject.label.destroy(true);
         object.gameObject.destroy(true);
     });
 
     var filepath;
 
-    game.seed = "0";
+    game.last_game_controls_recording = last_game_controls_recording
 
     seed_random(game.seed);
 
@@ -243,7 +247,7 @@ function newGame(this_thing, last_game_controls_array) {
     splinter_emitter.stop();
 
     crates = this_thing.physics.add.staticGroup();
-    destroyed_crates = this_thing.physics.add.staticGroup({defaultKey: 'plain_crate_destroyed'});
+    destroyed_stuff = this_thing.physics.add.staticGroup({defaultKey: 'plain_crate_destroyed'});
     explosions = this_thing.physics.add.staticGroup({defaultKey: 'explosion'});
     metal_crates = this_thing.physics.add.staticGroup({defaultKey: 'metal_crate'});
     shark_fins = this_thing.physics.add.staticGroup({defaultKey: 'shark_fin'});
@@ -292,10 +296,15 @@ function newGame(this_thing, last_game_controls_array) {
     player.score = 0;
 
     player.controlled_by = 'human'
-    player.controls_array = [];
+    player.controls_recording = {
+        code_signature: game.code_signature,
+        player_name: user_name,
+        score: 0,
+        controls_array: []
+    }
     player.setDepth(9);
 
-    if (last_game_controls_array) {
+    if (game.last_game_controls_recording) {
         player_ghost = players.create(GAME_WIDTH/2, GAME_HEIGHT/2, 'dude');
         player_ghost.setSize(...PLAYER_SIZE);
         player_ghost.setDisplaySize(...PLAYER_DISPLAY_SIZE);
@@ -309,12 +318,16 @@ function newGame(this_thing, last_game_controls_array) {
         player_ghost.score = 0;
 
         player_ghost.controlled_by = 'last_game'
-        player_ghost.controls_array = last_game_controls_array;
-        console.log("Ghost has frame number: "+last_game_controls_array.length);
+        player_ghost.controls_recording = game.last_game_controls_recording;
+        console.log("Ghost has frame number: "+game.last_game_controls_recording.controls_array.length);
 
-        player_ghost.setAlpha(.8);
+        player_ghost.setAlpha(.5);
         player_ghost.setTint(0xffff55);
         player_ghost.setDepth(8);
+        player_ghost.setDepth(8);
+        player_ghost.label = this_thing.add.text(8, 8, game.last_game_controls_recording.player_name, { fontSize: '15px', fill: '#dfd' });
+        player_ghost.label.setAlpha(.8);
+        player_ghost.label.setDepth(100);
     }
 
     foreground_water = this_thing.physics.add.staticGroup({
@@ -336,6 +349,25 @@ function newGame(this_thing, last_game_controls_array) {
     water.setSize(GAME_WIDTH, 20);
 
     game.restarted_at_frame = game.getFrame();
+
+    anomolies = this_thing.physics.add.staticGroup({defaultKey: 'background'});
+}
+
+function create_anomoly(this_thing) {
+    var shape = this_thing.make.graphics();
+    shape.fillStyle(0xffffff);
+    shape.fillCircle(0, 0, 66);
+    shape.fillPath();
+    var mask = shape.createGeometryMask();
+
+    anomoly = anomolies.create(GAME_WIDTH/2, GAME_HEIGHT/2);
+    anomoly.setSize(132,132);
+    anomoly.setMask(mask);
+    anomoly.mask_shape = shape;
+    anomoly.setDepth(10000);
+
+    anomoly.mask_shape.x = random_between(0, GAME_WIDTH);
+    anomoly.mask_shape.y = GAME_HEIGHT + 100;
 }
 
 function update () {
@@ -435,7 +467,11 @@ function update () {
         }
     });
 
-    destroyed_crates.children.each(function(destroyed_crate) {
+    destroyed_stuff.children.each(function(destroyed_crate) {
+        if (destroyed_crate.delay_before_movement) {
+            destroyed_crate.delay_before_movement -= 1;
+            return;
+        }
         destroyed_crate.myVelY += PLAYER_GRAVITY;
         destroyed_crate.myVelY *= .97;
         destroyed_crate.myVelX *= .97;
@@ -444,6 +480,28 @@ function update () {
         destroyed_crate.x += destroyed_crate.myVelX
         destroyed_crate.body.x += destroyed_crate.myVelX
         destroyed_crate.angle += destroyed_crate.angular_velocity;
+    });
+    anomolies.children.each(function(anomoly) {
+	if (!player.active)
+		return;
+	console.log(anomoly.mask_shape.x)
+	if (anomoly.mask_shape.x < player.x)
+	    anomoly.mask_shape.x += 1;
+	else
+	    anomoly.mask_shape.x -= 1;
+
+	if (anomoly.mask_shape.y < player.y)
+	    anomoly.mask_shape.y += 1;
+	else
+	    anomoly.mask_shape.y -= 1;
+
+	anomoly.body.x = anomoly.mask_shape.x - anomoly.body.width/2
+	anomoly.body.y = anomoly.mask_shape.y - anomoly.body.height/2
+	if (checkOverlap(anomoly, explosions)) {
+            anomoly.mask_shape.scale -= .02;
+            if (anomoly.mask_shape.scale < 0)
+                anomoly.destroy(true);
+	}
     });
     // Stuff to destroy
     this.physics.world.staticBodies.each(function (object) {
@@ -457,7 +515,7 @@ function update () {
         //particle.accelerationY -= 10;
     });
     */
-    randomSpawns();
+    randomSpawns(this);
     var text = "Score: "+Math.floor(player.score);
     if (config.physics.arcade.debug) {
         text += "\nHard mode: " + game.hard;
@@ -473,13 +531,23 @@ function update () {
 
     if (!player.active && cursors.left.isDown && cursors.right.isDown) {
         game.hard = false;
-        newGame(this, player.controls_array);
+        player.controls_recording.score = game.score;
+
+        if (game.last_game_controls_recording && game.last_game_controls_recording.controls_array.length > player.controls_recording.controls_array.length)
+            newGame(this, game.last_game_controls_recording);
+        else
+            newGame(this, player.controls_recording);
         return
     }
 
     if (!player.active && cursors.up.isDown && cursors.down.isDown) {
         game.hard = true;
-        newGame(this, player.controls_array);
+        player.controls_recording.score = game.score;
+
+        if (game.last_game_controls_recording && game.last_game_controls_recording.controls_array.length > player.controls_recording.controls_array.length)
+            newGame(this, game.last_game_controls_recording);
+        else
+            newGame(this, player.controls_recording);
         return
     }
 }
@@ -499,7 +567,7 @@ function checkOverlap(spriteA, spriteB) {
     }
 }
 
-function randomSpawns() {
+function randomSpawns(this_thing) {
     var hard_factor = 1 - (game.hard * HARD_FACTOR)
     if (random_between(0,PLAIN_CRATE_ODDS * hard_factor) == 0) {
         var crate = initialize_plain_crate(plain_crates.create(0,-BOX_SIZE))
@@ -519,6 +587,9 @@ function randomSpawns() {
     }
     if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 35) {
         initialize_shark_fin()
+    }
+    if (random_between(0,3000 * hard_factor) == 0) {
+        create_anomoly(this_thing);
     }
 }
 
@@ -602,10 +673,10 @@ function initialize_bomb_crate(bomb_crate) {
 
 function plain_crate_destroy(crate) {
     for (i=0;i<4;i++) {
-        piece = destroyed_crates.create(crate.x,crate.y);
+        piece = destroyed_stuff.create(crate.x,crate.y);
         piece.anims.play('plain_crate_destroyed_'+i);
-        piece.setSize(BOX_SIZE * .75, BOX_SIZE * .75);
-        piece.setDisplaySize(BOX_SIZE * .75, BOX_SIZE * .75);
+        piece.setSize(BOX_SIZE, BOX_SIZE);
+        piece.setDisplaySize(BOX_SIZE, BOX_SIZE);
         angle = random_between(0,359);
         piece.angular_velocity = random_between(-10,10);
         piece.myVelY = 15 * Math.sin(angle)
@@ -613,6 +684,7 @@ function plain_crate_destroy(crate) {
         piece.myVelX = 15 * Math.cos(angle)
         piece.setDepth(19);
         piece.myDestroy = generic_destroy;
+        piece.delay_before_movement = 2;
     }
     generic_destroy(crate);
 }
@@ -640,14 +712,30 @@ function missile_crate_destroy(object) {
     generic_destroy(object)
 }
 
-function player_destroy(object) {
+function player_destroy(p) {
     /*
     explosion = explosions.create(object.x, object.y, 'explosion')
     explosion.setSize(99, 99);
     explosion.setDisplaySize(99, 99);
     explosion.created_at = getFrame();
     */
-    generic_destroy(object)
+    if (p.label) {
+        p.label.destroy(true);
+    }
+    for (i=0;i<10;i++) {
+        piece = destroyed_stuff.create(p.x,p.y,'clove');
+        piece.setSize(30, 15);
+        piece.setDisplaySize(30, 15);
+        angle = i * 48;
+        piece.myVelY = 10 * Math.sin(angle)
+        piece.myVelX = 10 * Math.cos(angle)
+        piece.angular_velocity = piece.myVelX;
+        piece.setDepth(19);
+        piece.myDestroy = generic_destroy;
+        if (p.controlled_by != 'human')
+            piece.setTint(0xddffdd);
+    }
+    generic_destroy(p)
 }
 
 function destroy_in_radius(x, y, radius) {
@@ -773,17 +861,19 @@ function player_update(p) {
         down_pressed = cursors.down.isDown;
         left_pressed = cursors.left.isDown;
         right_pressed = cursors.right.isDown;
-        p.controls_array.push([up_pressed, down_pressed, left_pressed, right_pressed]);
+        p.controls_recording.controls_array.push([up_pressed, down_pressed, left_pressed, right_pressed]);
     } else {
+        p.label.setX(p.x - p.label.width/2);
+        p.label.setY(p.y - 30);
         f = getFrame() - 1
-        if (f >= p.controls_array.length) {
+        if (f >= p.controls_recording.controls_array.length) {
             player_destroy(p);
             return;
         }
-        up_pressed = p.controls_array[f][0]
-        down_pressed = p.controls_array[f][1]
-        left_pressed = p.controls_array[f][2]
-        right_pressed = p.controls_array[f][3]
+        up_pressed = p.controls_recording.controls_array[f][0]
+        down_pressed = p.controls_recording.controls_array[f][1]
+        left_pressed = p.controls_recording.controls_array[f][2]
+        right_pressed = p.controls_recording.controls_array[f][3]
     }
 
     p.super_jump_possible = false;

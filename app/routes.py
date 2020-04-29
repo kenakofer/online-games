@@ -164,9 +164,12 @@ def blitz_lobby():
 @app.route('/cold_waters/')
 @login_required
 def cold_waters():
+    user = get_stable_user()
     return render_template(
                 'cold_waters.html',
                 title='Play Cold Waters',
+                user_id=user.id,
+                user_name=user.username
             )
 
 #############
