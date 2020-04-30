@@ -88,7 +88,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 1000 },
-            debug: true,
+            debug: false,
             forceX: true
         }
     },
@@ -388,45 +388,23 @@ function update () {
     background_water.children.iterate(function (water_tile) {
         water_tile.x -= Math.sin(getFrame() / 50) / 2
     });
-    crates.children.each(function (crate) {
-        crate.grounded = false;
-        if (crate.texture.key == "metal_crate" && checkOverlap(crate, water)) {
-            crate.body.y += METAL_CRATE_SINK_SPEED;
-            crate.y += METAL_CRATE_SINK_SPEED;
-        } else {
-            crate.body.y += CRATE_SPEED;
-            crate.y += CRATE_SPEED;
-        }
-            
-        checkOverlap(crate, water)
-        players.children.each(function(p) {
-            for (var i=0; i<5; i++) {
-                if (checkOverlap(crate, p)) {
-                    p.y += CRATE_SPEED;
-                    p.body.y += CRATE_SPEED;
-                }
-            }
-        });
-
-        for (var i=0; i<5; i++) {
-            if (!(crate.texture.key != "metal_crate" && checkOverlap(crate, water)) && !checkOverlap(crate, crates))
-                break;
-            crate.grounded = true;
-            crate.grounded_at_frame = crate.grounded_at_frame || getFrame()
-            crate.body.y -= 1;
-            crate.y -= 1;
-        }
+    plain_crates.children.each(function (crate) {
+        crate_step(crate);
     });
-    bomb_crates.children.each(function(bomb_crate) {
-        if (bomb_crate.active && bomb_crate.grounded_at_frame) {
-            var frames_since = getFrame() - bomb_crate.grounded_at_frame
+    metal_crates.children.each(function (crate) {
+        crate_step(crate);
+    });
+    bomb_crates.children.each(function(crate) {
+        crate_step(crate);
+        if (crate.active && crate.grounded_at_frame) {
+            var frames_since = getFrame() - crate.grounded_at_frame
             var frame = Math.floor( frames_since / BOMB_BLINK_FRAMES) + 1;
             if (frames_since % BOMB_BLINK_FRAMES == 0) {
-                bomb_crate.anims.play('bomb_crate_'+BOMB_BLINK_STATES);
+                crate.anims.play('bomb_crate_'+BOMB_BLINK_STATES);
             } else if (frame < BOMB_BLINK_STATES)
-                bomb_crate.anims.play('bomb_crate_'+frame);
+                crate.anims.play('bomb_crate_'+frame);
             else
-                bomb_crate.myDestroy(bomb_crate);
+                crate.myDestroy(crate);
         }
     });
     explosions.children.each(function(explosion) {
@@ -552,6 +530,36 @@ function update () {
     }
 }
 
+function crate_step(crate) {
+        crate.grounded = false;
+        if (crate.texture.key == "metal_crate" && checkOverlap(crate, water)) {
+            crate.body.y += METAL_CRATE_SINK_SPEED;
+            crate.y += METAL_CRATE_SINK_SPEED;
+        } else {
+            crate.body.y += CRATE_SPEED;
+            crate.y += CRATE_SPEED;
+        }
+            
+        players.children.each(function(p) {
+            for (var i=0; i<5; i++) {
+                if (checkOverlap(crate, p)) {
+                    p.y += CRATE_SPEED;
+                    p.body.y += CRATE_SPEED;
+                }
+            }
+        });
+
+        for (var i=0; i<5; i++) {
+            if (!(crate.texture.key != "metal_crate" && checkOverlap(crate, water)) && !checkOverlap(crate, crates))
+                break;
+            crate.grounded = true;
+            crate.grounded_at_frame = crate.grounded_at_frame || getFrame()
+            crate.body.y -= 1;
+            crate.y -= 1;
+        }
+
+}
+
 function checkOverlap(spriteA, spriteB) {
     if (spriteB.type.includes("Group")) {
         var result = false;
@@ -643,10 +651,11 @@ function initialize_shark_fin() {
 }
 
 function initialize_plain_crate(crate) {
+    crates.add(crate);
+
     crate.setSize(BOX_SIZE-1,BOX_SIZE-1);
     crate.setDisplaySize(BOX_SIZE,BOX_SIZE);
     crate.syncBounds = true;
-    crates.add(crate);
     explodables.add(crate);
     crate.myDestroy = plain_crate_destroy
     crate.setDepth(10);
@@ -655,10 +664,11 @@ function initialize_plain_crate(crate) {
     return crate;
 }
 function initialize_metal_crate(crate) {
+    crates.add(crate);
+
     crate.setSize(BOX_SIZE-1,BOX_SIZE-1);
     crate.setDisplaySize(BOX_SIZE,BOX_SIZE);
     crate.syncBounds = true;
-    crates.add(crate);
     crate.myDestroy = generic_destroy
     crate.setDepth(10);
     if (random_between(0,1) == 1)
