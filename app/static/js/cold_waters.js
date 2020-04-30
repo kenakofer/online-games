@@ -481,12 +481,14 @@ function update () {
 	}
     });
     // Stuff to destroy
-    this.physics.world.staticBodies.each(function (object) {
+    this.physics.world.staticBodies.each(function (body) {
+        var object = body.gameObject;
+
         if (object.x > GAME_WIDTH + 150 || object.x < -150 || object.y > GAME_HEIGHT + 50 || object.y < -BOX_SIZE * 2) {
-            if (object.gameObject.texture.key == 'plain_crate_destroyed' || object.gameObject.texture.key == 'clove') {
-                destroyed_stuff.killAndHide(object.gameObject);
+            if (object.texture.key == 'plain_crate_destroyed' || object.texture.key == 'clove') {
+                destroyed_stuff.killAndHide(object);
             } else {
-                object.gameObject.destroy(true);
+                object.destroy(true);
             }
         }
     });
