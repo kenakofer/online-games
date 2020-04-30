@@ -462,7 +462,6 @@ function update () {
     anomolies.children.each(function(anomoly) {
 	if (!player.active)
 		return;
-	console.log(anomoly.mask_shape.x)
 	if (anomoly.mask_shape.x < player.x)
 	    anomoly.mask_shape.x += 1;
 	else
@@ -484,7 +483,11 @@ function update () {
     // Stuff to destroy
     this.physics.world.staticBodies.each(function (object) {
         if (object.x > GAME_WIDTH + 150 || object.x < -150 || object.y > GAME_HEIGHT + 50 || object.y < -BOX_SIZE * 2) {
-            object.gameObject.destroy(true);
+            if (object.gameObject.texture.key == 'plain_crate_destroyed' || object.gameObject.texture.key == 'clove') {
+                destroyed_stuff.killAndHide(object.gameObject);
+            } else {
+                object.gameObject.destroy(true);
+            }
         }
     });
     /*
@@ -683,7 +686,13 @@ function initialize_bomb_crate(bomb_crate) {
 
 function plain_crate_destroy(crate) {
     for (i=0;i<4;i++) {
-        piece = destroyed_stuff.create(crate.x,crate.y);
+        piece = destroyed_stuff.get(crate.x,crate.y);
+        piece.setVisible(true);
+        piece.setActive(true);
+        piece.body.x = piece.x - piece.body.halfWidth
+        piece.body.y = piece.y - piece.body.halfHeight
+        console.log(piece.x + " " + piece.y + " " + piece.body.x + " " + piece.body.y);
+
         piece.anims.play('plain_crate_destroyed_'+i);
         piece.setSize(BOX_SIZE, BOX_SIZE);
         piece.setDisplaySize(BOX_SIZE, BOX_SIZE);
@@ -733,7 +742,13 @@ function player_destroy(p) {
         p.label.destroy(true);
     }
     for (i=0;i<10;i++) {
-        piece = destroyed_stuff.create(p.x,p.y,'clove');
+        piece = destroyed_stuff.get(p.x,p.y,'clove');
+        piece.setTexture('clove');
+        piece.setVisible(true);
+        piece.setActive(true);
+        piece.body.x = piece.x - piece.body.halfWidth
+        piece.body.y = piece.y - piece.body.halfHeight
+
         piece.setSize(30, 15);
         piece.setDisplaySize(30, 15);
         angle = i * 48;
