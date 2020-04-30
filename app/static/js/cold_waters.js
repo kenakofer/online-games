@@ -205,7 +205,7 @@ function create () {
     game.current_source_code = this.cache.text.get('current_source_code');
     game.code_signature = md5(game.current_source_code).slice(0,10)
 
-    game.seed = ""+(new Date).getTime();
+    game.seed = ""+(new Date).getTime() % 10;
     newGame(this);
 }
 
@@ -300,7 +300,8 @@ function newGame(this_thing, last_game_controls_recording) {
         code_signature: game.code_signature,
         player_name: user_name,
         score: 0,
-        controls_array: []
+        controls_array: [],
+        hard: game.hard
     }
     player.setDepth(9);
 
@@ -395,6 +396,10 @@ function update () {
         crate_step(crate);
     });
     bomb_crates.children.each(function(crate) {
+        crate.body.x = crate.x - 25
+        crate.body.y = crate.y - 25
+        if (!crate.active)
+            return;
         crate_step(crate);
         if (crate.active && crate.grounded_at_frame) {
             var frames_since = getFrame() - crate.grounded_at_frame
@@ -587,7 +592,7 @@ function randomSpawns(this_thing) {
         move_to_empty_top_spot(crate); 
     }
     if (random_between(0,BOMB_CRATE_ODDS * hard_factor) == 0) {
-        var crate = initialize_bomb_crate(bomb_crates.create(0,-BOX_SIZE))
+        var crate = initialize_bomb_crate(bomb_crates.get(), 0, -BOX_SIZE);
         move_to_empty_top_spot(crate); 
     }
     if (random_between(0,METAL_CRATE_ODDS * hard_factor) == 0) {
@@ -680,10 +685,40 @@ function initialize_metal_crate(crate) {
         crate.flipX = true;
     return crate;
 }
-function initialize_bomb_crate(bomb_crate) {
-    initialize_plain_crate(bomb_crate);
-    bomb_crate.myDestroy = bomb_crate_destroy
-    return bomb_crate;
+function initialize_bomb_crate(crate, x, y) {
+    console.log('bomb!')
+    crates.add(crate);
+    crate.setVisible(true);
+    crate.setActive(true);
+
+    crate.anims.play('bomb_crate_0');
+    crate.grounded_at_frame = undefined;
+    // dx = x - crate.x;
+    // dy = y - crate.y;
+    // crate.x += dx;
+    // crate.body.x += dx;
+    // crate.y += dy;
+    // crate.body.y += dy;
+    crate.x = x
+    crate.y = y
+    crate.body
+    crate.body.x = crate.x - 25
+    crate.body.y = crate.y - 25
+
+
+    //crate.body.x = crate.x - BOX_SIZE/2
+    //crate.body.y = crate.y - BOX_SIZE/2
+
+    crate.setSize(BOX_SIZE-1,BOX_SIZE-1);
+    crate.setDisplaySize(BOX_SIZE,BOX_SIZE);
+    //crate.syncBounds = true;
+    explodables.add(crate);
+    crate.myDestroy = plain_crate_destroy
+    crate.setDepth(10);
+    if (random_between(0,1) == 1)
+        crate.flipX = true;
+    crate.myDestroy = bomb_crate_destroy
+    return crate;
 }
 
 function plain_crate_destroy(crate) {
@@ -693,7 +728,7 @@ function plain_crate_destroy(crate) {
         piece.setActive(true);
         piece.body.x = piece.x - piece.body.halfWidth
         piece.body.y = piece.y - piece.body.halfHeight
-        console.log(piece.x + " " + piece.y + " " + piece.body.x + " " + piece.body.y);
+        //console.log(piece.x + " " + piece.y + " " + piece.body.x + " " + piece.body.y);
 
         piece.anims.play('plain_crate_destroyed_'+i);
         piece.setSize(BOX_SIZE, BOX_SIZE);
@@ -716,12 +751,14 @@ function generic_destroy(object) {
 }
 
 function bomb_crate_destroy(object) {
-    object.destroy(true);
+    //object.destroy(true);
+    bomb_crates.killAndHide(object);
     explosion = explosions.create(object.x, object.y)
     explosion.setSize(EXPLOSION_SIZE, EXPLOSION_SIZE);
     explosion.setDisplaySize(EXPLOSION_SIZE, EXPLOSION_SIZE);
     explosion.created_at = getFrame();
-    generic_destroy(object)
+    // TODO get rid
+    //generic_destroy(object)
 }
 
 function missile_crate_destroy(object) {
@@ -763,10 +800,13 @@ function player_destroy(p) {
             piece.setTint(0xddffdd);
     }
     generic_destroy(p)
+    //httpRequest = new XMLHttpRequest(); 
 }
 
 function destroy_in_radius(x, y, radius) {
     explodables.children.each(function (crate) {
+        if (!crate.active)
+            return;
         var distance = Phaser.Math.Distance.Between(crate.x, crate.y, x, y);
         if (distance < radius && distance > 0)
             crate.myDestroy(crate);
