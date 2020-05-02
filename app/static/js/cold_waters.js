@@ -5,6 +5,7 @@
 // Minor:
 //  Download new recording if hard or seed changes
 //  Move background image so score is nicer
+//  Jumping into missile messes up RNG
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -18,8 +19,10 @@
 //
 // Major:
 //  Cloud with lightning
+//   Maybe Ufo with energy ball? (ufo/energy ball only interacts with metal crates)
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //  Try/optimize for mobile device
+//  Powerups
 //
 const CODE_VERSION = "test_version";
 
@@ -52,7 +55,9 @@ const SCORE_PER_FRAME = .5
 const GHOST_START_ALPHA = .5;
 const GHOST_LABEL_START_ALPHA = .8
 const GHOST_END_ALPHA = 0;
-const GHOST_LABEL_END_ALPHA = .1
+const GHOST_LABEL_END_ALPHA = .2
+
+const PARTICLE_RANDOM = new Phaser.Math.RandomDataGenerator(["0"])
 
 const MISSILE_SPEED = 4;
 
@@ -670,6 +675,10 @@ function random_between(x, y) {
     return Phaser.Math.RND.between(x, y);
 }
 
+function particle_random_between(x, y) {
+    return PARTICLE_RANDOM.between(x, y);
+}
+
 // Seed must be a string
 function seed_random(seed) {
     // The string has to be in a list for some reason?
@@ -771,8 +780,8 @@ function plain_crate_destroy(crate) {
         piece.anims.play('plain_crate_destroyed_'+i);
         piece.setSize(BOX_SIZE, BOX_SIZE);
         piece.setDisplaySize(BOX_SIZE, BOX_SIZE);
-        angle = random_between(0,359);
-        piece.angular_velocity = random_between(-10,10);
+        angle = particle_random_between(0,359);
+        piece.angular_velocity = particle_random_between(-10,10);
         piece.myVelY = 15 * Math.sin(angle)
         //piece.myVelY -= 5;
         piece.myVelX = 15 * Math.cos(angle)
@@ -828,10 +837,10 @@ function player_destroy(p) {
 
         piece.setSize(30, 15);
         piece.setDisplaySize(30, 15);
-        angle = i * 48;
+        angle = particle_random_between(0,359);
+        piece.angular_velocity = particle_random_between(-10,10);
         piece.myVelY = 10 * Math.sin(angle)
         piece.myVelX = 10 * Math.cos(angle)
-        piece.angular_velocity = piece.myVelX;
         piece.setDepth(19);
         piece.myDestroy = generic_destroy;
         if (p.controlled_by != 'human')
