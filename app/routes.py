@@ -1,14 +1,15 @@
 from app import app, db
-from flask import render_template, flash, redirect, jsonify, request, url_for
+from flask import render_template, flash, redirect, request, url_for, escape
 import flask
 # from flask_oauth2_login import GoogleLogin
 from math import floor
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, get_stable_user
+from app.models import User, get_stable_user, ColdWatersScore, load_cold_waters_score
 from app.hanabi import hanabi_games, HanabiGame
 from app.blitz import blitz_games, BlitzGame
 from app.freeplay import freeplay_games, FreeplayGame
 from datetime import timedelta
+import json
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
@@ -160,17 +161,63 @@ def blitz_lobby():
                 title='Dutch Blitz Lobby',
             )
 
-@app.route('/cold_waters')
-@app.route('/cold_waters/')
+@app.route('/cold_waters',  methods=['GET', 'POST'])
+@app.route('/cold_waters/', methods=['GET', 'POST'])
 @login_required
 def cold_waters():
-    user = get_stable_user()
-    return render_template(
-                'cold_waters.html',
-                title='Play Cold Waters',
+    if request.method == 'GET':
+        user = get_stable_user()
+        return render_template(
+                    'cold_waters.html',
+                    title='Play Cold Waters',
+                    user_id=user.id,
+                    user_name=user.username
+                )
+    elif request.method == 'POST':
+        user = get_stable_user()
+        print('request:', request)
+        controls_recording = json.loads(request.form.get('thing'))['controls_recording']
+        controls_array = controls_recording['controls_array'].encode()
+        print('controls_recording:', controls_recording)
+        score = ColdWatersScore(
                 user_id=user.id,
-                user_name=user.username
-            )
+                code_version=controls_recording['code_signature'],
+                hard=controls_recording['hard'],
+                seed=controls_recording['seed'],
+                score=controls_recording['score'],
+                controls_array=controls_array
+                )
+
+        db.session.add(score)
+        db.session.commit()
+
+        fetched_score = load_cold_waters_score(score.id)
+        print('Added the above recording to the DB')
+        print(fetched_score.controls_array == score.controls_array)
+        return json.dumps({
+            'name': user.username,
+            'code_version': fetched_score.code_version,
+            'hard': fetched_score.hard,
+            'seed': fetched_score.seed,
+            'score': fetched_score.score,
+            'controls_array': fetched_score.controls_array.decode()
+        });
+
+@app.route('/cold_waters/get_best_recording/<code_version>/<seed>/<hard>')
+@login_required
+def cold_waters_get_best_recording(code_version, seed, hard):
+    score = ColdWatersScore.query.filter_by(code_version=code_version, seed=seed, hard=hard).order_by(ColdWatersScore.score.desc()).first()
+    if score is None:
+        return "None found"
+    name = User.query.get(score.user_id).username
+    return json.dumps({
+        'name':name,
+        'code_version': score.code_version,
+        'hard': score.hard,
+        'seed': score.seed,
+        'score': score.score,
+        'controls_array': score.controls_array.decode()
+    });
 
 #############
 # Free Play #

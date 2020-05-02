@@ -3,7 +3,9 @@
 //
 // TODO
 // Minor:
-//  Make seed random on load
+//  Download new recording if hard or seed changes
+//  Move background image so score is nicer
+// 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
 //  Depth constants
@@ -19,9 +21,7 @@
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //  Try/optimize for mobile device
 //
-// Super Major
-//  Saves, replays, and ghosts
-//
+const CODE_VERSION = "test_version";
 
 const PLAIN_CRATE_ODDS = 50;
 const BOMB_CRATE_ODDS = 100;
@@ -49,6 +49,11 @@ const BOMB_BLINK_FRAMES = 34;
 const BOMB_BLINK_STATES = 5;
 const SCORE_PER_FRAME = .5
 
+const GHOST_START_ALPHA = .5;
+const GHOST_LABEL_START_ALPHA = .8
+const GHOST_END_ALPHA = 0;
+const GHOST_LABEL_END_ALPHA = .1
+
 const MISSILE_SPEED = 4;
 
 // Combined, these make for a minimum jump height of ~60 pixels (1 box) and max
@@ -73,6 +78,10 @@ const PLAYER_HORIZONTAL_KILL_THRESHOLD = 16;
 const PLAYER_DASH_SPEED = 10
 const PLAYER_DASH_FRAMES = 15
 const PLAYER_DASH_RECHARGE_FRAMES = 30
+
+
+var httpRequest;
+var received_controls_recording;
 
 var config = {
     type: Phaser.AUTO,
@@ -100,15 +109,13 @@ var config = {
 };
 var physics;
 
-
 var game = new Phaser.Game(config);
 
 var score = 0;
-var screenText;
 
 function preload () {
     this.load.setBaseURL('../static/images/cold_waters');
-    this.load.text('current_source_code', '../../../static/js/cold_waters.js');
+    //this.load.text('current_source_code', '../../../static/js/cold_waters.js');
     this.load.image('background', 'ice_mountain_bg.png');
     this.load.image('water', 'water_surface_tile.png');
     this.load.image('plain_crate', 'plain_crate.png');
@@ -124,6 +131,10 @@ function preload () {
     this.load.spritesheet('dude_dash', 'onion_dude_dash.png', { frameWidth: 32, frameHeight: 29 });
     this.load.spritesheet('bomb_crate', 'bomb_crate_sheet.jpg', { frameWidth: 99, frameHeight: 100 });
     this.load.spritesheet('explosion', 'explosion_sheet.png', { frameWidth: 89, frameHeight: 89 });
+
+    game.seed = ""+(new Date).getTime() % 10;
+    game.hard = 0;
+    this.load.json('best_recording', 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+game.seed+'/'+game.hard)
     physics = this.physics;
 }
 
@@ -197,20 +208,32 @@ function create () {
     cursors = this.input.keyboard.createCursorKeys();
     debug_key = this.input.keyboard.addKey('D');
 
-    screenText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#000' });
-    screenText.setDepth(100);
+    upperLeftText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#fff' });
+    upperLeftText.setShadow(-1, 1, 'rgba(0,0,0)', 0);
+    upperLeftText.setDepth(100);
 
-    game.hard = false;
+    upperRightText = this.add.text(GAME_WIDTH-120, 9, 'Score: 0', { fontSize: '10px', fill: '#000' });
+    upperRightText.setDepth(100);
 
-    game.current_source_code = this.cache.text.get('current_source_code');
-    game.code_signature = md5(game.current_source_code).slice(0,10)
+    game.hard = 0;
 
-    game.seed = ""+(new Date).getTime() % 10;
-    newGame(this);
+    //game.current_source_code = this.cache.text.get('current_source_code');
+    //CODE_VERSION = md5(game.current_source_code).slice(0,10)
+
+    newGame(this, decompressRecording(this.cache.json.get('best_recording')));
+}
+
+function decompressRecording(recording) {
+    recording.controls_array = lzw_decode(recording.controls_array)
+    return recording
 }
 
 function newGame(this_thing, last_game_controls_recording) {
     // Remove old bodies
+    if (received_controls_recording) {
+        if (!last_game_controls_recording || received_controls_recording.score >= last_game_controls_recording.score)
+            last_game_controls_recording = received_controls_recording;
+    }
     this.physics.world.staticBodies.each(function (object) {
         if (object.gameObject.label)
             object.gameObject.label.destroy(true);
@@ -297,11 +320,12 @@ function newGame(this_thing, last_game_controls_recording) {
 
     player.controlled_by = 'human'
     player.controls_recording = {
-        code_signature: game.code_signature,
-        player_name: user_name,
+        code_version: CODE_VERSION,
+        name: user_name,
         score: 0,
         controls_array: [],
-        hard: game.hard
+        hard: game.hard,
+        seed: game.seed
     }
     player.setDepth(9);
 
@@ -320,14 +344,23 @@ function newGame(this_thing, last_game_controls_recording) {
 
         player_ghost.controlled_by = 'last_game'
         player_ghost.controls_recording = game.last_game_controls_recording;
-        console.log("Ghost has frame number: "+game.last_game_controls_recording.controls_array.length);
+        console.log("Ghost has score: "+game.last_game_controls_recording.score);
 
-        player_ghost.setAlpha(.5);
-        player_ghost.setTint(0xffff55);
+        player_ghost.setAlpha(GHOST_START_ALPHA);
         player_ghost.setDepth(8);
         player_ghost.setDepth(8);
-        player_ghost.label = this_thing.add.text(8, 8, game.last_game_controls_recording.player_name, { fontSize: '15px', fill: '#dfd' });
-        player_ghost.label.setAlpha(.8);
+
+        var label_color, tint_color
+        if (game.last_game_controls_recording.name == user_name) {
+            label_color = '#dfd';
+            tint_color = 0xffff55;
+        } else {
+            label_color = '#fdd';
+            tint_color = 0xff7777;
+        }
+        player_ghost.setTint(tint_color);
+        player_ghost.label = this_thing.add.text(8, 8, game.last_game_controls_recording.name, { fontSize: '15px', fill: label_color });
+        player_ghost.label.setAlpha(GHOST_LABEL_START_ALPHA);
         player_ghost.label.setDepth(100);
     }
 
@@ -505,21 +538,26 @@ function update () {
     */
     randomSpawns(this);
     var text = "Score: "+Math.floor(player.score);
-    if (config.physics.arcade.debug) {
-        text += "\nHard mode: " + game.hard;
-        text += '\nFPS: ' + game.loop.actualFps;
-        text += "\nObjects: " + object_count();
-        text += "\nCrates: " + crates.countActive();
-        text += "\nGame seed: " + game.seed;
-        text += "\nSig: " + game.code_signature;
-    }
     if (!player.active)
         text += "\nPress LEFT + RIGHT to play again!";
-    screenText.setText(text);
+    upperLeftText.setText(text);
+
+    //if (config.physics.arcade.debug) {
+    if (getFrame() % 10 == 0) {
+        upperRightText.setText([
+            "Hard mode: " + game.hard,
+            "FPS: " + Math.round(game.loop.actualFps * 100) / 100,
+            "Objects: " + object_count(),
+            "Crates: " + crates.countActive(),
+            "Game seed: " + game.seed,
+            "Sig: " + CODE_VERSION,
+
+        ].join("\n"))
+    }
 
     if (!player.active && cursors.left.isDown && cursors.right.isDown) {
-        game.hard = false;
-        player.controls_recording.score = game.score;
+        game.hard = 0;
+        player.controls_recording.score = player.score;
 
         if (game.last_game_controls_recording && game.last_game_controls_recording.controls_array.length > player.controls_recording.controls_array.length)
             newGame(this, game.last_game_controls_recording);
@@ -529,8 +567,8 @@ function update () {
     }
 
     if (!player.active && cursors.up.isDown && cursors.down.isDown) {
-        game.hard = true;
-        player.controls_recording.score = game.score;
+        game.hard = 1;
+        player.controls_recording.score = player.score;
 
         if (game.last_game_controls_recording && game.last_game_controls_recording.controls_array.length > player.controls_recording.controls_array.length)
             newGame(this, game.last_game_controls_recording);
@@ -799,8 +837,41 @@ function player_destroy(p) {
         if (p.controlled_by != 'human')
             piece.setTint(0xddffdd);
     }
+
     generic_destroy(p)
-    //httpRequest = new XMLHttpRequest(); 
+    if (p == player) {
+        p.controls_recording.score = p.score;
+        uploadRecording(player.controls_recording)
+    }
+}
+
+function uploadRecording(controls_recording) {
+    controls_array_string = controls_recording.controls_array.flat().join("")
+    //console.log("Original string: " + controls_array_string);
+    encoded = lzw_encode(controls_array_string);
+    //console.log("Encoded string: " + encoded);
+    decoded = lzw_decode(encoded);
+    //console.log("Decoded string: " + decoded);
+    //console.log("Matches? " + (decoded == controls_array_string));
+
+    object_to_send = {
+        code_signature: controls_recording.code_version,
+        hard: controls_recording.hard * 1,
+        name: controls_recording.name,
+        score: controls_recording.score,
+        seed: controls_recording.seed,
+        controls_array: encoded,
+    }
+
+    httpRequest = new XMLHttpRequest(); 
+    httpRequest.onload = contentsSent;
+    httpRequest.open('POST', 'https://games.gc.my/cold_waters', true);
+    httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    httpRequest.send('thing='+encodeURIComponent(JSON.stringify({controls_recording: object_to_send})));
+}
+
+function contentsSent() {
+    console.log('Recording uploaded, I think');
 }
 
 function destroy_in_radius(x, y, radius) {
@@ -928,19 +999,25 @@ function player_update(p) {
         down_pressed = cursors.down.isDown;
         left_pressed = cursors.left.isDown;
         right_pressed = cursors.right.isDown;
-        p.controls_recording.controls_array.push([up_pressed, down_pressed, left_pressed, right_pressed]);
+        p.controls_recording.controls_array = p.controls_recording.controls_array.concat([up_pressed*1, down_pressed*1, left_pressed*1, right_pressed*1]);
     } else {
         p.label.setX(p.x - p.label.width/2);
         p.label.setY(p.y - 30);
-        f = getFrame() - 1
-        if (f >= p.controls_recording.controls_array.length) {
+        f = getFrame() - 1;
+        if (f*4 >= p.controls_recording.controls_array.length) {
             player_destroy(p);
             return;
         }
-        up_pressed = p.controls_recording.controls_array[f][0]
-        down_pressed = p.controls_recording.controls_array[f][1]
-        left_pressed = p.controls_recording.controls_array[f][2]
-        right_pressed = p.controls_recording.controls_array[f][3]
+        up_pressed = parseInt(p.controls_recording.controls_array[f*4+0]);
+        down_pressed = parseInt(p.controls_recording.controls_array[f*4+1]);
+        left_pressed = parseInt(p.controls_recording.controls_array[f*4+2]);
+        right_pressed = parseInt(p.controls_recording.controls_array[f*4+3]);
+
+
+        if (f % 100 == 0) {
+            p.setAlpha( (GHOST_START_ALPHA - GHOST_END_ALPHA) * (1 - p.score / p.controls_recording.score) + GHOST_END_ALPHA );
+            p.label.setAlpha( (GHOST_LABEL_START_ALPHA - GHOST_LABEL_END_ALPHA) * (1 - p.score / p.controls_recording.score) + GHOST_LABEL_END_ALPHA );
+        }
     }
 
     p.super_jump_possible = false;
@@ -1069,4 +1146,59 @@ function player_update(p) {
 
 function getFrame() {
     return game.getFrame() - (game.restarted_at_frame || 0);
+}
+
+
+
+// LZW-compress a string
+function lzw_encode(s) {
+    var dict = {};
+    var data = (s + "").split("");
+    var out = [];
+    var currChar;
+    var phrase = data[0];
+    var code = 256;
+    for (var i=1; i<data.length; i++) {
+        currChar=data[i];
+        if (dict[phrase + currChar] != null) {
+            phrase += currChar;
+        }
+        else {
+            out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
+            dict[phrase + currChar] = code;
+            code++;
+            phrase=currChar;
+        }
+    }
+    out.push(phrase.length > 1 ? dict[phrase] : phrase.charCodeAt(0));
+    for (var i=0; i<out.length; i++) {
+        out[i] = String.fromCharCode(out[i]);
+    }
+    return out.join("");
+}
+
+// Decompress an LZW-encoded string
+function lzw_decode(s) {
+    var dict = {};
+    var data = (s + "").split("");
+    var currChar = data[0];
+    var oldPhrase = currChar;
+    var out = [currChar];
+    var code = 256;
+    var phrase;
+    for (var i=1; i<data.length; i++) {
+        var currCode = data[i].charCodeAt(0);
+        if (currCode < 256) {
+            phrase = data[i];
+        }
+        else {
+           phrase = dict[currCode] ? dict[currCode] : (oldPhrase + currChar);
+        }
+        out.push(phrase);
+        currChar = phrase.charAt(0);
+        dict[code] = oldPhrase + currChar;
+        code++;
+        oldPhrase = phrase;
+    }
+    return out.join("");
 }
