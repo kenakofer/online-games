@@ -208,9 +208,10 @@ def cold_waters():
 def cold_waters_get_best_recording(code_version, seed, hard):
     score = ColdWatersScore.query.filter_by(code_version=code_version, seed=seed, hard=hard).order_by(ColdWatersScore.score.desc()).first()
     if score is None:
-        return "None found"
+        return json.dumps({'response': 'None found'})
     name = User.query.get(score.user_id).username
     return json.dumps({
+        'response': 'Score found',
         'name':name,
         'code_version': score.code_version,
         'hard': score.hard,
