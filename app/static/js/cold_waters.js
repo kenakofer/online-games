@@ -99,7 +99,6 @@ const PLAYER_DASH_RECHARGE_FRAMES = 30
 
 
 var httpRequest;
-var received_controls_recording;
 var ufo_random; 
 var particle_random = new Phaser.Math.RandomDataGenerator(["0"])
 
@@ -256,14 +255,23 @@ function decompressRecording(recording) {
     return recording
 }
 
+function recording_valid(controls_recording) {
+    return (controls_recording && controls_recording.hard == game.hard && controls_recording.code_version == CODE_VERSION)
+}
+
+function best_recording(recordings) {
+    const valids = recordings.filter(recording_valid);
+    return valids.reduce(function(prev, current) {
+        return (prev && prev.score > current.score) ? prev : current
+    }, undefined); 
+}
+
 function newGame(this_thing, last_game_controls_recording) {
     game.restarted_at_frame = false;
 
+    last_game_controls_recording = best_recording([last_game_controls_recording]);
+
     // Remove old bodies
-    if (received_controls_recording) {
-        if (!last_game_controls_recording || received_controls_recording.score >= last_game_controls_recording.score)
-            last_game_controls_recording = received_controls_recording;
-    }
     this.physics.world.staticBodies.each(function (object) {
         if (object.gameObject.label)
             object.gameObject.label.destroy(true);
@@ -365,6 +373,7 @@ function newGame(this_thing, last_game_controls_recording) {
     game.rng_integrity_check = "";
     player.setDepth(9);
 
+    player_ghost = false;
     if (game.last_game_controls_recording) {
         player_ghost = players.create(GAME_WIDTH/2, GAME_HEIGHT/2, 'dude');
         player_ghost.setSize(...PLAYER_SIZE);
@@ -647,7 +656,7 @@ function update () {
         rng_index = Math.floor(getFrame() / 10);
 
         rng_ok = true;
-        if (player_ghost.active && player_ghost.controls_recording.rng_integrity_check) {
+        if (player_ghost && player_ghost.active && player_ghost.controls_recording.rng_integrity_check) {
             rng_ok = (game.rng_integrity_check.charAt(rng_index) == player_ghost.controls_recording.rng_integrity_check.charAt(rng_index))
         }
 
