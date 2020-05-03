@@ -3,9 +3,9 @@
 //
 // TODO
 // Minor:
+//  Shrink box explosion size?
 //  Download new recording if hard or seed changes
 //  Move background image so score is nicer
-//  Jumping into missile messes up RNG
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -18,8 +18,6 @@
 //   Make anomalies cooler
 //
 // Major:
-//  Cloud with lightning
-//   Maybe Ufo with energy ball? (ufo/energy ball only interacts with metal crates)
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //  Try/optimize for mobile device
 //  Powerups
@@ -30,6 +28,7 @@ const PLAIN_CRATE_ODDS = 50;
 const BOMB_CRATE_ODDS = 100;
 const METAL_CRATE_ODDS = 100;
 const MISSILE_ODDS = 200;
+const UFO_ODDS = 800;
 const HARD_FACTOR = .5;
 
 const TARGET_FPS = 50;
@@ -47,17 +46,23 @@ const BACKGROUND_WATER_TILE_WIDTH = 80;
 const BACKGROUND_WATER_TILE_HEIGHT = 30;
 const CRATE_SPEED = 3;
 const SHARK_SPEED = 2;
+const UFO_SPEED = 2;
 const METAL_CRATE_SINK_SPEED = .5;
 const BOMB_BLINK_FRAMES = 34;
 const BOMB_BLINK_STATES = 5;
 const SCORE_PER_FRAME = .5
+const UFO_WIDTH = 100
+const UFO_HEIGHT = 40
+
+const ELECTRO_BALL_SPEED = 6;
+const ELECTRO_BALL_WIDTH = 64;
+const ELECTRO_BALL_HEIGHT = 18;
 
 const GHOST_START_ALPHA = .5;
 const GHOST_LABEL_START_ALPHA = .8
 const GHOST_END_ALPHA = 0;
 const GHOST_LABEL_END_ALPHA = .2
 
-const PARTICLE_RANDOM = new Phaser.Math.RandomDataGenerator(["0"])
 
 const MISSILE_SPEED = 4;
 
@@ -87,6 +92,8 @@ const PLAYER_DASH_RECHARGE_FRAMES = 30
 
 var httpRequest;
 var received_controls_recording;
+var ufo_random; 
+var particle_random = new Phaser.Math.RandomDataGenerator(["0"])
 
 var config = {
     type: Phaser.AUTO,
@@ -131,11 +138,13 @@ function preload () {
     this.load.image('clove', 'clove.png');
     this.load.image('shark_fin', 'shark_fin.png');
     this.load.image('missile', 'missile.png');
+    this.load.image('ufo', 'ufo.png');
     this.load.spritesheet('dude', 'onion_dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('plain_crate_destroyed', 'plain_crate_destroyed_sheet.png', { frameWidth: 250, frameHeight: 250 });
     this.load.spritesheet('dude_dash', 'onion_dude_dash.png', { frameWidth: 32, frameHeight: 29 });
     this.load.spritesheet('bomb_crate', 'bomb_crate_sheet.jpg', { frameWidth: 99, frameHeight: 100 });
     this.load.spritesheet('explosion', 'explosion_sheet.png', { frameWidth: 89, frameHeight: 89 });
+    this.load.spritesheet('electro_ball', 'electro_ball.png', { frameWidth: 128, frameHeight: 35 });
 
     game.seed = ""+(new Date).getTime() % 10;
     game.hard = 0;
@@ -145,7 +154,6 @@ function preload () {
 
 function create () {
     this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
-
 
     this.anims.create({
 	key: 'left',
@@ -182,6 +190,13 @@ function create () {
     this.anims.create({
 	key: 'explosion',
 	frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 9 }),
+	frameRate: 20,
+	repeat: -1
+    });
+
+    this.anims.create({
+	key: 'electro_ball',
+	frames: this.anims.generateFrameNumbers('electro_ball', { start: 0, end: 5 }),
 	frameRate: 20,
 	repeat: -1
     });
@@ -249,7 +264,7 @@ function newGame(this_thing, last_game_controls_recording) {
 
     game.last_game_controls_recording = last_game_controls_recording
 
-    seed_random(game.seed);
+    seed_rngs(game.seed);
 
     background_water = this_thing.physics.add.staticGroup({
 	key: 'water',
@@ -281,7 +296,11 @@ function newGame(this_thing, last_game_controls_recording) {
     shark_fins = this_thing.physics.add.staticGroup({defaultKey: 'shark_fin'});
     missiles = this_thing.physics.add.staticGroup({defaultKey: 'missile'});
     bomb_crates = this_thing.physics.add.staticGroup({defaultKey: 'bomb_crate'});
+    ufos = this_thing.physics.add.staticGroup({defaultKey: 'ufo'});
+    electro_balls = this_thing.physics.add.staticGroup({defaultKey: 'electro_ball'});
     explodables = this_thing.physics.add.staticGroup();
+    electrified_metal_crates = this_thing.physics.add.staticGroup();
+    unelectrified_metal_crates = this_thing.physics.add.staticGroup();
 
     boundaries = this_thing.physics.add.staticGroup();
     boundary = boundaries.create(-10,GAME_HEIGHT/2);
@@ -431,6 +450,31 @@ function update () {
         crate_step(crate);
     });
     metal_crates.children.each(function (crate) {
+        if (crate.electrified) {
+            redness = particle_random_between(0, 150);
+            crate.setTint(Phaser.Display.Color.GetColor(105+redness, 255, 255));
+            crate.angle = particle_random_between(-3, 3);
+            // Kill player (not ghost)
+            if (myTouching(crate, player, 0, 1) || myTouching(crate, player, 0, -1) || myTouching(crate, player, 1, 0) || myTouching(crate, player, -1, 0)) {
+                player_destroy(player);
+                setElectrified(crate, false);
+            }
+            if (checkOverlap(crate, water)) {
+                setElectrified(crate, false);
+                deelectrifyWithinCluster(crate, metal_crates, []);
+            } else {
+                var other_crate = myTouching(crate, unelectrified_metal_crates, 3, 3);
+                if (other_crate)
+                    setElectrified(other_crate, true);
+                other_crate = myTouching(crate, unelectrified_metal_crates, -3, -3);
+                if (other_crate)
+                    setElectrified(other_crate, true);
+            }
+        }
+        if (!crate.electrified) {
+            crate.setTint(0xffffff);
+            crate.angle = 0;
+        }
         crate_step(crate);
     });
     bomb_crates.children.each(function(crate) {
@@ -476,6 +520,37 @@ function update () {
         var collision = checkOverlap(shark_fin, explodables);
         if (collision)
             collision.myDestroy(collision);
+    });
+    ufos.children.each(function (ufo) {
+        ufo.x += ufo.myVelX;
+        ufo.body.x += ufo.myVelX;
+        prev_offset = ufo.body.offset
+        y_diff = Math.sin(ufo.x/17) + Math.sin(ufo.x/20)/2
+        ufo.angle = Math.sin(ufo.x/8) * 5
+        ufo.setOffset(prev_offset.x, prev_offset.y + y_diff)
+        ufo.y -= y_diff
+        ufo.body.y -= y_diff
+        if (ufo.can_shoot && ((ufo.myVelX < 0 && ufo.x < ufo.shoot_at_x) || (ufo.myVelX > 0 && ufo.x > ufo.shoot_at_x))) {
+            initialize_electro_ball(ufo.x, ufo.y);
+            ufo.can_shoot = false;
+
+        }
+    });
+
+    electro_balls.children.each(function (electro_ball) {
+        electro_ball.x += electro_ball.myVelX;
+        electro_ball.body.x += electro_ball.myVelX;
+        electro_ball.y += electro_ball.myVelY;
+        electro_ball.body.y += electro_ball.myVelY;
+        // Kill the player (not ghosts)
+        if (checkOverlap(electro_ball, player)) {
+            player_destroy(player)
+        }
+        var metal_crate = checkOverlap(electro_ball, metal_crates) 
+        if (metal_crate) {
+            electro_ball.destroy(true);
+            setElectrified(metal_crate, true);
+        }
     });
 
     missiles.children.each(function(missile) {
@@ -628,6 +703,40 @@ function checkOverlap(spriteA, spriteB) {
     }
 }
 
+function setElectrified(metal_crate, value) {
+    if (!metal_crate.active)
+        return;
+    if (value) {
+        electrified_metal_crates.add(metal_crate);
+        unelectrified_metal_crates.remove(metal_crate);
+        metal_crate.electrified = true;
+    } else {
+        electrified_metal_crates.remove(metal_crate);
+        unelectrified_metal_crates.add(metal_crate);
+        metal_crate.electrified = false;
+    }
+}
+
+// For example, get all metal boxes connected to metal box A through metal boxes
+function deelectrifyWithinCluster(sprite, group, visited) {
+    setElectrified(sprite, false);
+    visited.push(sprite);
+    group.children.iterate(function(child) {
+        if (!visited.includes(child) && isSurroundTouching(sprite, child))
+            deelectrifyWithinCluster(child, group, visited);
+    });
+    return visited
+}
+
+function isSurroundTouching(spriteA, spriteB) {
+    bounds1 = spriteA.body.getBounds({});
+    bounds1.x -= 4;
+    bounds1.y -= 4;
+    bounds1.width += 8;
+    bounds1.width += 8;
+    return (spriteA.active && spriteB.active && Phaser.Geom.Intersects.RectangleToRectangle(bounds1, spriteB.body.getBounds({})) && spriteA != spriteB)
+}
+
 function randomSpawns(this_thing) {
     var hard_factor = 1 - (game.hard * HARD_FACTOR)
     if (random_between(0,PLAIN_CRATE_ODDS * hard_factor) == 0) {
@@ -651,6 +760,9 @@ function randomSpawns(this_thing) {
     }
     if (random_between(0,3000 * hard_factor) == 0) {
         create_anomoly(this_thing);
+    }
+    if (ufo_random_between(0, UFO_ODDS * hard_factor) == 0) {
+        initialize_ufo()
     }
 }
 
@@ -676,12 +788,17 @@ function random_between(x, y) {
 }
 
 function particle_random_between(x, y) {
-    return PARTICLE_RANDOM.between(x, y);
+    return particle_random.between(x, y);
+}
+
+function ufo_random_between(x, y) {
+    return ufo_random.between(x, y);
 }
 
 // Seed must be a string
-function seed_random(seed) {
+function seed_rngs(seed) {
     // The string has to be in a list for some reason?
+    ufo_random = new Phaser.Math.RandomDataGenerator([seed])
     return Phaser.Math.RND.init([seed]);
 }
 
@@ -707,6 +824,37 @@ function initialize_shark_fin() {
     shark_fin.setDepth(15);
 }
 
+function initialize_ufo() {
+    var side = ufo_random_between(0,1);
+    var ufo = ufos.create(side * GAME_WIDTH, 40);
+    ufo.setSize(UFO_WIDTH,UFO_HEIGHT);
+    ufo.setDisplaySize(UFO_WIDTH,UFO_HEIGHT);
+    ufo.created_at = getFrame();
+    ufo.myVelX = UFO_SPEED * (side * -2 + 1)
+    ufo.can_shoot = true;
+    ufo.shoot_at_x = ufo_random_between(10, GAME_WIDTH - 10)
+    ufo.setDepth(15);
+}
+
+function initialize_electro_ball(x, y) {
+    var electro_ball = electro_balls.create(x, y);
+    electro_ball.anims.play('electro_ball');
+    electro_ball.setSize(5, 5);
+    electro_ball.setDisplaySize(ELECTRO_BALL_WIDTH-10, ELECTRO_BALL_HEIGHT);
+    electro_ball.created_at = getFrame();
+    if (player.active) {
+        console.log((y - player.y) + " " + (x - player.x));
+        electro_ball.angle = Math.atan2(y - player.y, x - player.x) * 180 / Math.PI;
+    } else {
+        electro_ball.angle = -90;
+    }
+    console.log(electro_ball.angle)
+
+    electro_ball.myVelY = -ELECTRO_BALL_SPEED * Math.sin((electro_ball.angle) * Math.PI / 180)
+    electro_ball.myVelX = -ELECTRO_BALL_SPEED * Math.cos((electro_ball.angle) * Math.PI / 180)
+    electro_ball.setDepth(15);
+}
+
 function initialize_plain_crate(crate) {
     crates.add(crate);
 
@@ -728,6 +876,7 @@ function initialize_metal_crate(crate) {
     crate.syncBounds = true;
     crate.myDestroy = generic_destroy
     crate.setDepth(10);
+    setElectrified(crate, false);
     if (random_between(0,1) == 1)
         crate.flipX = true;
     return crate;
