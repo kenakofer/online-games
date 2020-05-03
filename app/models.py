@@ -46,6 +46,10 @@ class ColdWatersScore(UserMixin, db.Model):
     # controls_array BYTEA NOT NULL
     # );
 
+    # Added created_at TIMESTAMP with default now()
+
+    # Added rng_integrity_check TEXT
+
     __tablename__ = 'cold_waters_scores'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, index=True, nullable=False)
@@ -55,6 +59,7 @@ class ColdWatersScore(UserMixin, db.Model):
     score = db.Column(db.Integer, index=True, nullable=False)
     controls_array = db.Column(db.LargeBinary, index=True, nullable=False)
     #controls_array = db.Column(db.String, index=True, nullable=False)
+    rng_integrity_check = db.Column(db.String, nullable=False)
 
     def __repr__(self):
         return '{} (id={})'.format(self.fullname, self.id)

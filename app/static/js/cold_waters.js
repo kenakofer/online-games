@@ -1,11 +1,15 @@
 // Benchmarks:
-//  My phone firefox: 25-35 FPS
+//  My phone firefox: 37-45 FPS
+//  My phone chrome: 45-50 FPS
+//   - More jerk than Firefox
 //
 // TODO
 // Minor:
 //  Shrink box explosion size?
 //  Download new recording if hard or seed changes
 //  Move background image so score is nicer
+//  Anomoly toward ghost player after death
+//  Electro ball toward ghost player after death
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -22,14 +26,17 @@
 //  Try/optimize for mobile device
 //  Powerups
 //
-const CODE_VERSION = "versionaoeuaoeu";
+const CODE_VERSION = "126";
 
-const PLAIN_CRATE_ODDS = 50;
+const PLAIN_CRATE_ODDS = 100;
 const BOMB_CRATE_ODDS = 100;
 const METAL_CRATE_ODDS = 100;
-const MISSILE_ODDS = 200;
-const UFO_ODDS = 800;
-const HARD_FACTOR = .5;
+const MISSILE_ODDS = 250;
+const UFO_ODDS = 2000;
+
+const HARD_FACTOR = .6;
+const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
+const T_HALF_LIFE = 4000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
 
 const TARGET_FPS = 50;
 
@@ -53,6 +60,7 @@ const BOMB_BLINK_STATES = 5;
 const SCORE_PER_FRAME = .5
 const UFO_WIDTH = 100
 const UFO_HEIGHT = 40
+
 
 const ELECTRO_BALL_SPEED = 6;
 const ELECTRO_BALL_WIDTH = 64;
@@ -249,7 +257,7 @@ function decompressRecording(recording) {
 }
 
 function newGame(this_thing, last_game_controls_recording) {
-    game.restarted_at_frame = game.getFrame();
+    game.restarted_at_frame = false;
 
     // Remove old bodies
     if (received_controls_recording) {
@@ -432,6 +440,9 @@ function create_anomoly(this_thing) {
 }
 
 function update () {
+    if (game.restarted_at_frame === false)
+        game.restarted_at_frame = game.getFrame();
+
     if (debug_key.isDown) {
         this.physics.debug = !this.physics.debug;
         this.physics.world.staticBodies.iterate(function (body) {
@@ -503,7 +514,7 @@ function update () {
             var frame = Math.floor( frames_since / 2);
 
             if (frame < 9 && frame > 1)
-                destroy_in_radius(explosion.x, explosion.y, explosion.getBounds().width/2);
+                destroy_in_radius(explosion.x, explosion.y, explosion.getBounds().width/2 - 5);
 
             if (frame < 10)
                 explosion.anims.play('explosion_'+frame);
@@ -578,14 +589,21 @@ function update () {
         destroyed_crate.angle += destroyed_crate.angular_velocity;
     });
     anomolies.children.each(function(anomoly) {
-	if (!player.active)
-		return;
-	if (anomoly.mask_shape.x < player.x)
+        var focus;
+        // The fallback focus on player_ghost may not be accurate to original
+	if (player.active)
+            focus = player;
+        else if (player_ghost.active)
+            focus = player_ghost;
+        else
+            return;
+
+	if (anomoly.mask_shape.x < focus.x)
 	    anomoly.mask_shape.x += 1;
 	else
 	    anomoly.mask_shape.x -= 1;
 
-	if (anomoly.mask_shape.y < player.y)
+	if (anomoly.mask_shape.y < focus.y)
 	    anomoly.mask_shape.y += 1;
 	else
 	    anomoly.mask_shape.y -= 1;
@@ -642,6 +660,11 @@ function update () {
             "Sig: " + CODE_VERSION,
             "RNG ok? " + rng_ok,
         ].join("\n"))
+
+        if (rng_ok)
+            upperRightText.setColor("#000000")
+        else 
+            upperRightText.setColor("#ff0000")
     }
 
     if (!player.active && cursors.left.isDown && cursors.right.isDown) {
@@ -759,29 +782,30 @@ function isSurroundTouching(spriteA, spriteB) {
 
 function randomSpawns(this_thing) {
     var hard_factor = 1 - (game.hard * HARD_FACTOR)
-    if (random_between(0,PLAIN_CRATE_ODDS * hard_factor) == 0) {
+    var time_factor = T_INF_FACTOR + (1-T_INF_FACTOR) * (T_HALF_LIFE / (getFrame() + T_HALF_LIFE))
+    if (random_between(0,PLAIN_CRATE_ODDS * hard_factor * time_factor) == 0) {
         var crate = initialize_plain_crate(plain_crates.create(0,-BOX_SIZE))
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,BOMB_CRATE_ODDS * hard_factor) == 0) {
+    if (random_between(0,BOMB_CRATE_ODDS * hard_factor * time_factor) == 0) {
         var crate = initialize_bomb_crate(bomb_crates.get(), 0, -BOX_SIZE);
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,METAL_CRATE_ODDS * hard_factor) == 0) {
+    if (random_between(0,METAL_CRATE_ODDS * hard_factor * time_factor) == 0) {
         var crate = initialize_metal_crate(metal_crates.create(0,-BOX_SIZE))
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,MISSILE_ODDS * hard_factor) == 0) {
+    if (random_between(0,MISSILE_ODDS * hard_factor * time_factor) == 0) {
         var missile = initialize_missile(missiles.create(0, -BOX_SIZE))
         move_to_empty_top_spot(missile); 
     }
     if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 35) {
         initialize_shark_fin()
     }
-    if (random_between(0,3000 * hard_factor) == 0) {
+    if (random_between(0,3000 * hard_factor * time_factor) == 0) {
         create_anomoly(this_thing);
     }
-    if (ufo_random_between(0, UFO_ODDS * hard_factor) == 0) {
+    if (ufo_random_between(0, UFO_ODDS * hard_factor * time_factor) == 0) {
         initialize_ufo()
     }
 }
@@ -862,8 +886,11 @@ function initialize_electro_ball(x, y) {
     electro_ball.setSize(5, 5);
     electro_ball.setDisplaySize(ELECTRO_BALL_WIDTH-10, ELECTRO_BALL_HEIGHT);
     electro_ball.created_at = getFrame();
+
     if (player.active) {
         electro_ball.angle = Math.atan2(y - player.y, x - player.x) * 180 / Math.PI;
+    } else if (player_ghost.active) {
+        electro_ball.angle = Math.atan2(y - player_ghost.y, x - player_ghost.x) * 180 / Math.PI;
     } else {
         electro_ball.angle = -90;
     }
@@ -1178,6 +1205,7 @@ function player_update(p) {
         down_pressed = cursors.down.isDown;
         left_pressed = cursors.left.isDown;
         right_pressed = cursors.right.isDown;
+        f += 1; // Why is this needed?
         p.controls_recording.controls_array[f*4+0] = up_pressed*1;
         p.controls_recording.controls_array[f*4+1] = down_pressed*1;
         p.controls_recording.controls_array[f*4+2] = left_pressed*1;

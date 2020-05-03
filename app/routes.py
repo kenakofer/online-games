@@ -185,7 +185,8 @@ def cold_waters():
                 hard=controls_recording['hard'],
                 seed=controls_recording['seed'],
                 score=controls_recording['score'],
-                controls_array=controls_array
+                controls_array=controls_array,
+                rng_integrity_check=controls_recording['rng_integrity_check']
                 )
 
         db.session.add(score)
@@ -200,7 +201,8 @@ def cold_waters():
             'hard': fetched_score.hard,
             'seed': fetched_score.seed,
             'score': fetched_score.score,
-            'controls_array': fetched_score.controls_array.decode()
+            'controls_array': fetched_score.controls_array.decode(),
+            'rng_integrity_check': fetched_score.rng_integrity_check
         });
 
 @app.route('/cold_waters/get_best_recording/<code_version>/<seed>/<hard>')
@@ -217,7 +219,8 @@ def cold_waters_get_best_recording(code_version, seed, hard):
         'hard': score.hard,
         'seed': score.seed,
         'score': score.score,
-        'controls_array': score.controls_array.decode()
+        'controls_array': score.controls_array.decode(),
+        'rng_integrity_check': score.rng_integrity_check
     });
 
 #############
