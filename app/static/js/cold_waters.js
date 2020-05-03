@@ -22,7 +22,7 @@
 //  Try/optimize for mobile device
 //  Powerups
 //
-const CODE_VERSION = "0.1";
+const CODE_VERSION = "versionaoeuaoeu";
 
 const PLAIN_CRATE_ODDS = 50;
 const BOMB_CRATE_ODDS = 100;
@@ -249,6 +249,8 @@ function decompressRecording(recording) {
 }
 
 function newGame(this_thing, last_game_controls_recording) {
+    game.restarted_at_frame = game.getFrame();
+
     // Remove old bodies
     if (received_controls_recording) {
         if (!last_game_controls_recording || received_controls_recording.score >= last_game_controls_recording.score)
@@ -349,8 +351,10 @@ function newGame(this_thing, last_game_controls_recording) {
         score: 0,
         controls_array: [],
         hard: game.hard,
-        seed: game.seed
+        seed: game.seed,
+        rng_integrity_check: "",
     }
+    game.rng_integrity_check = "";
     player.setDepth(9);
 
     if (game.last_game_controls_recording) {
@@ -406,7 +410,6 @@ function newGame(this_thing, last_game_controls_recording) {
     water.visible = false;
     water.setSize(GAME_WIDTH, 60);
 
-    game.restarted_at_frame = game.getFrame();
 
     anomolies = this_thing.physics.add.staticGroup({defaultKey: 'background'});
 }
@@ -608,11 +611,27 @@ function update () {
         }
     });
     randomSpawns(this);
+
+    // RNG integrity check
+    if (getFrame() % 10 == 0) {
+        var ch = random_between(0,35).toString(36)
+        game.rng_integrity_check += ch;
+        if (player.active)
+            player.controls_recording.rng_integrity_check += ch;
+    }
+
     if (getFrame() % 10 == 0) {
         var text = "Score: "+Math.floor(player.score);
         if (!player.active)
             text += "\nPress LEFT + RIGHT to play again!";
         upperLeftText.setText(text);
+
+        rng_index = Math.floor(getFrame() / 10);
+
+        rng_ok = true;
+        if (player_ghost.active && player_ghost.controls_recording.rng_integrity_check) {
+            rng_ok = (game.rng_integrity_check.charAt(rng_index) == player_ghost.controls_recording.rng_integrity_check.charAt(rng_index))
+        }
 
         upperRightText.setText([
             "Hard mode: " + game.hard,
@@ -621,6 +640,7 @@ function update () {
             "Crates: " + crates.countActive(),
             "Game seed: " + game.seed,
             "Sig: " + CODE_VERSION,
+            "RNG ok? " + rng_ok,
         ].join("\n"))
     }
 
@@ -1011,6 +1031,7 @@ function uploadRecording(controls_recording) {
         score: controls_recording.score,
         seed: controls_recording.seed,
         controls_array: encoded,
+        rng_integrity_check: controls_recording.rng_integrity_check,
     }
 
     httpRequest = new XMLHttpRequest(); 
