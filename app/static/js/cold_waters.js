@@ -320,7 +320,7 @@ function newGame(this_thing, last_game_controls_recording) {
 	key: 'plain_crate',
 	defaultKey: 'plain_crate',
 	repeat: GAME_WIDTH_IN_BOXES - 5,
-	setXY: { x: 2*BOX_SIZE + BOX_SIZE/2, y: 590, stepX: BOX_SIZE }
+	setXY: { x: 2*BOX_SIZE + BOX_SIZE/2, y: 530, stepX: BOX_SIZE }
 
     });
     plain_crates.children.iterate(function (crate) {
@@ -431,7 +431,7 @@ function create_anomoly(this_thing) {
 function update () {
     if (debug_key.isDown) {
         this.physics.debug = !this.physics.debug;
-        this.physics.world.staticBodies.each(function (body) {
+        this.physics.world.staticBodies.iterate(function (body) {
             body.gameObject.setDebug(this.physics.debug, this.physics.debug);
         });
     }
@@ -446,10 +446,10 @@ function update () {
     background_water.children.iterate(function (water_tile) {
         water_tile.x -= Math.sin(getFrame() / 50) / 2
     });
-    plain_crates.children.each(function (crate) {
+    plain_crates.children.iterate(function (crate) {
         crate_step(crate);
     });
-    metal_crates.children.each(function (crate) {
+    metal_crates.children.iterate(function (crate) {
         if (crate.electrified) {
             redness = particle_random_between(0, 150);
             crate.setTint(Phaser.Display.Color.GetColor(105+redness, 255, 255));
@@ -509,7 +509,7 @@ function update () {
             }
         }
     });
-    shark_fins.children.each(function (shark_fin) {
+    shark_fins.children.iterate(function (shark_fin) {
         shark_fin.x += shark_fin.myVelX;
         shark_fin.body.x += shark_fin.myVelX;
         prev_offset = shark_fin.body.offset
@@ -521,7 +521,7 @@ function update () {
         if (collision)
             collision.myDestroy(collision);
     });
-    ufos.children.each(function (ufo) {
+    ufos.children.iterate(function (ufo) {
         ufo.x += ufo.myVelX;
         ufo.body.x += ufo.myVelX;
         prev_offset = ufo.body.offset
@@ -563,7 +563,7 @@ function update () {
         }
     });
 
-    destroyed_stuff.children.each(function(destroyed_crate) {
+    destroyed_stuff.children.iterate(function(destroyed_crate) {
         if (destroyed_crate.delay_before_movement) {
             destroyed_crate.delay_before_movement -= 1;
             return;
@@ -571,10 +571,7 @@ function update () {
         destroyed_crate.myVelY += PLAYER_GRAVITY;
         destroyed_crate.myVelY *= .97;
         destroyed_crate.myVelX *= .97;
-        destroyed_crate.y += destroyed_crate.myVelY
-        destroyed_crate.body.y += destroyed_crate.myVelY
-        destroyed_crate.x += destroyed_crate.myVelX
-        destroyed_crate.body.x += destroyed_crate.myVelX
+        myMove(destroyed_crate, destroyed_crate.myVelX, destroyed_crate.myVelY);
         destroyed_crate.angle += destroyed_crate.angular_velocity;
     });
     anomolies.children.each(function(anomoly) {
@@ -610,20 +607,13 @@ function update () {
             }
         }
     });
-    /*
-    splinter_emitter.forEachAlive(function (particle) {
-        particle.rotation += 10;
-        //particle.accelerationY -= 10;
-    });
-    */
     randomSpawns(this);
-    var text = "Score: "+Math.floor(player.score);
-    if (!player.active)
-        text += "\nPress LEFT + RIGHT to play again!";
-    upperLeftText.setText(text);
-
-    //if (config.physics.arcade.debug) {
     if (getFrame() % 10 == 0) {
+        var text = "Score: "+Math.floor(player.score);
+        if (!player.active)
+            text += "\nPress LEFT + RIGHT to play again!";
+        upperLeftText.setText(text);
+
         upperRightText.setText([
             "Hard mode: " + game.hard,
             "FPS: " + Math.round(game.loop.actualFps * 100) / 100,
@@ -631,7 +621,6 @@ function update () {
             "Crates: " + crates.countActive(),
             "Game seed: " + game.seed,
             "Sig: " + CODE_VERSION,
-
         ].join("\n"))
     }
 
@@ -659,33 +648,42 @@ function update () {
 }
 
 function crate_step(crate) {
-        crate.grounded = false;
-        if (crate.texture.key == "metal_crate" && checkOverlap(crate, water)) {
-            crate.body.y += METAL_CRATE_SINK_SPEED;
-            crate.y += METAL_CRATE_SINK_SPEED;
-        } else {
-            crate.body.y += CRATE_SPEED;
-            crate.y += CRATE_SPEED;
-        }
-            
-        players.children.each(function(p) {
-            for (var i=0; i<5; i++) {
-                if (checkOverlap(crate, p)) {
-                    p.y += CRATE_SPEED;
-                    p.body.y += CRATE_SPEED;
-                }
-            }
-        });
-
+    if (crate.pause_crate_step) {
+        crate.pause_crate_step -= 1;
+        return;
+    }
+    crate.grounded = false;
+    if (crate.texture.key == "metal_crate" && checkOverlap(crate, water)) {
+        crate.body.y += METAL_CRATE_SINK_SPEED;
+        crate.y += METAL_CRATE_SINK_SPEED;
+    } else {
+        crate.body.y += CRATE_SPEED;
+        crate.y += CRATE_SPEED;
+    }
+        
+    players.children.iterate(function(p) {
         for (var i=0; i<5; i++) {
-            if (!(crate.texture.key != "metal_crate" && checkOverlap(crate, water)) && !checkOverlap(crate, crates))
-                break;
-            crate.grounded = true;
-            crate.grounded_at_frame = crate.grounded_at_frame || getFrame()
-            crate.body.y -= 1;
-            crate.y -= 1;
+            if (checkOverlap(crate, p)) {
+                p.y += CRATE_SPEED;
+                p.body.y += CRATE_SPEED;
+            }
         }
+    });
 
+    var collision = checkOverlap(crate, crates)
+    if (!collision && crate.texture.key != "metal_crate")
+        collision = checkOverlap(crate, water)
+    if (collision) {
+        crate.grounded = true;
+        crate.grounded_at_frame = crate.grounded_at_frame || getFrame()
+
+        //crate.pause_crate_step = 10;
+        raise_delta_y = collision.body.top - crate.body.bottom - 1;
+        myMove(crate, 0, raise_delta_y);
+    }
+    if (crate.y == crate.last_y)
+        crate.pause_crate_step = 5;
+    crate.last_y = crate.y
 }
 
 function checkOverlap(spriteA, spriteB) {
@@ -1048,16 +1046,18 @@ function destroy_in_radius(x, y, radius) {
 }
 
 function myTouching(sprite, others, xdelta, ydelta) {
-    sprite.x += xdelta;
-    sprite.y += ydelta;
-    sprite.body.x += xdelta;
-    sprite.body.y += ydelta;
+    myMove(sprite, xdelta, ydelta);
     var result = checkOverlap(sprite, others);
-    sprite.x -= xdelta;
-    sprite.y -= ydelta;
-    sprite.body.x -= xdelta;
-    sprite.body.y -= ydelta;
+    myMove(sprite, -xdelta, -ydelta);
     return result;
+}
+
+function myMove(sprite, xdelta, ydelta) {
+    // I don't think there are any gains to using setPosition
+    sprite.x += xdelta
+    sprite.y += ydelta
+    // Setting the body at once will, I think, only cause internal updates once
+    sprite.body.position = {x: sprite.body.x + xdelta, y: sprite.body.y + ydelta};
 }
 
 function player_resolve_vertical(p) {
