@@ -22,7 +22,7 @@
 //  Try/optimize for mobile device
 //  Powerups
 //
-const CODE_VERSION = "test_version";
+const CODE_VERSION = "0.1";
 
 const PLAIN_CRATE_ODDS = 50;
 const BOMB_CRATE_ODDS = 100;
@@ -402,9 +402,9 @@ function newGame(this_thing, last_game_controls_recording) {
     });
 
     water_group = this_thing.physics.add.staticGroup({});
-    water = water_group.create(GAME_WIDTH/2, GAME_HEIGHT - 10);
+    water = water_group.create(GAME_WIDTH/2, GAME_HEIGHT + 10);
     water.visible = false;
-    water.setSize(GAME_WIDTH, 20);
+    water.setSize(GAME_WIDTH, 60);
 
     game.restarted_at_frame = game.getFrame();
 
@@ -670,9 +670,11 @@ function crate_step(crate) {
         }
     });
 
-    var collision = checkOverlap(crate, crates)
-    if (!collision && crate.texture.key != "metal_crate")
-        collision = checkOverlap(crate, water)
+    var collision = checkOverlap(crate, water)
+    if (collision && crate.texture.key == "metal_crate")
+        return;
+    if (!collision)
+        collision = checkOverlap(crate, crates)
     if (collision) {
         crate.grounded = true;
         crate.grounded_at_frame = crate.grounded_at_frame || getFrame()
@@ -680,7 +682,7 @@ function crate_step(crate) {
         //crate.pause_crate_step = 10;
         raise_delta_y = collision.body.top - crate.body.bottom - 1;
         myMove(crate, 0, raise_delta_y);
-    }
+    } 
     if (crate.y == crate.last_y)
         crate.pause_crate_step = 5;
     crate.last_y = crate.y
