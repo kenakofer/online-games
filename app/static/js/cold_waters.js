@@ -517,7 +517,7 @@ function update () {
         shark_fin.setOffset(prev_offset.x, prev_offset.y + y_diff)
         shark_fin.y -= y_diff
         shark_fin.body.y -= y_diff
-        var collision = checkOverlap(shark_fin, explodables);
+        var collision = checkOverlapGroup(shark_fin, explodables);
         if (collision)
             collision.myDestroy(collision);
     });
@@ -546,7 +546,7 @@ function update () {
         if (checkOverlap(electro_ball, player)) {
             player_destroy(player)
         }
-        var metal_crate = checkOverlap(electro_ball, metal_crates) 
+        var metal_crate = checkOverlapGroup(electro_ball, metal_crates) 
         if (metal_crate) {
             electro_ball.destroy(true);
             setElectrified(metal_crate, true);
@@ -557,7 +557,7 @@ function update () {
         missile.y += MISSILE_SPEED
         missile.body.y += MISSILE_SPEED
         missile.angle += Math.sin(missile.y/30)
-        var collision = checkOverlap(missile, crates) || checkOverlap(missile, water) || checkOverlap(missile, player)
+        var collision = checkOverlapGroup(missile, crates) || checkOverlap(missile, water) || checkOverlap(missile, player)
         if (collision) {
             missile.myDestroy(missile);
         }
@@ -589,7 +589,7 @@ function update () {
 
 	anomoly.body.x = anomoly.mask_shape.x - anomoly.body.width/2
 	anomoly.body.y = anomoly.mask_shape.y - anomoly.body.height/2
-	if (checkOverlap(anomoly, explosions)) {
+	if (checkOverlapGroup(anomoly, explosions)) {
             anomoly.mask_shape.scale -= .02;
             if (anomoly.mask_shape.scale < 0)
                 anomoly.destroy(true);
@@ -674,7 +674,7 @@ function crate_step(crate) {
     if (collision && crate.texture.key == "metal_crate")
         return;
     if (!collision)
-        collision = checkOverlap(crate, crates)
+        collision = checkOverlapGroup(crate, crates)
     if (collision) {
         crate.grounded = true;
         crate.grounded_at_frame = crate.grounded_at_frame || getFrame()
@@ -689,18 +689,18 @@ function crate_step(crate) {
 }
 
 function checkOverlap(spriteA, spriteB) {
-    if (spriteB.type.includes("Group")) {
-        var result = false;
-        spriteB.children.iterate(function(child) {
-           result = result || checkOverlap(spriteA, child); 
-        });
-        return result;
-    } else {
-        if (spriteA.active && spriteB.active && Phaser.Geom.Intersects.RectangleToRectangle(spriteA.body.getBounds({}), spriteB.body.getBounds({})) && spriteA != spriteB)
-            return spriteB;
-        else
-            return false;
-    }
+    if (spriteA.active && spriteB.active && Phaser.Geom.Intersects.RectangleToRectangle(spriteA.body.getBounds({}), spriteB.body.getBounds({})) && spriteA != spriteB)
+        return spriteB;
+    else
+        return false;
+}
+
+function checkOverlapGroup(sprite, group) {
+    var result = false;
+    group.children.iterate(function(child) {
+       result = result || checkOverlap(sprite, child); 
+    });
+    return result;
 }
 
 function setElectrified(metal_crate, value) {
@@ -771,7 +771,7 @@ function move_to_empty_top_spot(object) {
         var random_x = random_between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
         object.body.x = random_x
         object.x = random_x + BOX_SIZE/2
-        if (!checkOverlap(object, crates))
+        if (!checkOverlapGroup(object, crates))
             return;
 
     }
@@ -843,12 +843,10 @@ function initialize_electro_ball(x, y) {
     electro_ball.setDisplaySize(ELECTRO_BALL_WIDTH-10, ELECTRO_BALL_HEIGHT);
     electro_ball.created_at = getFrame();
     if (player.active) {
-        console.log((y - player.y) + " " + (x - player.x));
         electro_ball.angle = Math.atan2(y - player.y, x - player.x) * 180 / Math.PI;
     } else {
         electro_ball.angle = -90;
     }
-    console.log(electro_ball.angle)
 
     electro_ball.myVelY = -ELECTRO_BALL_SPEED * Math.sin((electro_ball.angle) * Math.PI / 180)
     electro_ball.myVelX = -ELECTRO_BALL_SPEED * Math.cos((electro_ball.angle) * Math.PI / 180)
@@ -882,7 +880,6 @@ function initialize_metal_crate(crate) {
     return crate;
 }
 function initialize_bomb_crate(crate, x, y) {
-    console.log('bomb!')
     crates.add(crate);
     crate.setVisible(true);
     crate.setActive(true);
@@ -924,7 +921,6 @@ function plain_crate_destroy(crate) {
         piece.setActive(true);
         piece.body.x = piece.x - piece.body.halfWidth
         piece.body.y = piece.y - piece.body.halfHeight
-        //console.log(piece.x + " " + piece.y + " " + piece.body.x + " " + piece.body.y);
 
         piece.anims.play('plain_crate_destroyed_'+i);
         piece.setSize(BOX_SIZE, BOX_SIZE);
@@ -1005,12 +1001,8 @@ function player_destroy(p) {
 
 function uploadRecording(controls_recording) {
     controls_array_string = controls_recording.controls_array.flat().join("")
-    //console.log("Original string: " + controls_array_string);
     encoded = lzw_encode(controls_array_string);
-    //console.log("Encoded string: " + encoded);
     decoded = lzw_decode(encoded);
-    //console.log("Decoded string: " + decoded);
-    //console.log("Matches? " + (decoded == controls_array_string));
 
     object_to_send = {
         code_signature: controls_recording.code_version,
@@ -1049,7 +1041,11 @@ function destroy_in_radius(x, y, radius) {
 
 function myTouching(sprite, others, xdelta, ydelta) {
     myMove(sprite, xdelta, ydelta);
-    var result = checkOverlap(sprite, others);
+    var result;
+    if (others.children)
+        result = checkOverlapGroup(sprite, others);
+    else
+        result = checkOverlap(sprite, others);
     myMove(sprite, -xdelta, -ydelta);
     return result;
 }
@@ -1064,7 +1060,7 @@ function myMove(sprite, xdelta, ydelta) {
 
 function player_resolve_vertical(p) {
     // Resolve possible collision
-    var collision = checkOverlap(p, boundaries) || checkOverlap(p, crates)
+    var collision = checkOverlapGroup(p, boundaries) || checkOverlapGroup(p, crates)
     if (collision) {
         raise_delta_y = collision.body.top - p.body.bottom - 1;
         lower_delta_y = collision.body.bottom - p.body.top + 1;
@@ -1074,8 +1070,8 @@ function player_resolve_vertical(p) {
 
         // Kill if the distance is too great
         if (Math.min(lower_delta_y, -raise_delta_y) > kill_threshold) {
-            console.log("Kill threshold was"+kill_threshold);
-            console.log("Delta y would have been "+Math.min(lower_delta_y, -raise_delta_y));
+            //console.log("Kill threshold was"+kill_threshold);
+            //console.log("Delta y would have been "+Math.min(lower_delta_y, -raise_delta_y));
             return player_attempt_horizontal_save(p)
         }
 
@@ -1097,14 +1093,14 @@ function player_resolve_vertical(p) {
 
 function player_attempt_horizontal_save(p) {
     // Resolve possible collision
-    var collision = checkOverlap(p, boundaries) || checkOverlap(p, crates)
+    var collision = checkOverlapGroup(p, boundaries) || checkOverlapGroup(p, crates)
     if (collision) {
         left_delta_x = collision.body.left - p.body.right - 1;
         right_delta_x = collision.body.right - p.body.left + 1;
 
         // Kill if the distance is too great
         if (Math.min(right_delta_x, -left_delta_x) > PLAYER_HORIZONTAL_KILL_THRESHOLD) {
-            console.log("Delta x would have been "+Math.min(right_delta_x, -left_delta_x));
+            //console.log("Delta x would have been "+Math.min(right_delta_x, -left_delta_x));
             return player_destroy(p);
         }
 
@@ -1112,12 +1108,12 @@ function player_attempt_horizontal_save(p) {
         if (-left_delta_x < right_delta_x) {
             p.body.x += left_delta_x;
             p.x += left_delta_x;
-            console.log("Saved with delta X of "+-left_delta_x);
+            //console.log("Saved with delta X of "+-left_delta_x);
             return left_delta_x;
         } else {
             p.body.x += right_delta_x;
             p.x += right_delta_x;
-            console.log("Saved with delta X of "+right_delta_x);
+            //console.log("Saved with delta X of "+right_delta_x);
             return right_delta_x;
         }
     }
@@ -1153,17 +1149,21 @@ function player_update(p) {
     }
 
     p.score += SCORE_PER_FRAME;
+
     var up_press, down_pressed, left_pressed, right_pressed;
+    var f = getFrame() - 1;
     if (p.controlled_by == "human") {
         up_pressed = cursors.up.isDown;
         down_pressed = cursors.down.isDown;
         left_pressed = cursors.left.isDown;
         right_pressed = cursors.right.isDown;
-        p.controls_recording.controls_array = p.controls_recording.controls_array.concat([up_pressed*1, down_pressed*1, left_pressed*1, right_pressed*1]);
+        p.controls_recording.controls_array[f*4+0] = up_pressed*1;
+        p.controls_recording.controls_array[f*4+1] = down_pressed*1;
+        p.controls_recording.controls_array[f*4+2] = left_pressed*1;
+        p.controls_recording.controls_array[f*4+3] = right_pressed*1;
     } else {
         p.label.setX(p.x - p.label.width/2);
         p.label.setY(p.y - 30);
-        f = getFrame() - 1;
         if (f*4 >= p.controls_recording.controls_array.length) {
             player_destroy(p);
             return;
