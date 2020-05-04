@@ -8,8 +8,8 @@
 //  Shrink box explosion size?
 //  Download new recording if hard or seed changes
 //  Move background image so score is nicer
-//  Anomoly toward ghost player after death
-//  Electro ball toward ghost player after death
+//  try antialias off
+//  make ghost unexplodable
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -20,10 +20,10 @@
 //   Add explosion/fire particles
 //   Add ghost/death animation
 //   Make anomalies cooler
+//   Dragging between 
 //
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
-//  Try/optimize for mobile device
 //  Powerups
 //
 const CODE_VERSION = "127";
@@ -97,10 +97,16 @@ const PLAYER_DASH_SPEED = 10
 const PLAYER_DASH_FRAMES = 15
 const PLAYER_DASH_RECHARGE_FRAMES = 30
 
-
+var CODE_HASH;
+var game_div;
 var httpRequest;
 var ufo_random; 
 var particle_random = new Phaser.Math.RandomDataGenerator(["0"])
+var virtual_screen_pressed = [
+    [false, false, false],
+    [false, false, false],
+    [false, false, false]
+]
 
 var config = {
     type: Phaser.AUTO,
@@ -138,7 +144,7 @@ var score = 0;
 
 function preload () {
     this.load.setBaseURL('../static/images/cold_waters');
-    //this.load.text('current_source_code', '../../../static/js/cold_waters.js');
+    this.load.text('current_source_code', '../../../static/js/cold_waters.js');
 
     this.load.image('background', 'ice_mountain_bg.png');
     this.load.image('water', 'water_surface_tile.png');
@@ -165,6 +171,58 @@ function preload () {
     physics = this.physics;
 }
 
+function pointerdown(pointer) {
+    var row, col;
+    [row, col] = getRowColPressed(pointer);
+
+    virtual_screen_pressed[row][col] = true;
+    //printPressedArray(virtual_screen_pressed);
+}
+
+function pointerup(pointer, other) {
+    var row, col;
+    [row, col] = getRowColPressed(pointer);
+
+    virtual_screen_pressed[row][col] = false;
+    //printPressedArray(virtual_screen_pressed);
+}
+
+function getRowColPressed(pointer) {
+    if (! game_div)
+        game_div = Phaser.DOM.GetTarget('game_div');
+    
+    var row = 1;
+    var col = 1;
+
+    if (pointer.downX < GAME_WIDTH/3)
+        col = 0;
+    else if (pointer.downX > 2 * GAME_WIDTH/3)
+        col = 2;
+    else
+        col = 1;
+
+    if (pointer.downY < GAME_HEIGHT/3)
+        row = 0;
+    else if (pointer.downY > 2 * GAME_HEIGHT/3)
+        row = 2;
+    else
+        row = 1;
+    return [row, col]; 
+}
+
+function printPressedArray(array) {
+    for (var r=0;r<3;r++) {
+        console.log(r+": "+array[r].join(" "));
+    }
+}
+
+function touchStart(pointer) {
+    console.log('onTouchStart');
+    scene = game.scene.scenes[0]
+    console.log(scene.input.pointer1);
+    console.log(scene.input.pointer2);
+}
+
 function create () {
     //Mobile stuff
     if (game.device.desktop == false) {
@@ -173,6 +231,11 @@ function create () {
 
 
     }
+    // Maybe move this into the mobile stuff
+    scene = game.scene.scenes[0]
+    scene.input.on('pointerdown', pointerdown);
+    scene.input.on('pointerup', pointerup);
+    scene.input.addPointer(1); // Two touch support. Could be more
 
     if (this.sys.game.device.fullscreen.available) {
         fullscreen_button = this.add.image(GAME_WIDTH-5, 5, 'fullscreen', 0).setOrigin(1, 0).setInteractive();
@@ -284,8 +347,8 @@ function create () {
 
     game.hard = 0;
 
-    //game.current_source_code = this.cache.text.get('current_source_code');
-    //CODE_VERSION = md5(game.current_source_code).slice(0,10)
+    game.current_source_code = this.cache.text.get('current_source_code');
+    CODE_HASH = md5(game.current_source_code).slice(0,10)
 
     newGame(this, decompressRecording(this.cache.json.get('best_recording')));
 }
@@ -707,6 +770,7 @@ function update () {
             "Crates: " + crates.countActive(),
             "Game seed: " + game.seed,
             "Sig: " + CODE_VERSION,
+            "Hash: " + CODE_HASH,
             "RNG ok? " + rng_ok,
         ].join("\n"))
 
@@ -716,7 +780,7 @@ function update () {
             upperRightText.setColor("#ff0000")
     }
 
-    if (!player.active && cursors.left.isDown && cursors.right.isDown) {
+    if (!player.active && my_pressed('left') && my_pressed('right')) {
         game.hard = 0;
         player.controls_recording.score = player.score;
 
@@ -727,7 +791,7 @@ function update () {
         return
     }
 
-    if (!player.active && cursors.up.isDown && cursors.down.isDown) {
+    if (!player.active && my_pressed('up') && my_pressed('down')) {
         game.hard = 1;
         player.controls_recording.score = player.score;
 
@@ -737,6 +801,25 @@ function update () {
             newGame(this, player.controls_recording);
         return
     }
+}
+
+function my_pressed(direction) {
+    var value = false;
+    switch (direction) {
+        case 'up':
+            value = cursors.up.isDown || virtual_screen_pressed[0][0] || virtual_screen_pressed[0][1] || virtual_screen_pressed[0][2]
+            break;
+        case 'down':
+            value = cursors.down.isDown || virtual_screen_pressed[2][0] || virtual_screen_pressed[2][1] || virtual_screen_pressed[2][2]
+            break;
+        case 'left':
+            value = cursors.left.isDown || virtual_screen_pressed[0][0] || virtual_screen_pressed[1][0] || virtual_screen_pressed[2][0]
+            break;
+        case 'right':
+            value = cursors.right.isDown || virtual_screen_pressed[0][2] || virtual_screen_pressed[1][2] || virtual_screen_pressed[2][2]
+            break;
+    }
+    return value;
 }
 
 function crate_step(crate) {
@@ -1250,10 +1333,10 @@ function player_update(p) {
     var up_press, down_pressed, left_pressed, right_pressed;
     var f = getFrame() - 1;
     if (p.controlled_by == "human") {
-        up_pressed = cursors.up.isDown;
-        down_pressed = cursors.down.isDown;
-        left_pressed = cursors.left.isDown;
-        right_pressed = cursors.right.isDown;
+        up_pressed = my_pressed('up')
+        down_pressed = my_pressed('down');
+        left_pressed = my_pressed('left');
+        right_pressed = my_pressed('right');
         f += 1; // Why is this needed?
         p.controls_recording.controls_array[f*4+0] = up_pressed*1;
         p.controls_recording.controls_array[f*4+1] = down_pressed*1;
