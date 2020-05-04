@@ -26,7 +26,7 @@
 //  Try/optimize for mobile device
 //  Powerups
 //
-const CODE_VERSION = "126";
+const CODE_VERSION = "127";
 
 const PLAIN_CRATE_ODDS = 100;
 const BOMB_CRATE_ODDS = 100;
@@ -107,6 +107,10 @@ var config = {
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
     parent: "game_div",
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     fps: {
         target: TARGET_FPS + 2,
         min: TARGET_FPS,
@@ -135,6 +139,7 @@ var score = 0;
 function preload () {
     this.load.setBaseURL('../static/images/cold_waters');
     //this.load.text('current_source_code', '../../../static/js/cold_waters.js');
+
     this.load.image('background', 'ice_mountain_bg.png');
     this.load.image('water', 'water_surface_tile.png');
     this.load.image('plain_crate', 'plain_crate.png');
@@ -146,6 +151,7 @@ function preload () {
     this.load.image('shark_fin', 'shark_fin.png');
     this.load.image('missile', 'missile.png');
     this.load.image('ufo', 'ufo.png');
+    this.load.spritesheet('fullscreen', 'fullscreen.png', { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet('dude', 'onion_dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('plain_crate_destroyed', 'plain_crate_destroyed_sheet.png', { frameWidth: 250, frameHeight: 250 });
     this.load.spritesheet('dude_dash', 'onion_dude_dash.png', { frameWidth: 32, frameHeight: 29 });
@@ -160,6 +166,40 @@ function preload () {
 }
 
 function create () {
+    //Mobile stuff
+    if (game.device.desktop == false) {
+	// Set the scaling mode to SHOW_ALL to show all the game
+	//game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
+
+    }
+
+    if (this.sys.game.device.fullscreen.available) {
+        fullscreen_button = this.add.image(GAME_WIDTH-5, 5, 'fullscreen', 0).setOrigin(1, 0).setInteractive();
+        fullscreen_button.setDisplaySize(40,40);
+        fullscreen_button.setSize(20,20);
+        fullscreen_button.setTintFill(0xbbbbff);
+        fullscreen_button.setDepth(1);
+
+        fullscreen_button.on('pointerup', function () {
+
+            if (this.scale.isFullscreen)
+            {
+                fullscreen_button.setFrame(0);
+
+                this.scale.stopFullscreen();
+            }
+            else
+            {
+                fullscreen_button.setFrame(1);
+
+                this.scale.startFullscreen();
+            }
+
+        }, this);
+    }
+
+
     this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
 
     this.anims.create({
