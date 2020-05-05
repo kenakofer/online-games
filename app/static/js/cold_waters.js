@@ -10,6 +10,7 @@
 //  Move background image so score is nicer
 //  try antialias off
 //  make ghost unexplodable
+//  flip bomb crates (careful of recycling issues)
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -17,16 +18,16 @@
 //  Refactor update: Maybe use runChildUpdate
 //
 //  Medium:
+//   Show my best ghost as well as best ghost
 //   Add explosion/fire particles
 //   Make anomalies cooler
 //   Dragging between 
-//   Show my best ghost as well as best ghost
 //
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //  Powerups
 //
-const CODE_VERSION = "127";
+const CODE_VERSION = "128";
 
 const PLAIN_CRATE_ODDS = 100;
 const BOMB_CRATE_ODDS = 100;
@@ -366,7 +367,13 @@ function create () {
     game.current_source_code = this.cache.text.get('current_source_code');
     CODE_HASH = md5(game.current_source_code).slice(0,10)
 
-    newGame(this, decompressRecording(this.cache.json.get('best_recording')));
+    game.downloaded_recording = decompressRecording(this.cache.json.get('best_recording')) 
+    downloaded_ghost = false;
+
+    game.my_best_recording = false;
+    player_ghost = false;
+
+    newGame(this);
 }
 
 function decompressRecording(recording) {
@@ -385,10 +392,8 @@ function best_recording(recordings) {
     }, undefined); 
 }
 
-function newGame(this_thing, last_game_controls_recording) {
+function newGame(this_thing) {
     game.restarted_at_frame = false;
-
-    last_game_controls_recording = best_recording([last_game_controls_recording]);
 
     // Remove old bodies
     this.physics.world.staticBodies.each(function (object) {
@@ -398,8 +403,6 @@ function newGame(this_thing, last_game_controls_recording) {
     });
 
     var filepath;
-
-    game.last_game_controls_recording = last_game_controls_recording
 
     seed_rngs(game.seed);
 
@@ -492,40 +495,19 @@ function newGame(this_thing, last_game_controls_recording) {
     game.rng_integrity_check = "";
     player.setDepth(9);
 
-    player_ghost = false;
-    if (game.last_game_controls_recording) {
-        player_ghost = players.create(GAME_WIDTH/2, GAME_HEIGHT/2, 'dude');
-        player_ghost.setSize(...PLAYER_SIZE);
-        player_ghost.setDisplaySize(...PLAYER_DISPLAY_SIZE);
-        player_ghost.setOffset(...PLAYER_OFFSET)
-
-        player_ghost.myVelY = 0;
-        player_ghost.grounded = false;
-        player_ghost.dash_start_frame = -100;
-        player_ghost.dashing = false;
-        player_ghost.grounded_since_dash = true;
-        player_ghost.score = 0;
-
-        player_ghost.controlled_by = 'last_game'
-        player_ghost.controls_recording = game.last_game_controls_recording;
-        console.log("Ghost has score: "+game.last_game_controls_recording.score);
-
-        player_ghost.setAlpha(GHOST_START_ALPHA);
-        player_ghost.setDepth(8);
-        player_ghost.setDepth(8);
-
-        var label_color, tint_color
-        if (game.last_game_controls_recording.name == user_name) {
-            label_color = '#dfd';
-            tint_color = 0xffff55;
-        } else {
-            label_color = '#fdd';
-            tint_color = 0xff7777;
+    // TODO this is kind of a mess of logic.
+    //
+    // We want to show the best recording that we've gotten locally if it
+    // exists, and also show the downloaded recording if it's better than our
+    // local best recording
+    if (game.downloaded_recording.name == user_name) {
+        var better = best_recording([game.downloaded_recording, game.my_best_recording])
+        player_ghost = ghost_from_recording(better, this_thing);
+    } else {
+        player_ghost = ghost_from_recording(game.my_best_recording, this_thing);
+        if (!game.my_best_recording || game.downloaded_recording.score > game.my_best_recording.score) {
+            downloaded_ghost = ghost_from_recording(game.downloaded_recording, this_thing);
         }
-        player_ghost.setTint(tint_color);
-        player_ghost.label = this_thing.add.text(8, 8, game.last_game_controls_recording.name, { fontSize: '15px', fill: label_color });
-        player_ghost.label.setAlpha(GHOST_LABEL_START_ALPHA);
-        player_ghost.label.setDepth(100);
     }
 
     foreground_water = this_thing.physics.add.staticGroup({
@@ -548,6 +530,44 @@ function newGame(this_thing, last_game_controls_recording) {
 
 
     anomolies = this_thing.physics.add.staticGroup({defaultKey: 'background'});
+}
+
+function ghost_from_recording(recording, this_thing) {
+    if (! recording)
+        return false
+
+    ghost = players.create(GAME_WIDTH/2, GAME_HEIGHT/2, 'dude');
+    ghost.setSize(...PLAYER_SIZE);
+    ghost.setDisplaySize(...PLAYER_DISPLAY_SIZE);
+    ghost.setOffset(...PLAYER_OFFSET)
+
+    ghost.myVelY = 0;
+    ghost.grounded = false;
+    ghost.dash_start_frame = -100;
+    ghost.dashing = false;
+    ghost.grounded_since_dash = true;
+    ghost.score = 0;
+
+    ghost.controlled_by = 'last_game';
+    ghost.controls_recording = recording;
+    console.log("Ghost has score: "+recording.score);
+
+    ghost.setAlpha(GHOST_START_ALPHA);
+    ghost.setDepth(8);
+
+    var label_color, tint_color
+    if (recording.name == user_name) {
+        label_color = '#dfd';
+        tint_color = 0xffff55;
+    } else {
+        label_color = '#fdd';
+        tint_color = 0xff7777;
+    }
+    ghost.setTint(tint_color);
+    ghost.label = this_thing.add.text(8, 8, recording.name, { fontSize: '15px', fill: label_color });
+    ghost.label.setAlpha(GHOST_LABEL_START_ALPHA);
+    ghost.label.setDepth(100);
+    return ghost;
 }
 
 function create_anomoly(this_thing) {
@@ -813,10 +833,11 @@ function update () {
         game.hard = 0;
         player.controls_recording.score = player.score;
 
-        if (game.last_game_controls_recording && game.last_game_controls_recording.controls_array.length > player.controls_recording.controls_array.length)
-            newGame(this, game.last_game_controls_recording);
-        else
-            newGame(this, player.controls_recording);
+        if (game.my_best_recording && game.my_best_recording.controls_array.length > player.controls_recording.controls_array.length) {
+
+        } else
+            game.my_best_recording = player.controls_recording
+        newGame(this);
         return
     }
 
@@ -824,10 +845,12 @@ function update () {
         game.hard = 1;
         player.controls_recording.score = player.score;
 
-        if (game.last_game_controls_recording && game.last_game_controls_recording.controls_array.length > player.controls_recording.controls_array.length)
-            newGame(this, game.last_game_controls_recording);
-        else
-            newGame(this, player.controls_recording);
+        if (game.my_best_recording && game.my_best_recording.controls_array.length > player.controls_recording.controls_array.length) {
+
+        } else
+            game.my_best_recording = player.controls_recording
+
+        newGame(this);
         return
     }
 }
@@ -1360,13 +1383,12 @@ function player_update(p) {
     p.score += SCORE_PER_FRAME;
 
     var up_press, down_pressed, left_pressed, right_pressed;
-    var f = getFrame() - 1;
+    var f = getFrame();
     if (p.controlled_by == "human") {
         up_pressed = my_pressed('up')
         down_pressed = my_pressed('down');
         left_pressed = my_pressed('left');
         right_pressed = my_pressed('right');
-        f += 1; // Why is this needed?
         p.controls_recording.controls_array[f*4+0] = up_pressed*1;
         p.controls_recording.controls_array[f*4+1] = down_pressed*1;
         p.controls_recording.controls_array[f*4+2] = left_pressed*1;
