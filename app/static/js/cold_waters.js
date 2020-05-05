@@ -68,10 +68,7 @@ const ELECTRO_BALL_WIDTH = 64;
 const ELECTRO_BALL_HEIGHT = 18;
 
 const GHOST_START_ALPHA = .5;
-const GHOST_LABEL_START_ALPHA = .8
-const GHOST_END_ALPHA = 0;
-const GHOST_LABEL_END_ALPHA = .2
-
+const GHOST_LABEL_START_ALPHA = 1
 
 const MISSILE_SPEED = 4;
 
@@ -555,16 +552,18 @@ function ghost_from_recording(recording, this_thing) {
     ghost.setAlpha(GHOST_START_ALPHA);
     ghost.setDepth(8);
 
-    var label_color, tint_color
+    var label_color, tint_color, label_text;
     if (recording.name == user_name) {
         label_color = '#dfd';
         tint_color = 0xffff55;
+        label_text = recording.name + " (You)"
     } else {
         label_color = '#fdd';
         tint_color = 0xff7777;
+        label_text = recording.name
     }
     ghost.setTint(tint_color);
-    ghost.label = this_thing.add.text(8, 8, recording.name, { fontSize: '15px', fill: label_color });
+    ghost.label = this_thing.add.text(8, 8, label_text, { fontSize: '15px', fill: label_color });
     ghost.label.setAlpha(GHOST_LABEL_START_ALPHA);
     ghost.label.setDepth(100);
     return ghost;
@@ -1405,10 +1404,10 @@ function player_update(p) {
         left_pressed = parseInt(p.controls_recording.controls_array[f*4+2]);
         right_pressed = parseInt(p.controls_recording.controls_array[f*4+3]);
 
-
-        if (f % 100 == 0) {
-            p.setAlpha( (GHOST_START_ALPHA - GHOST_END_ALPHA) * (1 - p.score / p.controls_recording.score) + GHOST_END_ALPHA );
-            p.label.setAlpha( (GHOST_LABEL_START_ALPHA - GHOST_LABEL_END_ALPHA) * (1 - p.score / p.controls_recording.score) + GHOST_LABEL_END_ALPHA );
+        if (p.label) {
+            p.label.alpha -= .005;
+            if (p.label.alpha <= 0)
+                p.label.destroy(true);
         }
     }
 
