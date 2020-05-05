@@ -18,9 +18,9 @@
 //
 //  Medium:
 //   Add explosion/fire particles
-//   Add ghost/death animation
 //   Make anomalies cooler
 //   Dragging between 
+//   Show my best ghost as well as best ghost
 //
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
@@ -157,6 +157,7 @@ function preload () {
     this.load.image('shark_fin', 'shark_fin.png');
     this.load.image('missile', 'missile.png');
     this.load.image('ufo', 'ufo.png');
+    this.load.image('keyboard_instructions', 'keyboard_instructions.png');
     this.load.spritesheet('fullscreen', 'fullscreen.png', { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet('dude', 'onion_dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('plain_crate_destroyed', 'plain_crate_destroyed_sheet.png', { frameWidth: 250, frameHeight: 250 });
@@ -224,12 +225,28 @@ function touchStart(pointer) {
 }
 
 function create () {
-    //Mobile stuff
-    if (game.device.desktop == false) {
-	// Set the scaling mode to SHOW_ALL to show all the game
-	//game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
+    mobile_lines = [];
+    mobile_instructions = [];
 
+    // Desktop (non-mobile stuff
+    keyboard_instructions = false;
+    if (game.device.os.desktop == true) {
+        keyboard_instructions = this.add.image(5, 70, 'keyboard_instructions', 0).setOrigin(0,0)
+        keyboard_instructions.setDepth(100);
+        keyboard_instructions.setDisplaySize(200,160);
+    } else {
+	// Mobile stuff
+        // Mobile button lines
+        mobile_lines.push(this.add.line(0,0, 0,GAME_HEIGHT/3, GAME_WIDTH,GAME_HEIGHT/3, 0xffffff, .2).setOrigin(0,0).setDepth(100));
+        mobile_lines.push(this.add.line(0,0, 0,2*GAME_HEIGHT/3, GAME_WIDTH,2*GAME_HEIGHT/3, 0xffffff, .2).setOrigin(0,0).setDepth(100));
+        mobile_lines.push(this.add.line(0,0, GAME_WIDTH/3,0, GAME_WIDTH/3,GAME_HEIGHT, 0xffffff, .2).setOrigin(0,0).setDepth(100));
+        mobile_lines.push(this.add.line(0,0, 2*GAME_WIDTH/3,0, 2*GAME_WIDTH/3,GAME_HEIGHT, 0xffffff, .2).setOrigin(0,0).setDepth(100));
 
+        mobile_instructions.push(this.add.text(40,GAME_HEIGHT/2-40, 'Left', { fontSize: '80px', fill: '#fff' }).setAlpha(.5).setDepth(100));
+        mobile_instructions.push(this.add.text(GAME_WIDTH-250,GAME_HEIGHT/2-40, 'Right', { fontSize: '80px', fill: '#fff' }).setAlpha(.5).setDepth(100));
+        mobile_instructions.push(this.add.text(GAME_WIDTH/2-90,20, 'Jump', { fontSize: '80px', fill: '#fff' }).setAlpha(.5).setDepth(100));
+        mobile_instructions.push(this.add.text(GAME_WIDTH/2-90,GAME_HEIGHT-130, 'Dash', { fontSize: '80px', fill: '#fff' }).setAlpha(.5).setDepth(100));
     }
     // Maybe move this into the mobile stuff
     scene = game.scene.scenes[0]
@@ -263,7 +280,6 @@ function create () {
     }
 
 
-    this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
 
     this.anims.create({
 	key: 'left',
@@ -560,6 +576,19 @@ function update () {
         this.physics.world.staticBodies.iterate(function (body) {
             body.gameObject.setDebug(this.physics.debug, this.physics.debug);
         });
+    }
+
+    if (keyboard_instructions && player.dashing) {
+        keyboard_instructions.alpha -= .08;
+        if (keyboard_instructions.alpha <= 0)
+            keyboard_instructions.destroy(true);
+    }
+    if (mobile_instructions && player.dashing) {
+        for (i in mobile_instructions) {
+            mobile_instructions[i].alpha -= .04;
+            if (mobile_instructions[i].alpha <= 0)
+                mobile_instructions[i].destroy(true);
+        }
     }
 
     players.children.each(function(p) {
