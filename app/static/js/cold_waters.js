@@ -27,7 +27,7 @@
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //  Powerups
 //
-const CODE_VERSION = "128";
+const CODE_VERSION = "129";
 
 const PLAIN_CRATE_ODDS = 100;
 const BOMB_CRATE_ODDS = 100;
@@ -94,6 +94,7 @@ const PLAYER_HORIZONTAL_KILL_THRESHOLD = 16;
 const PLAYER_DASH_SPEED = 10
 const PLAYER_DASH_FRAMES = 15
 const PLAYER_DASH_RECHARGE_FRAMES = 30
+const DEATH_SLEEP_MS = 400;
 
 const SEED_COUNT = 10
 
@@ -143,6 +144,9 @@ var game = new Phaser.Game(config);
 var score = 0;
 
 function preload () {
+    // For the clock
+    this.load.plugin('rexclockplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclockplugin.min.js', true);
+
     this.load.setBaseURL('../static/images/cold_waters');
     this.load.text('current_source_code', '../../../static/js/cold_waters.js');
 
@@ -166,10 +170,13 @@ function preload () {
     this.load.spritesheet('explosion', 'explosion_sheet.png', { frameWidth: 89, frameHeight: 89 });
     this.load.spritesheet('electro_ball', 'electro_ball.png', { frameWidth: 128, frameHeight: 35 });
 
+
     game.seed = ""+(new Date).getTime() % SEED_COUNT;
     game.hard = 0;
-    for (var i=0;i<SEED_COUNT;i++)
-        this.load.json('best_recording_'+i, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+i+'/'+game.hard)
+
+    // Load just the one seed/difficult now, load the rest later
+    this.load.json('best_recording_'+game.seed+'_'+game.hard, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+game.seed+'/'+game.hard)
+
     physics = this.physics;
 }
 
@@ -226,6 +233,13 @@ function touchStart(pointer) {
 }
 
 function create () {
+
+    // Let these load while the user starts playing
+    for (var h=0;h<2;h++)
+        for (var i=0;i<SEED_COUNT;i++)
+            this.load.json('best_recording_'+i+'_'+h, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+i+'/'+h)
+    this.load.start();
+
     this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
     mobile_lines = [];
     mobile_instructions = [];
@@ -280,6 +294,7 @@ function create () {
         }, this);
     }
 
+    clock = scene.plugins.get('rexclockplugin').add(scene, config);
 
 
     this.anims.create({
@@ -367,7 +382,6 @@ function create () {
     game.current_source_code = this.cache.text.get('current_source_code');
     CODE_HASH = md5(game.current_source_code).slice(0,10)
 
-    game.downloaded_recording = decompressRecording(this.cache.json.get('best_recording_'+game.seed)) 
     downloaded_ghost = false;
 
     game.my_best_recording = false;
@@ -382,7 +396,7 @@ function decompressRecording(recording) {
 }
 
 function recording_valid(controls_recording) {
-    return (controls_recording && controls_recording.hard == game.hard && controls_recording.code_version == CODE_VERSION)
+    return (controls_recording && controls_recording.hard == game.hard && controls_recording.seed == game.seed && controls_recording.code_version == CODE_VERSION)
 }
 
 function best_recording(recordings) {
@@ -393,20 +407,27 @@ function best_recording(recordings) {
 }
 
 function newGame(this_thing) {
-    game.restarted_at_frame = false;
+    game.myFrame = -1;
+    scene.scene.resume();
 
     // Remove old bodies
-    this.physics.world.staticBodies.each(function (object) {
+    scene.physics.world.staticBodies.each(function (object) {
         if (object.gameObject.label)
             object.gameObject.label.destroy(true);
         object.gameObject.destroy(true);
     });
 
+    // Make sure we're using the correct recording
+    game.downloaded_recording = decompressRecording(scene.cache.json.get('best_recording_'+game.seed+'_'+game.hard))
+
+    if (!recording_valid(game.my_best_recording))
+        game.my_best_recording = false;
+
     var filepath;
 
     seed_rngs(game.seed);
 
-    background_water = this_thing.physics.add.staticGroup({
+    background_water = scene.physics.add.staticGroup({
 	key: 'water',
 	repeat: Math.floor(GAME_WIDTH / BACKGROUND_WATER_TILE_WIDTH) + 1,
 	setXY: { x: -BACKGROUND_WATER_TILE_WIDTH/2, y: GAME_HEIGHT-35, stepX: 80 },
@@ -419,7 +440,7 @@ function newGame(this_thing) {
         water_tile.setDepth(0);
     });
 
-    splinter_particles = this_thing.add.particles('splinter');
+    splinter_particles = scene.add.particles('splinter');
     splinter_emitter = splinter_particles.createEmitter();
 
     splinter_emitter.setPosition(400, 300);
@@ -429,20 +450,20 @@ function newGame(this_thing) {
     splinter_emitter.setGravityY(1000);
     splinter_emitter.stop();
 
-    crates = this_thing.physics.add.staticGroup();
-    destroyed_stuff = this_thing.physics.add.staticGroup({defaultKey: 'plain_crate_destroyed'});
-    explosions = this_thing.physics.add.staticGroup({defaultKey: 'explosion'});
-    metal_crates = this_thing.physics.add.staticGroup({defaultKey: 'metal_crate'});
-    shark_fins = this_thing.physics.add.staticGroup({defaultKey: 'shark_fin'});
-    missiles = this_thing.physics.add.staticGroup({defaultKey: 'missile'});
-    bomb_crates = this_thing.physics.add.staticGroup({defaultKey: 'bomb_crate'});
-    ufos = this_thing.physics.add.staticGroup({defaultKey: 'ufo'});
-    electro_balls = this_thing.physics.add.staticGroup({defaultKey: 'electro_ball'});
-    explodables = this_thing.physics.add.staticGroup();
-    electrified_metal_crates = this_thing.physics.add.staticGroup();
-    unelectrified_metal_crates = this_thing.physics.add.staticGroup();
+    crates = scene.physics.add.staticGroup();
+    destroyed_stuff = scene.physics.add.staticGroup({defaultKey: 'plain_crate_destroyed'});
+    explosions = scene.physics.add.staticGroup({defaultKey: 'explosion'});
+    metal_crates = scene.physics.add.staticGroup({defaultKey: 'metal_crate'});
+    shark_fins = scene.physics.add.staticGroup({defaultKey: 'shark_fin'});
+    missiles = scene.physics.add.staticGroup({defaultKey: 'missile'});
+    bomb_crates = scene.physics.add.staticGroup({defaultKey: 'bomb_crate'});
+    ufos = scene.physics.add.staticGroup({defaultKey: 'ufo'});
+    electro_balls = scene.physics.add.staticGroup({defaultKey: 'electro_ball'});
+    explodables = scene.physics.add.staticGroup();
+    electrified_metal_crates = scene.physics.add.staticGroup();
+    unelectrified_metal_crates = scene.physics.add.staticGroup();
 
-    boundaries = this_thing.physics.add.staticGroup();
+    boundaries = scene.physics.add.staticGroup();
     boundary = boundaries.create(-10,GAME_HEIGHT/2);
     boundary.setSize(20, GAME_HEIGHT);
     boundary.visible = false;
@@ -456,7 +477,7 @@ function newGame(this_thing) {
     boundary.visible = false;
 
 
-    plain_crates = this_thing.physics.add.staticGroup({
+    plain_crates = scene.physics.add.staticGroup({
 	key: 'plain_crate',
 	defaultKey: 'plain_crate',
 	repeat: GAME_WIDTH_IN_BOXES - 5,
@@ -468,7 +489,7 @@ function newGame(this_thing) {
     });
 
 
-    players = this_thing.physics.add.staticGroup();
+    players = scene.physics.add.staticGroup();
 
     player = players.create(GAME_WIDTH/2, GAME_HEIGHT/2, 'dude');
     player.setSize(...PLAYER_SIZE);
@@ -502,15 +523,15 @@ function newGame(this_thing) {
     // local best recording
     if (game.downloaded_recording.name == user_name) {
         var better = best_recording([game.downloaded_recording, game.my_best_recording])
-        player_ghost = ghost_from_recording(better, this_thing);
+        player_ghost = ghost_from_recording(better, scene);
     } else {
-        player_ghost = ghost_from_recording(game.my_best_recording, this_thing);
+        player_ghost = ghost_from_recording(game.my_best_recording, scene);
         if (!game.my_best_recording || game.downloaded_recording.score > game.my_best_recording.score) {
-            downloaded_ghost = ghost_from_recording(game.downloaded_recording, this_thing);
+            downloaded_ghost = ghost_from_recording(game.downloaded_recording, scene);
         }
     }
 
-    foreground_water = this_thing.physics.add.staticGroup({
+    foreground_water = scene.physics.add.staticGroup({
 	key: 'water',
 	repeat: Math.floor(GAME_WIDTH / FOREGROUND_WATER_TILE_HEIGHT),
 	setXY: { x: -FOREGROUND_WATER_TILE_WIDTH, y: GAME_HEIGHT+8, stepX: FOREGROUND_WATER_TILE_WIDTH },
@@ -523,13 +544,12 @@ function newGame(this_thing) {
         water_tile.setDepth(20);
     });
 
-    water_group = this_thing.physics.add.staticGroup({});
+    water_group = scene.physics.add.staticGroup({});
     water = water_group.create(GAME_WIDTH/2, GAME_HEIGHT + 10);
     water.visible = false;
     water.setSize(GAME_WIDTH, 60);
 
-
-    anomolies = this_thing.physics.add.staticGroup({defaultKey: 'background'});
+    anomolies = scene.physics.add.staticGroup({defaultKey: 'background'});
 }
 
 function ghost_from_recording(recording, this_thing) {
@@ -590,8 +610,7 @@ function create_anomoly(this_thing) {
 }
 
 function update () {
-    if (game.restarted_at_frame === false)
-        game.restarted_at_frame = game.getFrame();
+    game.myFrame += 1;
 
     if (debug_key.isDown) {
         this.physics.debug = !this.physics.debug;
@@ -839,6 +858,7 @@ function update () {
 
         } else
             game.my_best_recording = player.controls_recording
+        //game.seed = ""+(new Date).getTime() % SEED_COUNT;
         newGame(this);
         return
     }
@@ -851,7 +871,7 @@ function update () {
 
         } else
             game.my_best_recording = player.controls_recording
-
+        //game.seed = ""+(new Date).getTime() % SEED_COUNT;
         newGame(this);
         return
     }
@@ -1205,6 +1225,14 @@ function player_destroy(p) {
     if (p.label) {
         p.label.destroy(true);
     }
+    if (p == player) {
+        p.controls_recording.score = p.score;
+        uploadRecording(player.controls_recording)
+        /*scene.scene.pause();
+        setTimeout(function() {
+            scene.scene.resume();
+        }, DEATH_SLEEP_MS);*/
+    }
     for (i=0;i<10;i++) {
         piece = destroyed_stuff.get(p.x,p.y,'clove');
         piece.setTexture('clove');
@@ -1226,10 +1254,6 @@ function player_destroy(p) {
     }
 
     generic_destroy(p)
-    if (p == player) {
-        p.controls_recording.score = p.score;
-        uploadRecording(player.controls_recording)
-    }
 }
 
 function uploadRecording(controls_recording) {
@@ -1539,10 +1563,8 @@ function player_update(p) {
 }
 
 function getFrame() {
-    return game.getFrame() - (game.restarted_at_frame || 0);
+    return game.myFrame;
 }
-
-
 
 // LZW-compress a string
 function lzw_encode(s) {
@@ -1595,4 +1617,8 @@ function lzw_decode(s) {
         oldPhrase = phrase;
     }
     return out.join("");
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
