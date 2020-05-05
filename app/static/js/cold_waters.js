@@ -95,6 +95,8 @@ const PLAYER_DASH_SPEED = 10
 const PLAYER_DASH_FRAMES = 15
 const PLAYER_DASH_RECHARGE_FRAMES = 30
 
+const SEED_COUNT = 10
+
 var CODE_HASH;
 var game_div;
 var httpRequest;
@@ -164,9 +166,10 @@ function preload () {
     this.load.spritesheet('explosion', 'explosion_sheet.png', { frameWidth: 89, frameHeight: 89 });
     this.load.spritesheet('electro_ball', 'electro_ball.png', { frameWidth: 128, frameHeight: 35 });
 
-    game.seed = ""+(new Date).getTime() % 10;
+    game.seed = ""+(new Date).getTime() % SEED_COUNT;
     game.hard = 0;
-    this.load.json('best_recording', 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+game.seed+'/'+game.hard)
+    for (var i=0;i<SEED_COUNT;i++)
+        this.load.json('best_recording_'+i, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+i+'/'+game.hard)
     physics = this.physics;
 }
 
@@ -364,7 +367,7 @@ function create () {
     game.current_source_code = this.cache.text.get('current_source_code');
     CODE_HASH = md5(game.current_source_code).slice(0,10)
 
-    game.downloaded_recording = decompressRecording(this.cache.json.get('best_recording')) 
+    game.downloaded_recording = decompressRecording(this.cache.json.get('best_recording_'+game.seed)) 
     downloaded_ghost = false;
 
     game.my_best_recording = false;
