@@ -169,9 +169,9 @@ function preload () {
     this.load.spritesheet('bomb_crate', 'bomb_crate_sheet.jpg', { frameWidth: 99, frameHeight: 100 });
     this.load.spritesheet('explosion', 'explosion_sheet.png', { frameWidth: 89, frameHeight: 89 });
     this.load.spritesheet('electro_ball', 'electro_ball.png', { frameWidth: 128, frameHeight: 35 });
+    this.load.json('leader_board', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION)
 
-
-    game.seed = ""+(new Date).getTime() % SEED_COUNT;
+    game.seed = (new Date).getTime() % SEED_COUNT;
     game.hard = 0;
 
     // Load just the one seed/difficult now, load the rest later
@@ -232,6 +232,34 @@ function touchStart(pointer) {
     console.log(scene.input.pointer2);
 }
 
+function get_leader_board_string(scene) {
+    var string = "Player bests (v"+CODE_VERSION+"):"
+    scene.cache.json.get('leader_board').forEach(function(entry){
+        var score_string = (""+entry.score).padStart(4, '0')
+        string += "\n"+score_string+" "+entry.username
+    });
+    return string;
+}
+
+function get_seed_scores_string(scene) {
+    var string = "Leaders by seed:"
+    for (var i=0;i<SEED_COUNT;i++) {
+        var recording = scene.cache.json.get('best_recording_'+i+'_'+game.hard)
+        if (recording && recording.name) {
+            score_string = (""+recording.score).padStart(4, '0')
+            string += '\n('+i+') '+score_string+": "+recording.name;
+        } else {
+            score_string = "0".padStart(4, '0')
+            string += '\n('+i+') '+score_string+': No one';
+
+        }
+        if (game.seed == i) {
+            string += " <"
+        }
+    }
+    return string;
+}
+
 function create () {
 
     // Let these load while the user starts playing
@@ -247,6 +275,7 @@ function create () {
     // Desktop (non-mobile stuff
     keyboard_instructions = false;
     if (game.device.os.desktop == true) {
+    //if (false) {
         keyboard_instructions = this.add.image(5, 70, 'keyboard_instructions', 0).setOrigin(0,0)
         keyboard_instructions.setDepth(100);
         keyboard_instructions.setDisplaySize(200,160);
@@ -263,6 +292,18 @@ function create () {
         mobile_instructions.push(this.add.text(GAME_WIDTH/2-90,20, 'Jump', { fontSize: '80px', fill: '#fff' }).setAlpha(.5).setDepth(100));
         mobile_instructions.push(this.add.text(GAME_WIDTH/2-90,GAME_HEIGHT-130, 'Dash', { fontSize: '80px', fill: '#fff' }).setAlpha(.5).setDepth(100));
     }
+
+    replay_instructions = [];
+    replay_instructions.push(this.add.text(GAME_WIDTH/6,GAME_HEIGHT/2, 'LEFT\nAgain', { fontSize: '40px', fill: '#fff', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
+
+    seed_scores_text = this.add.text(GAME_WIDTH/6, 5/6*GAME_HEIGHT - 25, get_seed_scores_string(this), { fontSize: '14px', fill: '#fff', backgroundColor: '#233f7a', padding: 15 }).setAlpha(.8).setDepth(100).setOrigin(.5,.5).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
+    leader_board_text = this.add.text(5/6*GAME_WIDTH, 5/6*GAME_HEIGHT - 25, get_leader_board_string(this), { fontSize: '14px', fill: '#fff', backgroundColor: '#233f7a', padding: 15 }).setAlpha(.8).setDepth(100).setOrigin(.5,.5).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
+
+    
+    replay_instructions.push(this.add.text(GAME_WIDTH/2,GAME_HEIGHT/6, 'UP\nHard', { fontSize: '40px', fill: '#faa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
+    replay_instructions.push(this.add.text(5/6*GAME_WIDTH,GAME_HEIGHT/2, 'RIGHT\nNew seed', { fontSize: '40px', fill: '#fff', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
+    replay_instructions.push(this.add.text(GAME_WIDTH/2,5/6*GAME_HEIGHT, 'DOWN\nEasy', { fontSize: '40px', fill: '#afa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
+
     // Maybe move this into the mobile stuff
     scene = game.scene.scenes[0]
     scene.input.on('pointerdown', pointerdown);
@@ -408,6 +449,7 @@ function best_recording(recordings) {
 
 function newGame(this_thing) {
     game.myFrame = -1;
+    game.frameOfDeath = false;
     scene.scene.resume();
 
     // Remove old bodies
@@ -416,6 +458,13 @@ function newGame(this_thing) {
             object.gameObject.label.destroy(true);
         object.gameObject.destroy(true);
     });
+
+    // Remove old instructions
+    replay_instructions.forEach(function(text){
+        text.setVisible(false);
+    });
+    seed_scores_text.setVisible(false);
+    leader_board_text.setVisible(false);
 
     // Make sure we're using the correct recording
     game.downloaded_recording = decompressRecording(scene.cache.json.get('best_recording_'+game.seed+'_'+game.hard))
@@ -822,8 +871,18 @@ function update () {
 
     if (getFrame() % 10 == 0) {
         var text = "Score: "+Math.floor(player.score);
-        if (!player.active)
-            text += "\nPress LEFT + RIGHT to play again!";
+        if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30) {
+
+            seed_scores_text.setVisible(true);
+            leader_board_text.setVisible(true);
+            for (var i=0;i<replay_instructions.length;i++) {
+                replay_instructions[i].setVisible(true);
+                if (Math.floor(getFrame()/10) % 8 == i)
+                    replay_instructions[i].setAlpha(.8);
+                else
+                    replay_instructions[i].setAlpha(.6);
+            }
+        }
         upperLeftText.setText(text);
 
         rng_index = Math.floor(getFrame() / 10);
@@ -850,30 +909,24 @@ function update () {
             upperRightText.setColor("#ff0000")
     }
 
-    if (!player.active && my_pressed('left') && my_pressed('right')) {
-        game.hard = 0;
+    if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30 &&
+        (my_pressed('left') || my_pressed('right') || my_pressed('up') || my_pressed('down'))) {
         player.controls_recording.score = player.score;
 
-        if (game.my_best_recording && game.my_best_recording.controls_array.length > player.controls_recording.controls_array.length) {
+        if (my_pressed('left')) {
+            // Don't change anything
+        } else if (my_pressed('right')) {
+            game.seed = (game.seed+1) % SEED_COUNT;
+        } else if (my_pressed('up')) {
+            game.hard = 1;
+        } else if (my_pressed('down')) {
+            game.hard = 0;
+        }
 
-        } else
+        if (!game.my_best_recording || player.controls_recording.score > game.my_best_recording.score)
             game.my_best_recording = player.controls_recording
-        //game.seed = ""+(new Date).getTime() % SEED_COUNT;
         newGame(this);
-        return
-    }
-
-    if (!player.active && my_pressed('up') && my_pressed('down')) {
-        game.hard = 1;
-        player.controls_recording.score = player.score;
-
-        if (game.my_best_recording && game.my_best_recording.controls_array.length > player.controls_recording.controls_array.length) {
-
-        } else
-            game.my_best_recording = player.controls_recording
-        //game.seed = ""+(new Date).getTime() % SEED_COUNT;
-        newGame(this);
-        return
+        return;
     }
 }
 
@@ -1045,11 +1098,10 @@ function ufo_random_between(x, y) {
     return ufo_random.between(x, y);
 }
 
-// Seed must be a string
 function seed_rngs(seed) {
-    // The string has to be in a list for some reason?
+    // The string has to be in a list and a string for some reason?
     ufo_random = new Phaser.Math.RandomDataGenerator([seed])
-    return Phaser.Math.RND.init([seed]);
+    return Phaser.Math.RND.init([""+seed]);
 }
 
 function initialize_missile(missile) {
@@ -1216,18 +1268,13 @@ function missile_crate_destroy(object) {
 }
 
 function player_destroy(p) {
-    /*
-    explosion = explosions.create(object.x, object.y, 'explosion')
-    explosion.setSize(99, 99);
-    explosion.setDisplaySize(99, 99);
-    explosion.created_at = getFrame();
-    */
     if (p.label) {
         p.label.destroy(true);
     }
     if (p == player) {
         p.controls_recording.score = p.score;
         uploadRecording(player.controls_recording)
+        game.frameOfDeath = getFrame();
         /*scene.scene.pause();
         setTimeout(function() {
             scene.scene.resume();
@@ -1252,6 +1299,12 @@ function player_destroy(p) {
         if (p.controlled_by != 'human')
             piece.setTint(0xddffdd);
     }
+
+    // These will get in the way of the replay instructions
+    mobile_instructions.forEach(function(text) { text.destroy(true); });
+
+    // This needs to be updated now
+    seed_scores_text.setText(get_seed_scores_string(scene));
 
     generic_destroy(p)
 }

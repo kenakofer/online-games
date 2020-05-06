@@ -231,7 +231,7 @@ def cold_waters_leader_board(code_version):
     results = []
 
     for user_id in user_ids:
-        recording = ColdWatersScore.query.filter_by(code_version=code_version).order_by(ColdWatersScore.score.desc()).first()
+        recording = ColdWatersScore.query.filter_by(code_version=code_version, user_id=user_id).order_by(ColdWatersScore.score.desc()).first()
         results.append(
             {
                 'user_id': user_id[0],
@@ -242,6 +242,7 @@ def cold_waters_leader_board(code_version):
             }
         )
 
+    results.sort(key=lambda r: r['score'], reverse=True)
     print(results)
     return json.dumps(results);
 
