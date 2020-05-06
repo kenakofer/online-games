@@ -33,11 +33,41 @@ const PLAIN_CRATE_ODDS = 100;
 const BOMB_CRATE_ODDS = 100;
 const METAL_CRATE_ODDS = 100;
 const MISSILE_ODDS = 250;
+const ANOMOLY_ODDS = 3000;
 const UFO_ODDS = 2000;
 
-const HARD_FACTOR = .6;
+
+const HARD_FACTOR = .4;
+const EASY_FACTOR = .4;
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
 const T_HALF_LIFE = 4000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
+
+const BASE_ODDS_BY_DIFFICULTY = {
+    "-1": {
+        'plain_crate': 80,
+        'bomb_crate': 200,
+        'metal_crate': 100,
+        'missile': 500,
+        'ufo': 4000,
+        'anomoly': 10000,
+    },
+    0: {
+        'plain_crate': 100,
+        'bomb_crate': 100,
+        'metal_crate': 100,
+        'missile': 250,
+        'ufo': 2000,
+        'anomoly': 3000,
+    },
+    1: {
+        'plain_crate': 100*HARD_FACTOR,
+        'bomb_crate': 100*HARD_FACTOR,
+        'metal_crate': 100*HARD_FACTOR,
+        'missile': 250*HARD_FACTOR,
+        'ufo': 2000*HARD_FACTOR,
+        'anomoly': 3000*HARD_FACTOR,
+    }
+};
 
 const TARGET_FPS = 50;
 
@@ -300,9 +330,9 @@ function create () {
     leader_board_text = this.add.text(5/6*GAME_WIDTH, 5/6*GAME_HEIGHT - 25, get_leader_board_string(this), { fontSize: '14px', fill: '#fff', backgroundColor: '#233f7a', padding: 15 }).setAlpha(.8).setDepth(100).setOrigin(.5,.5).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
 
     
-    replay_instructions.push(this.add.text(GAME_WIDTH/2,GAME_HEIGHT/6, 'UP\nHard', { fontSize: '40px', fill: '#faa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
+    replay_instructions.push(this.add.text(GAME_WIDTH/2,GAME_HEIGHT/6, 'UP\nHarder', { fontSize: '40px', fill: '#faa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
     replay_instructions.push(this.add.text(5/6*GAME_WIDTH,GAME_HEIGHT/2, 'RIGHT\nNew seed', { fontSize: '40px', fill: '#fff', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
-    replay_instructions.push(this.add.text(GAME_WIDTH/2,5/6*GAME_HEIGHT, 'DOWN\nEasy', { fontSize: '40px', fill: '#afa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
+    replay_instructions.push(this.add.text(GAME_WIDTH/2,5/6*GAME_HEIGHT, 'DOWN\nEasier', { fontSize: '40px', fill: '#afa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
 
     // Maybe move this into the mobile stuff
     scene = game.scene.scenes[0]
@@ -432,6 +462,8 @@ function create () {
 }
 
 function decompressRecording(recording) {
+    if (!recording)
+        return undefined;
     recording.controls_array = lzw_decode(recording.controls_array)
     return recording
 }
@@ -570,7 +602,7 @@ function newGame(this_thing) {
     // We want to show the best recording that we've gotten locally if it
     // exists, and also show the downloaded recording if it's better than our
     // local best recording
-    if (game.downloaded_recording.name == user_name) {
+    if (game.downloaded_recording && game.downloaded_recording.name == user_name) {
         var better = best_recording([game.downloaded_recording, game.my_best_recording])
         player_ghost = ghost_from_recording(better, scene);
     } else {
@@ -924,9 +956,9 @@ function update () {
         } else if (my_pressed('right')) {
             game.seed = (game.seed+1) % SEED_COUNT;
         } else if (my_pressed('up')) {
-            game.hard = 1;
+            game.hard = Math.min(game.hard+1, 1);
         } else if (my_pressed('down')) {
-            game.hard = 0;
+            game.hard = Math.max(game.hard-1, -1);
         }
 
         if (!game.my_best_recording || player.controls_recording.score > game.my_best_recording.score)
@@ -1046,33 +1078,37 @@ function isSurroundTouching(spriteA, spriteB) {
 }
 
 function randomSpawns(this_thing) {
-    var hard_factor = 1 - (game.hard * HARD_FACTOR)
-    var time_factor = T_INF_FACTOR + (1-T_INF_FACTOR) * (T_HALF_LIFE / (getFrame() + T_HALF_LIFE))
-    if (random_between(0,PLAIN_CRATE_ODDS * hard_factor * time_factor) == 0) {
+
+    if (random_between(0,getOdds('plain_crate')) == 0) {
         var crate = initialize_plain_crate(plain_crates.create(0,-BOX_SIZE))
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,BOMB_CRATE_ODDS * hard_factor * time_factor) == 0) {
+    if (random_between(0,getOdds('bomb_crate')) == 0) {
         var crate = initialize_bomb_crate(bomb_crates.get(), 0, -BOX_SIZE);
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,METAL_CRATE_ODDS * hard_factor * time_factor) == 0) {
+    if (random_between(0,getOdds('metal_crate')) == 0) {
         var crate = initialize_metal_crate(metal_crates.create(0,-BOX_SIZE))
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,MISSILE_ODDS * hard_factor * time_factor) == 0) {
+    if (random_between(0,getOdds('missile')) == 0) {
         var missile = initialize_missile(missiles.create(0, -BOX_SIZE))
         move_to_empty_top_spot(missile); 
     }
     if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 35) {
         initialize_shark_fin()
     }
-    if (random_between(0,3000 * hard_factor * time_factor) == 0) {
+    if (random_between(0,getOdds('anomoly')) == 0) {
         create_anomoly(this_thing);
     }
-    if (ufo_random_between(0, UFO_ODDS * hard_factor * time_factor) == 0) {
+    if (ufo_random_between(0,getOdds('ufo')) == 0) {
         initialize_ufo()
     }
+}
+
+function getOdds(type) {
+   var time_factor = T_INF_FACTOR + (1-T_INF_FACTOR) * (T_HALF_LIFE / (getFrame() + T_HALF_LIFE))
+   return BASE_ODDS_BY_DIFFICULTY[game.hard][type] * time_factor 
 }
 
 function move_to_empty_top_spot(object) {
