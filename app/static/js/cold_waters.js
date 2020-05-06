@@ -873,8 +873,14 @@ function update () {
         var text = "Score: "+Math.floor(player.score);
         if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30) {
 
-            seed_scores_text.setVisible(true);
-            leader_board_text.setVisible(true);
+            if (!seed_scores_text.visible) {
+                refresh_best_recording(game.seed, game.hard);
+                seed_scores_text.setVisible(true);
+                leader_board_text.setVisible(true);
+            }
+            if (getFrame() % 200 == 0) {
+                seed_scores_text.setText(get_seed_scores_string(scene));
+            }
             for (var i=0;i<replay_instructions.length;i++) {
                 replay_instructions[i].setVisible(true);
                 if (Math.floor(getFrame()/10) % 8 == i)
@@ -1674,4 +1680,10 @@ function lzw_decode(s) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function refresh_best_recording(seed, hard) {
+    game.cache.json.remove('best_recording_'+seed+'_'+hard);
+    scene.load.json('best_recording_'+seed+'_'+hard, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+seed+'/'+hard)
+    scene.load.start();
 }
