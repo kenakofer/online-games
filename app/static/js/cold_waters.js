@@ -4,12 +4,17 @@
 //   - More jerk than Firefox
 //
 // TODO
+//
+// For next score reset:
+//  Scale difficulty over time faster
+//  remove HARD_FACTOR constant
+//  shrinke large explosion?
+//
 // Minor:
-//  Move background image so score is nicer
-//  try antialias off
 //  make ghost unexplodable
 //  flip bomb crates (careful of recycling issues)
 //  fix sinking box issue (identify seed)  9 easy at score 1400 or so
+//  Fix bounce on falling boxes
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -26,6 +31,7 @@
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //  Powerups
+//   6 part snowflakes
 //
 const CODE_VERSION = "129";
 
@@ -38,7 +44,6 @@ const UFO_ODDS = 2000;
 
 
 const HARD_FACTOR = .4;
-const EASY_FACTOR = .4;
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
 const T_HALF_LIFE = 4000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
 
@@ -50,6 +55,7 @@ const BASE_ODDS_BY_DIFFICULTY = {
         'missile': 1000,
         'ufo': 10000,
         'anomoly': 20000,
+        'snowflake': 100,
     },
     0: {
         'plain_crate': 100,
@@ -58,6 +64,7 @@ const BASE_ODDS_BY_DIFFICULTY = {
         'missile': 250,
         'ufo': 2000,
         'anomoly': 3000,
+        'snowflake': 100,
     },
     1: {
         'plain_crate': 100*HARD_FACTOR,
@@ -66,6 +73,7 @@ const BASE_ODDS_BY_DIFFICULTY = {
         'missile': 250*HARD_FACTOR,
         'ufo': 2000*HARD_FACTOR,
         'anomoly': 3000*HARD_FACTOR,
+        'snowflake': 100,
     }
 };
 
@@ -92,7 +100,6 @@ const SCORE_PER_FRAME = .5
 const UFO_WIDTH = 100
 const UFO_HEIGHT = 40
 
-
 const ELECTRO_BALL_SPEED = 6;
 const ELECTRO_BALL_WIDTH = 64;
 const ELECTRO_BALL_HEIGHT = 18;
@@ -101,6 +108,10 @@ const GHOST_START_ALPHA = .5;
 const GHOST_LABEL_START_ALPHA = 1
 
 const MISSILE_SPEED = 4;
+const SNOWFLAKE_SPEED = 2;
+
+const SNOWFLAKE_WIND_INTERVAL = 35;
+const SNOWFLAKE_WIND_FRAMES = 20;
 
 // Combined, these make for a minimum jump height of ~60 pixels (1 box) and max
 // of ~160 pixels (3 box), and super jump around 260 pixels (5 boxes)
@@ -184,7 +195,7 @@ function preload () {
     this.load.setBaseURL('../static/images/cold_waters');
     this.load.text('current_source_code', '../../../static/js/cold_waters.js');
 
-    this.load.image('background', 'ice_mountain_bg.png');
+    this.load.image('background', 'bg_cropped.jpg');
     this.load.image('water', 'water_surface_tile.png');
     this.load.image('plain_crate', 'plain_crate.png');
     this.load.image('metal_crate', 'metal_crate.png');
@@ -198,6 +209,7 @@ function preload () {
     this.load.image('keyboard_instructions', 'keyboard_instructions.png');
     this.load.spritesheet('fullscreen', 'fullscreen.png', { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet('dude', 'onion_dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('snowflake', 'snowflake.png', { frameWidth: 116, frameHeight: 130 });
     this.load.spritesheet('plain_crate_destroyed', 'plain_crate_destroyed_sheet.png', { frameWidth: 250, frameHeight: 250 });
     this.load.spritesheet('dude_dash', 'onion_dude_dash.png', { frameWidth: 32, frameHeight: 29 });
     this.load.spritesheet('bomb_crate', 'bomb_crate_sheet.jpg', { frameWidth: 99, frameHeight: 100 });
@@ -426,6 +438,13 @@ function create () {
 	repeat: -1
     });
 
+    this.anims.create({
+	key: 'snowflake',
+	frames: this.anims.generateFrameNumbers('snowflake', { start: 0, end: 4 }),
+	frameRate: 15,
+	repeat: -1
+    });
+
     for (var i=0;i<6;i++) {
         this.anims.create({
             key: 'bomb_crate_'+i,
@@ -556,6 +575,7 @@ function newGame(this_thing) {
     metal_crates = scene.physics.add.staticGroup({defaultKey: 'metal_crate'});
     shark_fins = scene.physics.add.staticGroup({defaultKey: 'shark_fin'});
     missiles = scene.physics.add.staticGroup({defaultKey: 'missile'});
+    snowflakes = scene.physics.add.staticGroup({defaultKey: 'snowflake'});
     bomb_crates = scene.physics.add.staticGroup({defaultKey: 'bomb_crate'});
     ufos = scene.physics.add.staticGroup({defaultKey: 'ufo'});
     electro_balls = scene.physics.add.staticGroup({defaultKey: 'electro_ball'});
@@ -712,7 +732,7 @@ function create_anomoly(this_thing) {
     anomoly.setSize(132,132);
     anomoly.setMask(mask);
     anomoly.mask_shape = shape;
-    anomoly.setDepth(10000);
+    anomoly.setDepth(50);
 
     anomoly.mask_shape.x = random_between(0, GAME_WIDTH);
     anomoly.mask_shape.y = GAME_HEIGHT + 100;
@@ -865,6 +885,36 @@ function update () {
         var collision = checkOverlapGroup(missile, crates) || checkOverlap(missile, water) || checkOverlap(missile, player)
         if (collision) {
             missile.myDestroy(missile);
+        }
+    });
+
+    snowflakes.children.each(function(snowflake) {
+        snowflake.y += SNOWFLAKE_SPEED
+        snowflake.body.y += SNOWFLAKE_SPEED
+
+        if (getFrame() % SNOWFLAKE_WIND_INTERVAL == 0)
+            snowflake.wind_enabled = true;
+
+        var cycle = getFrame() % (SNOWFLAKE_WIND_INTERVAL*2) 
+        snowflake.angle = Math.sin((cycle + 10) / SNOWFLAKE_WIND_INTERVAL * Math.PI)* 10;
+
+        // Wind
+        if (snowflake.wind_enabled && getFrame() % SNOWFLAKE_WIND_INTERVAL < SNOWFLAKE_WIND_FRAMES) {
+            var dx = BOX_SIZE/2 / SNOWFLAKE_WIND_FRAMES;
+            if (cycle < SNOWFLAKE_WIND_INTERVAL)
+                dx *= -1;
+            snowflake.x += dx;
+            snowflake.body.x += dx;
+        } else {
+            snowflake.angle *= .9;
+        }
+        var collision = checkOverlapGroup(snowflake, crates) || checkOverlap(snowflake, water) || checkOverlapGroup(snowflake, missiles)
+        if (collision) {
+            snowflake.myDestroy(snowflake);
+        } 
+        if (checkOverlap(snowflake, player)) {
+            snowflake.setAlpha(.7);
+            snowflake.setTint(0xaaaaaa);
         }
     });
 
@@ -1153,6 +1203,12 @@ function randomSpawns(this_thing) {
     if (ufo_random_between(0,getOdds('ufo')) == 0) {
         initialize_ufo()
     }
+    if (snowflake_random_between(0,getOdds('snowflake')) == 0) {
+        var snowflake = initialize_snowflake(snowflakes.create(0, -BOX_SIZE))
+        move_to_empty_top_spot(snowflake, snowflake_random); 
+        snowflake.x += 7;
+        snowflake.body.x += 7;
+    }
 }
 
 function getOdds(type) {
@@ -1160,9 +1216,10 @@ function getOdds(type) {
    return BASE_ODDS_BY_DIFFICULTY[game.hard][type] * time_factor 
 }
 
-function move_to_empty_top_spot(object) {
+function move_to_empty_top_spot(object, rng) {
+    rng = rng || Phaser.Math.RND
     for (var i=0; i<5; i++) {
-        var random_x = random_between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
+        var random_x = rng.between(1,GAME_WIDTH_IN_BOXES*2 - 3) * BOX_SIZE/2 + 1
         object.body.x = random_x
         object.x = random_x + BOX_SIZE/2
         if (!checkOverlapGroup(object, crates))
@@ -1189,9 +1246,14 @@ function ufo_random_between(x, y) {
     return ufo_random.between(x, y);
 }
 
+function snowflake_random_between(x, y) {
+    return snowflake_random.between(x, y);
+}
+
 function seed_rngs(seed) {
     // The string has to be in a list and a string for some reason?
-    ufo_random = new Phaser.Math.RandomDataGenerator([seed])
+    ufo_random = new Phaser.Math.RandomDataGenerator([""+seed])
+    snowflake_random = new Phaser.Math.RandomDataGenerator(["snowflake"+seed])
     return Phaser.Math.RND.init([""+seed]);
 }
 
@@ -1205,6 +1267,22 @@ function initialize_missile(missile) {
     missile.myDestroy = missile_crate_destroy
     missile.setDepth(10);
     return missile;
+}
+
+function initialize_snowflake(snowflake) {
+    snowflake.setSize(10, 10);
+    snowflake.setDisplaySize(BOX_SIZE/2 - 1, BOX_SIZE/2 - 1);
+    snowflakes.add(snowflake);
+    explodables.add(snowflake);
+    snowflake.myDestroy = generic_destroy
+    snowflake.setDepth(10);
+    snowflake.anims.play('snowflake');
+    snowflake.setOrigin(1.4, .5);
+    snowflake.x += 7;
+    snowflake.body.x += 7;
+    snowflake.created_at = getFrame();
+    snowflake.wind_enabled = false;
+    return snowflake;
 }
 
 function initialize_shark_fin() {
