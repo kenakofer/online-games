@@ -138,6 +138,7 @@ var virtual_screen_pressed = [
     [false, false, false],
     [false, false, false]
 ]
+var all_local_recordings = [];
 
 var config = {
     type: Phaser.AUTO,
@@ -629,6 +630,15 @@ function newGame(this_thing) {
             downloaded_ghost = ghost_from_recording(game.downloaded_recording, scene);
         }
     }
+    // Crazy all ghosts
+    recordings = best_recording(all_local_recordings, 10)
+    if (recordings && recordings.length % 6 == 0) {
+        recordings.forEach(function(recording) {
+            if (player_ghost && recording == player_ghost.recording)
+                return
+            ghost_from_recording(recording, scene);
+        });
+    }
 
     foreground_water = scene.physics.add.staticGroup({
 	key: 'water',
@@ -1000,6 +1010,7 @@ function update () {
             game.hard = Math.max(game.hard-1, -1);
         }
 
+        all_local_recordings.push(player.controls_recording);
         game.my_best_recording = best_recording([player.controls_recording, game.my_best_recording])
         newGame(this);
         return;
