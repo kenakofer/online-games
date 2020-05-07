@@ -5,8 +5,6 @@
 //
 // TODO
 // Minor:
-//  Shrink box explosion size?
-//  Download new recording if hard or seed changes
 //  Move background image so score is nicer
 //  try antialias off
 //  make ghost unexplodable
@@ -19,10 +17,11 @@
 //  Refactor update: Maybe use runChildUpdate
 //
 //  Medium:
-//   Show my best ghost as well as best ghost
 //   Add explosion/fire particles
 //   Make anomalies cooler
 //   Dragging between 
+//   Add username selection screen
+//   Add credits screen
 //
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
@@ -166,7 +165,10 @@ var config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    render: {
+        pixelArt: false
+    },
 };
 var physics;
 
@@ -278,7 +280,7 @@ function get_leader_board_string(scene) {
 }
 
 function get_seed_scores_string(scene) {
-    var string = "\nLeaders by seed:"
+    var string = "\nBest in each seed:"
     for (var i=0;i<SEED_COUNT;i++) {
         var recording = scene.cache.json.get('best_recording_'+i+'_'+game.hard)
         if (recording && recording.name) {
@@ -481,11 +483,16 @@ function recording_valid(controls_recording) {
     return (controls_recording && controls_recording.hard == game.hard && controls_recording.seed == game.seed && controls_recording.code_version == CODE_VERSION)
 }
 
-function best_recording(recordings) {
-    const valids = recordings.filter(recording_valid);
-    return valids.reduce(function(prev, current) {
-        return (prev && prev.score > current.score) ? prev : current
-    }, undefined); 
+function best_recording(recordings, number) {
+    number = number || 1;
+    var valids = recordings.filter(recording_valid);
+    if (valids.length == 0)
+        return undefined;
+
+    valids.sort(function(r1, r2) {return r2.score - r1.score}); // Higher scores first
+    if (number == 1)
+        return valids[0]
+    return valids.slice(0,number)
 }
 
 function newGame(this_thing) {
@@ -993,8 +1000,7 @@ function update () {
             game.hard = Math.max(game.hard-1, -1);
         }
 
-        if (!game.my_best_recording || player.controls_recording.score > game.my_best_recording.score)
-            game.my_best_recording = player.controls_recording
+        game.my_best_recording = best_recording([player.controls_recording, game.my_best_recording])
         newGame(this);
         return;
     }
