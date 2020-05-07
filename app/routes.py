@@ -223,15 +223,15 @@ def cold_waters_get_best_recording(code_version, seed, hard):
         'rng_integrity_check': score.rng_integrity_check
     });
 
-@app.route('/cold_waters/leader_board/<code_version>')
+@app.route('/cold_waters/leader_board/<code_version>/<hard>')
 @login_required
-def cold_waters_leader_board(code_version):
-    user_ids = ColdWatersScore.query.with_entities(ColdWatersScore.user_id).filter_by(code_version=code_version).distinct()
+def cold_waters_leader_board(code_version, hard):
+    user_ids = ColdWatersScore.query.with_entities(ColdWatersScore.user_id).filter_by(code_version=code_version, hard=hard).distinct()
     print(user_ids)
     results = []
 
     for user_id in user_ids:
-        recording = ColdWatersScore.query.filter_by(code_version=code_version, user_id=user_id).order_by(ColdWatersScore.score.desc()).first()
+        recording = ColdWatersScore.query.filter_by(code_version=code_version, user_id=user_id, hard=hard).order_by(ColdWatersScore.score.desc()).first()
         results.append(
             {
                 'user_id': user_id[0],

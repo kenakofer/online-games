@@ -11,6 +11,7 @@
 //  try antialias off
 //  make ghost unexplodable
 //  flip bomb crates (careful of recycling issues)
+//  fix sinking box issue (identify seed)  9 easy at score 1400 or so
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -44,12 +45,12 @@ const T_HALF_LIFE = 4000; // the time factor in random spawns drops halfway to T
 
 const BASE_ODDS_BY_DIFFICULTY = {
     "-1": {
-        'plain_crate': 80,
+        'plain_crate': 50,
         'bomb_crate': 200,
         'metal_crate': 100,
-        'missile': 500,
-        'ufo': 4000,
-        'anomoly': 10000,
+        'missile': 1000,
+        'ufo': 10000,
+        'anomoly': 20000,
     },
     0: {
         'plain_crate': 100,
@@ -199,7 +200,9 @@ function preload () {
     this.load.spritesheet('bomb_crate', 'bomb_crate_sheet.jpg', { frameWidth: 99, frameHeight: 100 });
     this.load.spritesheet('explosion', 'explosion_sheet.png', { frameWidth: 89, frameHeight: 89 });
     this.load.spritesheet('electro_ball', 'electro_ball.png', { frameWidth: 128, frameHeight: 35 });
-    this.load.json('leader_board', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION)
+    this.load.json('leader_board_-1', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/-1')
+    this.load.json('leader_board_0', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/0')
+    this.load.json('leader_board_1', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/1')
 
     game.seed = (new Date).getTime() % SEED_COUNT;
     game.hard = 0;
@@ -263,24 +266,27 @@ function touchStart(pointer) {
 }
 
 function get_leader_board_string(scene) {
-    var string = "Player bests (v"+CODE_VERSION+"):"
-    scene.cache.json.get('leader_board').forEach(function(entry){
+    var string = "\nPlayer bests:"
+    var leader_board_object = scene.cache.json.get('leader_board_'+game.hard)
+    if (!leader_board_object)
+        return "Loading...";
+    leader_board_object.forEach(function(entry){
         var score_string = (""+entry.score).padStart(4, '0')
-        string += "\n"+score_string+" "+entry.username
+        string += "\n"+score_string+" - "+entry.username
     });
     return string;
 }
 
 function get_seed_scores_string(scene) {
-    var string = "Leaders by seed:"
+    var string = "\nLeaders by seed:"
     for (var i=0;i<SEED_COUNT;i++) {
         var recording = scene.cache.json.get('best_recording_'+i+'_'+game.hard)
         if (recording && recording.name) {
             score_string = (""+recording.score).padStart(4, '0')
-            string += '\n('+i+') '+score_string+": "+recording.name;
+            string += '\n'+getSeedString(i)+': '+score_string+" - "+recording.name;
         } else {
             score_string = "0".padStart(4, '0')
-            string += '\n('+i+') '+score_string+': No one';
+            string += '\n'+getSeedString(i)+': '+score_string+' - No one';
 
         }
         if (game.seed == i) {
@@ -293,7 +299,7 @@ function get_seed_scores_string(scene) {
 function create () {
 
     // Let these load while the user starts playing
-    for (var h=0;h<2;h++)
+    for (var h=-1;h<=1;h++)
         for (var i=0;i<SEED_COUNT;i++)
             this.load.json('best_recording_'+i+'_'+h, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+i+'/'+h)
     this.load.start();
@@ -327,7 +333,10 @@ function create () {
     replay_instructions.push(this.add.text(GAME_WIDTH/6,GAME_HEIGHT/2, 'LEFT\nAgain', { fontSize: '40px', fill: '#fff', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
 
     seed_scores_text = this.add.text(GAME_WIDTH/6, 5/6*GAME_HEIGHT - 25, get_seed_scores_string(this), { fontSize: '14px', fill: '#fff', backgroundColor: '#233f7a', padding: 15 }).setAlpha(.8).setDepth(100).setOrigin(.5,.5).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
+    seed_scores_header = this.add.text(seed_scores_text.x+seed_scores_text.displayWidth/2+5, seed_scores_text.y-seed_scores_text.displayHeight/2+5, "Easy v129", { fontSize: '12px', fill: '#ff0' }).setAlpha(.8).setDepth(101).setOrigin(1,0).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
+
     leader_board_text = this.add.text(5/6*GAME_WIDTH, 5/6*GAME_HEIGHT - 25, get_leader_board_string(this), { fontSize: '14px', fill: '#fff', backgroundColor: '#233f7a', padding: 15 }).setAlpha(.8).setDepth(100).setOrigin(.5,.5).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
+    leader_board_header = this.add.text(leader_board_text.x+leader_board_text.displayWidth/2+5, leader_board_text.y-leader_board_text.displayHeight/2+5, "Easy v129", { fontSize: '12px', fill: '#ff0' }).setAlpha(.8).setDepth(101).setOrigin(1,0).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
 
     
     replay_instructions.push(this.add.text(GAME_WIDTH/2,GAME_HEIGHT/6, 'UP\nHarder', { fontSize: '40px', fill: '#faa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
@@ -496,7 +505,9 @@ function newGame(this_thing) {
         text.setVisible(false);
     });
     seed_scores_text.setVisible(false);
+    seed_scores_header.setVisible(false);
     leader_board_text.setVisible(false);
+    leader_board_header.setVisible(false);
 
     // Make sure we're using the correct recording
     game.downloaded_recording = decompressRecording(scene.cache.json.get('best_recording_'+game.seed+'_'+game.hard))
@@ -597,7 +608,7 @@ function newGame(this_thing) {
     game.rng_integrity_check = "";
     player.setDepth(9);
 
-    // TODO this is kind of a mess of logic.
+    // TODO this is kind of a mess of logic. It REALLY need some TLC
     //
     // We want to show the best recording that we've gotten locally if it
     // exists, and also show the downloaded recording if it's better than our
@@ -607,7 +618,7 @@ function newGame(this_thing) {
         player_ghost = ghost_from_recording(better, scene);
     } else {
         player_ghost = ghost_from_recording(game.my_best_recording, scene);
-        if (!game.my_best_recording || game.downloaded_recording.score > game.my_best_recording.score) {
+        if (game.downloaded_recording && (!game.my_best_recording || game.downloaded_recording.score > game.my_best_recording.score)) {
             downloaded_ghost = ghost_from_recording(game.downloaded_recording, scene);
         }
     }
@@ -906,12 +917,33 @@ function update () {
         if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30) {
 
             if (!seed_scores_text.visible) {
+                // Redraw the (possibly old) scores before fetching new ones
+                seed_scores_text.setText(get_seed_scores_string(scene));
                 refresh_best_recording(game.seed, game.hard);
                 seed_scores_text.setVisible(true);
+                seed_scores_header.setVisible(true);
+                seed_scores_header.setText(['Easy','Normal','Hard'][game.hard+1]+' v'+CODE_VERSION)
+                seed_scores_header.setFill(['#6f6','#fc0','#f77'][game.hard+1])
+                seed_scores_header.setX(seed_scores_text.x+seed_scores_text.width/2-5)
+
+                // Redraw the (possibly old) scores before fetching new ones
+                leader_board_text.setText(get_leader_board_string(scene));
+                refresh_leader_boards(game.hard);
                 leader_board_text.setVisible(true);
+                leader_board_header.setVisible(true);
+                leader_board_header.setText(['Easy','Normal','Hard'][game.hard+1]+' v'+CODE_VERSION)
+                leader_board_header.setFill(['#6f6','#fc0','#f77'][game.hard+1])
+                leader_board_header.setX(leader_board_text.x+leader_board_text.width/2-5)
+                leader_board_header.setY(leader_board_text.y-leader_board_text.height/2+5)
             }
             if (getFrame() % 200 == 0) {
                 seed_scores_text.setText(get_seed_scores_string(scene));
+                seed_scores_header.setX(seed_scores_text.x+seed_scores_text.width/2-5)
+                seed_scores_header.setY(seed_scores_text.y-seed_scores_text.height/2+5)
+
+                leader_board_text.setText(get_leader_board_string(scene));
+                leader_board_header.setX(leader_board_text.x+leader_board_text.width/2-5)
+                leader_board_header.setY(leader_board_text.y-leader_board_text.height/2+5)
             }
             for (var i=0;i<replay_instructions.length;i++) {
                 replay_instructions[i].setVisible(true);
@@ -1722,4 +1754,13 @@ function refresh_best_recording(seed, hard) {
     game.cache.json.remove('best_recording_'+seed+'_'+hard);
     scene.load.json('best_recording_'+seed+'_'+hard, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+seed+'/'+hard)
     scene.load.start();
+}
+function refresh_leader_boards(hard) {
+    game.cache.json.remove('leader_board_'+hard);
+    scene.load.json('leader_board_'+hard, 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/'+hard)
+    scene.load.start();
+}
+
+function getSeedString(seed) {
+    return String.fromCharCode(65+seed);
 }
