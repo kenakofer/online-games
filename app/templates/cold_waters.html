@@ -3,7 +3,11 @@
     <link rel='stylesheet' href='{{ url_for("static",filename="styles/styles.css") }}'>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.22.0/dist/phaser.min.js"></script> 
     <script type="text/javascript" src='{{ url_for("static",filename="js/md5.js") }}'></script>
-    <script type="text/javascript" src='{{ url_for("static",filename="js/cold_waters.js") }}'></script>
+    {% if experimental %}
+        <script type="text/javascript" src='{{ url_for("static",filename="js/cold_waters_experimental.js") }}'></script>
+    {% else %}
+        <script type="text/javascript" src='{{ url_for("static",filename="js/cold_waters.js") }}'></script>
+    {% endif %}
     <!-- For template variables needed by cold_waters.js -->
     <script type="text/javascript">
         var user_name = "{{ user_name }}";

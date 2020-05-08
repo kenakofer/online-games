@@ -171,7 +171,8 @@ def cold_waters():
                     'cold_waters.html',
                     title='Play Cold Waters',
                     user_id=user.id,
-                    user_name=user.username
+                    user_name=user.username,
+                    experimental=request.args.get('exp'),
                 )
     elif request.method == 'POST':
         user = get_stable_user()
