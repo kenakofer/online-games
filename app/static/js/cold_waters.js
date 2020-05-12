@@ -1026,7 +1026,7 @@ function update () {
         if (object.x > GAME_WIDTH + 150 || object.x < -150 || object.y > GAME_HEIGHT + 50 || object.y < -BOX_SIZE * 2) {
             if (object.texture.key == 'plain_crate_destroyed' || object.texture.key == 'clove') {
                 destroyed_stuff.killAndHide(object);
-            } else if (object.texture.key == 'dude') {
+            } else if (players.children.entries.includes(object)) {
                 player_destroy(object);
             } else {
                 object.destroy(true);
