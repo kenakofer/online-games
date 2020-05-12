@@ -29,14 +29,14 @@
 //  Powerups
 //   6 part snowflakes
 //
-const CODE_VERSION = "132";
+const CODE_VERSION = "134";
 
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
 const T_HALF_LIFE = 3000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
 
 const BASE_ODDS_BY_DIFFICULTY = {
     "-1": {
-        'plain_crate': 50,
+        'plain_crate': 200,
         'bomb_crate': 200,
         'metal_crate': 100,
         'missile': 1000,
@@ -565,6 +565,12 @@ function newGame(this_thing) {
     leader_board_text.setVisible(false);
     leader_board_header.setVisible(false);
     snowflake_indicator.setVisible(false);
+    super_dash_lines.forEach(function (line) {
+        line.setVisible(false);
+    })
+    super_dash_circles.forEach(function (line) {
+        line.setVisible(false);
+    })
 
     // Make sure we're using the correct recording
     game.downloaded_recording = decompressRecording(scene.cache.json.get('best_recording_'+game.seed+'_'+game.hard))
@@ -667,6 +673,8 @@ function newGame(this_thing) {
     }
     game.rng_integrity_check = "";
     player.setDepth(9);
+
+    //player.unexplodable_at = -100;
 
     // TODO this is kind of a mess of logic. It REALLY need some TLC
     //
@@ -1322,9 +1330,9 @@ function snowflake_random_between(x, y) {
 
 function seed_rngs(seed) {
     // The string has to be in a list and a string for some reason?
-    ufo_random = new Phaser.Math.RandomDataGenerator([""+seed])
+    ufo_random = new Phaser.Math.RandomDataGenerator(["ufo"+seed])
     snowflake_random = new Phaser.Math.RandomDataGenerator(["snowflake"+seed])
-    return Phaser.Math.RND.init([""+seed]);
+    return Phaser.Math.RND.init(["main"+seed]);
 }
 
 function initialize_missile(missile) {
@@ -1744,8 +1752,13 @@ function player_update(p) {
             powerup_bar_background.setPosition(p.x-25, p.y-30);
             powerup_bar_foreground.setPosition(p.x-23, p.y-28);
             powerup_bar_foreground.fillColor = SNOWFLAKE_TINTS[p_state[0]];
-            var percent_left = 1 - (getFrame() - p_state[1]) / 500
+            var f = getFrame() - p_state[1];
+            var percent_left = 1 - f / 500
             powerup_bar_foreground.width = percent_left * 46
+            if (f > 400 && f % 10 < 5)
+                powerup_bar_background.fillColor = 0xff0000;
+            else 
+                powerup_bar_background.fillColor = 0x222222;
         }
     } else {
         p.label.setX(p.x - p.label.width/2);
