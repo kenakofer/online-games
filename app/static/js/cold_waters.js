@@ -6,15 +6,11 @@
 // TODO
 //
 // For next score reset:
-//  Scale difficulty over time faster
-//  remove HARD_FACTOR constant
-//  shrinke large explosion?
+//  change player alignment to box_size/2?
+//  Change rng check to ghost state check
 //
 // Minor:
-//  make ghost unexplodable
 //  flip bomb crates (careful of recycling issues)
-//  fix sinking box issue (identify seed)  9 easy at score 1400 or so
-//  Fix bounce on falling boxes
 // 
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
@@ -33,19 +29,10 @@
 //  Powerups
 //   6 part snowflakes
 //
-const CODE_VERSION = "129";
+const CODE_VERSION = "132";
 
-const PLAIN_CRATE_ODDS = 100;
-const BOMB_CRATE_ODDS = 100;
-const METAL_CRATE_ODDS = 100;
-const MISSILE_ODDS = 250;
-const ANOMOLY_ODDS = 3000;
-const UFO_ODDS = 2000;
-
-
-const HARD_FACTOR = .4;
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
-const T_HALF_LIFE = 4000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
+const T_HALF_LIFE = 3000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
 
 const BASE_ODDS_BY_DIFFICULTY = {
     "-1": {
@@ -67,13 +54,13 @@ const BASE_ODDS_BY_DIFFICULTY = {
         'snowflake': 100,
     },
     1: {
-        'plain_crate': 100*HARD_FACTOR,
-        'bomb_crate': 100*HARD_FACTOR,
-        'metal_crate': 100*HARD_FACTOR,
-        'missile': 250*HARD_FACTOR,
-        'ufo': 2000*HARD_FACTOR,
-        'anomoly': 3000*HARD_FACTOR,
-        'snowflake': 100,
+        'plain_crate': 40,
+        'bomb_crate': 40,
+        'metal_crate': 40,
+        'missile': 100,
+        'ufo': 800,
+        'anomoly': 1200,
+        'snowflake': 60,
     }
 };
 
@@ -85,7 +72,7 @@ const BOX_SIZE = 50;
 const MISSILE_WIDTH = 30;
 const GAME_WIDTH_IN_BOXES = GAME_WIDTH/BOX_SIZE;
 const EXPLOSION_SIZE = 178;
-const BIG_EXPLOSION_SIZE = 250;
+const BIG_EXPLOSION_SIZE = 230;
 const FOREGROUND_WATER_TILE_WIDTH = 80;
 const FOREGROUND_WATER_TILE_HEIGHT = 40;
 const BACKGROUND_WATER_TILE_WIDTH = 80;
@@ -112,6 +99,7 @@ const SNOWFLAKE_SPEED = 2;
 
 const SNOWFLAKE_WIND_INTERVAL = 35;
 const SNOWFLAKE_WIND_FRAMES = 20;
+const SNOWFLAKE_TINTS = [0xffaaaa, 0xccffbb, 0xddddff, 0xffddaa];
 
 // Combined, these make for a minimum jump height of ~60 pixels (1 box) and max
 // of ~160 pixels (3 box), and super jump around 260 pixels (5 boxes)
@@ -189,8 +177,6 @@ var game = new Phaser.Game(config);
 var score = 0;
 
 function preload () {
-    // For the clock
-    this.load.plugin('rexclockplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexclockplugin.min.js', true);
 
     this.load.setBaseURL('../static/images/cold_waters');
     this.load.text('current_source_code', '../../../static/js/cold_waters.js');
@@ -389,11 +375,34 @@ function create () {
         }, this);
     }
 
-    clock = scene.plugins.get('rexclockplugin').add(scene, config);
+    snowflake_indicator = this.add.image(22, 10, 'snowflake', 4).setOrigin(.5,0).setDisplaySize(35,40).setVisible(false);
 
+    super_dash_lines = [];
+    var length = PLAYER_DASH_SPEED * PLAYER_DASH_FRAMES;
+    super_dash_lines.push(this.add.line(0,0, length/2,0, length,0, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
+    super_dash_lines.push(this.add.line(0,0, -length/2,0, -length,0, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
+
+    super_dash_lines.push(this.add.line(0,0, 0,-length/2, 0,-length, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
+
+    super_dash_circles = [];
+    var radius = 12;
+    super_dash_circles.push(this.add.circle(0,length, radius, 0xaaaa00).setDisplayOrigin(-length+radius,radius).setDepth(90).setVisible(false));
+    super_dash_circles.push(this.add.circle(0,-length, radius, 0xaaaa00).setDisplayOrigin(length+radius,radius).setDepth(90).setVisible(false));
+
+    super_dash_circles.push(this.add.circle(-length,0, radius, 0xaaaa00).setDisplayOrigin(radius,length+radius).setDepth(90).setVisible(false));
+
+    powerup_bar_background = this.add.rectangle(0,0, 50,10, 0x222222).setOrigin(0,0).setDepth(91).setVisible(true);
+    powerup_bar_foreground = this.add.rectangle(2,2, 46,6, 0xaaaa00).setOrigin(0,0).setDepth(92).setVisible(true);
 
     this.anims.create({
 	key: 'left',
+	frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+	frameRate: 10,
+	repeat: -1
+    });
+
+    this.anims.create({
+	key: 'fly',
 	frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
 	frameRate: 10,
 	repeat: -1
@@ -425,6 +434,20 @@ function create () {
     });
 
     this.anims.create({
+	key: 'fly_straight',
+	frames: this.anims.generateFrameNumbers('dude', { start: 9, end: 10 }),
+	frameRate: 20,
+	repeat: -1
+    });
+
+    this.anims.create({
+	key: 'fly_left',
+	frames: this.anims.generateFrameNumbers('dude', { start: 11, end: 12 }),
+	frameRate: 20,
+	repeat: -1
+    });
+
+    this.anims.create({
 	key: 'explosion',
 	frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 9 }),
 	frameRate: 20,
@@ -440,9 +463,15 @@ function create () {
 
     this.anims.create({
 	key: 'snowflake',
-	frames: this.anims.generateFrameNumbers('snowflake', { start: 0, end: 4 }),
+	frames: this.anims.generateFrameNumbers('snowflake', { start: 0, end: 3 }),
 	frameRate: 15,
 	repeat: -1
+    });
+
+    this.anims.create({
+	key: 'snowflake_marker',
+	frames: this.anims.generateFrameNumbers('snowflake', { start: 4, end: 9 }),
+	frameRate: 20,
     });
 
     for (var i=0;i<6;i++) {
@@ -472,7 +501,7 @@ function create () {
     cursors = this.input.keyboard.createCursorKeys();
     debug_key = this.input.keyboard.addKey('D');
 
-    upperLeftText = this.add.text(16, 16, 'Score: 0', { fontSize: '24px', fill: '#fff' });
+    upperLeftText = this.add.text(46, 16, 'Score: 0', { fontSize: '24px', fill: '#fff' });
     upperLeftText.setShadow(-1, 1, 'rgba(0,0,0)', 0);
     upperLeftText.setDepth(100);
 
@@ -535,6 +564,7 @@ function newGame(this_thing) {
     seed_scores_header.setVisible(false);
     leader_board_text.setVisible(false);
     leader_board_header.setVisible(false);
+    snowflake_indicator.setVisible(false);
 
     // Make sure we're using the correct recording
     game.downloaded_recording = decompressRecording(scene.cache.json.get('best_recording_'+game.seed+'_'+game.hard))
@@ -576,6 +606,7 @@ function newGame(this_thing) {
     shark_fins = scene.physics.add.staticGroup({defaultKey: 'shark_fin'});
     missiles = scene.physics.add.staticGroup({defaultKey: 'missile'});
     snowflakes = scene.physics.add.staticGroup({defaultKey: 'snowflake'});
+    snowflake_markers = scene.physics.add.staticGroup();
     bomb_crates = scene.physics.add.staticGroup({defaultKey: 'bomb_crate'});
     ufos = scene.physics.add.staticGroup({defaultKey: 'ufo'});
     electro_balls = scene.physics.add.staticGroup({defaultKey: 'electro_ball'});
@@ -584,16 +615,16 @@ function newGame(this_thing) {
     unelectrified_metal_crates = scene.physics.add.staticGroup();
 
     boundaries = scene.physics.add.staticGroup();
-    boundary = boundaries.create(-10,GAME_HEIGHT/2);
-    boundary.setSize(20, GAME_HEIGHT);
+    boundary = boundaries.create(-100,GAME_HEIGHT/2);
+    boundary.setSize(200, GAME_HEIGHT);
     boundary.visible = false;
 
-    boundary = boundaries.create(GAME_WIDTH + 10, GAME_HEIGHT/2);
-    boundary.setSize(20, GAME_HEIGHT);
+    boundary = boundaries.create(GAME_WIDTH + 100, GAME_HEIGHT/2);
+    boundary.setSize(200, GAME_HEIGHT);
     boundary.visible = false;
 
-    boundary = boundaries.create(GAME_WIDTH/2, -10);
-    boundary.setSize(GAME_WIDTH, 20);
+    boundary = boundaries.create(GAME_WIDTH/2, -100);
+    boundary.setSize(GAME_WIDTH, 200);
     boundary.visible = false;
 
 
@@ -620,8 +651,9 @@ function newGame(this_thing) {
     player.grounded = false;
     player.dash_start_frame = -100;
     player.dashing = false;
-    player.grounded_since_dash = true;
+    player.can_dash = true;
     player.score = 0;
+    player.snowflakes = new Set();
 
     player.controlled_by = 'human'
     player.controls_recording = {
@@ -694,8 +726,9 @@ function ghost_from_recording(recording, this_thing) {
     ghost.grounded = false;
     ghost.dash_start_frame = -100;
     ghost.dashing = false;
-    ghost.grounded_since_dash = true;
+    ghost.can_dash = true;
     ghost.score = 0;
+    ghost.snowflakes = new Set();
 
     ghost.controlled_by = 'last_game';
     ghost.controls_recording = recording;
@@ -766,10 +799,20 @@ function update () {
     });
 
     foreground_water.children.iterate(function (water_tile) {
-        water_tile.x += Math.sin(getFrame() / 50) / 2
+        if (player.water_walking_at) {
+            water_tile.setTintFill(0xddeeff);
+        } else {
+            water_tile.clearTint();
+            water_tile.x += Math.sin(getFrame() / 50) / 2
+        }
     });
     background_water.children.iterate(function (water_tile) {
-        water_tile.x -= Math.sin(getFrame() / 50) / 2
+        if (player.water_walking_at) {
+            water_tile.setTintFill(0xccddee);
+        } else {
+            water_tile.clearTint();
+            water_tile.x -= Math.sin(getFrame() / 50) / 2
+        }
     });
     plain_crates.children.iterate(function (crate) {
         crate_step(crate);
@@ -781,7 +824,9 @@ function update () {
             crate.angle = particle_random_between(-3, 3);
             // Kill player (not ghost)
             if (myTouching(crate, player, 0, 1) || myTouching(crate, player, 0, -1) || myTouching(crate, player, 1, 0) || myTouching(crate, player, -1, 0)) {
-                player_destroy(player);
+                if (!player.unexplodable_at) {
+                    player_destroy(player);
+                }
                 setElectrified(crate, false);
             }
             if (checkOverlap(crate, water)) {
@@ -868,7 +913,7 @@ function update () {
         electro_ball.y += electro_ball.myVelY;
         electro_ball.body.y += electro_ball.myVelY;
         // Kill the player (not ghosts)
-        if (checkOverlap(electro_ball, player)) {
+        if (checkOverlap(electro_ball, player) && !player.unexplodable_at) {
             player_destroy(player)
         }
         var metal_crate = checkOverlapGroup(electro_ball, metal_crates) 
@@ -885,6 +930,9 @@ function update () {
         var collision = checkOverlapGroup(missile, crates) || checkOverlap(missile, water) || checkOverlap(missile, player)
         if (collision) {
             missile.myDestroy(missile);
+            if (collision == player) {
+                player_destroy(player); // Regardless of unexplodable (can't change the recording)
+            }
         }
     });
 
@@ -908,15 +956,21 @@ function update () {
         } else {
             snowflake.angle *= .9;
         }
+
         var collision = checkOverlapGroup(snowflake, crates) || checkOverlap(snowflake, water) || checkOverlapGroup(snowflake, missiles)
         if (collision) {
             snowflake.myDestroy(snowflake);
         } 
-        if (checkOverlap(snowflake, player)) {
-            snowflake.setAlpha(.7);
-            snowflake.setTint(0xaaaaaa);
-        }
     });
+    if (snowflake_indicator.lobe_added_at) {
+        var f = getFrame() - snowflake_indicator.lobe_added_at;
+        if (f > 100) {
+            snowflake_indicator.lobe_added_at = false;
+            snowflake_indicator.angle = 0;
+        } else {
+            snowflake_indicator.angle = Math.sin(.2*f)*100 / (f**.7)
+        }
+    }
 
     destroyed_stuff.children.iterate(function(destroyed_crate) {
         if (destroyed_crate.delay_before_movement) {
@@ -964,6 +1018,8 @@ function update () {
         if (object.x > GAME_WIDTH + 150 || object.x < -150 || object.y > GAME_HEIGHT + 50 || object.y < -BOX_SIZE * 2) {
             if (object.texture.key == 'plain_crate_destroyed' || object.texture.key == 'clove') {
                 destroyed_stuff.killAndHide(object);
+            } else if (object.texture.key == 'dude') {
+                player_destroy(object);
             } else {
                 object.destroy(true);
             }
@@ -1101,12 +1157,12 @@ function crate_step(crate) {
     }
         
     players.children.iterate(function(p) {
-        for (var i=0; i<5; i++) {
+        //for (var i=0; i<5; i++) {
             if (checkOverlap(crate, p)) {
                 p.y += CRATE_SPEED;
                 p.body.y += CRATE_SPEED;
             }
-        }
+        //}
     });
 
     var collision = checkOverlap(crate, water)
@@ -1124,6 +1180,20 @@ function crate_step(crate) {
     } 
     if (crate.y == crate.last_y)
         crate.pause_crate_step = 5;
+
+    // One last check, to avaid sink-throughs
+    if (collision && crate.y > crate.last_y) {
+        collision = checkOverlapGroup(crate, crates)
+        if (collision) {
+            crate.grounded = true;
+            crate.grounded_at_frame = crate.grounded_at_frame || getFrame()
+
+            //crate.pause_crate_step = 10;
+            raise_delta_y = collision.body.top - crate.body.bottom - 1;
+            myMove(crate, 0, raise_delta_y);
+        }
+    }
+
     crate.last_y = crate.y
 }
 
@@ -1270,9 +1340,10 @@ function initialize_missile(missile) {
 }
 
 function initialize_snowflake(snowflake) {
+    snowflake.whichPowerup = snowflake_random_between(0, 3);
+    snowflake.setTint(SNOWFLAKE_TINTS[snowflake.whichPowerup]);
     snowflake.setSize(10, 10);
     snowflake.setDisplaySize(BOX_SIZE/2 - 1, BOX_SIZE/2 - 1);
-    snowflakes.add(snowflake);
     explodables.add(snowflake);
     snowflake.myDestroy = generic_destroy
     snowflake.setDepth(10);
@@ -1512,11 +1583,11 @@ function destroy_in_radius(x, y, radius) {
         if (distance < radius && distance > 0)
             crate.myDestroy(crate);
     });
-    players.children.each(function (p) {
-        var distance = Phaser.Math.Distance.Between(p.x, p.y, x, y);
+    if (player.active && !player.unexplodable_at) {
+        var distance = Phaser.Math.Distance.Between(player.x, player.y, x, y);
         if (distance < radius && distance > 0)
-            player_destroy(p);
-    });
+            player_destroy(player);
+    }
 }
 
 function myTouching(sprite, others, xdelta, ydelta) {
@@ -1538,9 +1609,16 @@ function myMove(sprite, xdelta, ydelta) {
     sprite.body.position = {x: sprite.body.x + xdelta, y: sprite.body.y + ydelta};
 }
 
+function myMoveTo(sprite, x, y) {
+    myMove(sprite, x - sprite.x, y - sprite.y);
+}
+
 function player_resolve_vertical(p) {
     // Resolve possible collision
-    var collision = checkOverlapGroup(p, boundaries) || checkOverlapGroup(p, crates)
+    var collision;
+    if (p.water_walking_at)
+        collision = checkOverlap(p, water);
+    collision = collision || checkOverlapGroup(p, boundaries) || checkOverlapGroup(p, crates)
     if (collision) {
         raise_delta_y = collision.body.top - p.body.bottom - 1;
         lower_delta_y = collision.body.bottom - p.body.top + 1;
@@ -1559,7 +1637,7 @@ function player_resolve_vertical(p) {
         if (-raise_delta_y < lower_delta_y) {
             p.body.y += raise_delta_y;
             p.y += raise_delta_y;
-            p.myVelY = 0;
+            p.myVelY = CRATE_SPEED * ((!collision.grounded) || 0);
             return raise_delta_y;
         } else {
             p.body.y += lower_delta_y;
@@ -1623,6 +1701,19 @@ function player_shift_to_rounded_position(p) {
     }
 }
 
+function player_powerup_state(p) {
+    if (p.unexplodable_at)
+        return [0, p.unexplodable_at];
+    else if (p.flying_started_at)
+        return [1, p.flying_started_at];
+    else if (p.water_walking_at)
+        return [2, p.water_walking_at];
+    else if (p.super_dash_started_at)
+        return [3, p.super_dash_started_at];
+    else
+        return [-1, -1];
+}
+
 function player_update(p) {
     if (!p.active) {
         return;
@@ -1641,6 +1732,21 @@ function player_update(p) {
         p.controls_recording.controls_array[f*4+1] = down_pressed*1;
         p.controls_recording.controls_array[f*4+2] = left_pressed*1;
         p.controls_recording.controls_array[f*4+3] = right_pressed*1;
+
+        // Powerup bar
+        var p_state = player_powerup_state(p);
+        if (p_state[0] == -1) {
+            powerup_bar_background.setVisible(false);
+            powerup_bar_foreground.setVisible(false);
+        } else {
+            powerup_bar_background.setVisible(true);
+            powerup_bar_foreground.setVisible(true);
+            powerup_bar_background.setPosition(p.x-25, p.y-30);
+            powerup_bar_foreground.setPosition(p.x-23, p.y-28);
+            powerup_bar_foreground.fillColor = SNOWFLAKE_TINTS[p_state[0]];
+            var percent_left = 1 - (getFrame() - p_state[1]) / 500
+            powerup_bar_foreground.width = percent_left * 46
+        }
     } else {
         p.label.setX(p.x - p.label.width/2);
         p.label.setY(p.y - 30);
@@ -1663,7 +1769,7 @@ function player_update(p) {
     p.super_jump_possible = false;
 
     p.strictly_grounded = myTouching(p, crates, 0, 1)
-    p.loosely_grounded = p.strictly_grounded || myTouching(p, crates, 0, 4) || myTouching(p, missiles, 0, 4);
+    p.loosely_grounded = p.strictly_grounded || myTouching(p, crates, 0, 4) || myTouching(p, missiles, 0, 4) || (p.water_walking_at && myTouching(p, water, 0, 4))
 
     if (p.dashing) {
         if (getFrame() - p.dash_start_frame >= PLAYER_DASH_FRAMES) {
@@ -1693,95 +1799,205 @@ function player_update(p) {
                 if (delta_y == 0)
                     break;
             }
-            return // Don't do anything more during a dash
         }
     }
 
-    // Jump limits:
-    // Shortest jump: 1 box height
-    // Tallest jump: 3 boxes height
-    if (p.strictly_grounded) {
-        p.myVelY = 0;
-    } else {
-        p.myVelY += PLAYER_GRAVITY;
-        if (p.myVelY < 0 && !up_pressed)
-            p.myVelY += PLAYER_JUMP_DRAG;
-    }
+    if (! p.dashing) {
+        // Not dashing
 
-    if (p.loosely_grounded || (p.myVelY > 0 && myTouching(p, missiles, 0, p.myVelY))) {
-        p.grounded_since_dash = true;
-        if (up_pressed) {
-            if (p.super_jump_possible) {
-                p.myVelY = PLAYER_SUPER_JUMP_SPEED;
-            } else
-                p.myVelY = Math.min(PLAYER_JUMP_SPEED, p.myVelY);
-        }
-    }
-
-    if (left_pressed)
-    {
-	p.anims.play('left', true);
-        if (! p.strictly_grounded) {
-            p.anims.setProgress(.25);
-            p.anims.stop();
-        }
-        p.x -= PLAYER_WALK_SPEED; 
-        p.body.x -= PLAYER_WALK_SPEED; 
-        player_attempt_horizontal_save(p);
-    }
-    else if (right_pressed)
-    {
-	p.anims.play('right', true);
-        if (! p.strictly_grounded) {
-            p.anims.setProgress(.25);
-            p.anims.stop();
-        }
-        p.x += PLAYER_WALK_SPEED;
-        p.body.x += PLAYER_WALK_SPEED;
-        player_attempt_horizontal_save(p);
-    }
-    else
-    {
-	p.anims.play('turn');
-        player_shift_to_rounded_position(p);
-    }
-    if (!p.active)
-        return
-
-    if (down_pressed && p.grounded_since_dash /*&& getFrame() - p.dash_start_frame > PLAYER_DASH_RECHARGE_FRAMES*/ && (left_pressed || right_pressed || !p.strictly_grounded)) {
-        
-        if (left_pressed) {
-            p.dash_delta = [-PLAYER_DASH_SPEED, 0]
-            p.anims.play('dash_right');
-        } else if (right_pressed) {
-            p.dash_delta = [PLAYER_DASH_SPEED, 0]
-            p.anims.play('dash_right');
-
+        // Jump limits:
+        // Shortest jump: 1 box height
+        // Tallest jump: 3 boxes height
+        if (p.strictly_grounded) {
+            p.myVelY = 0;
         } else {
-            p.dash_delta = [0, PLAYER_DASH_SPEED * 1.5]
-            p.anims.play('dash_downward');
+            if (p.flying_started_at) {
+                if (up_pressed) {
+                    p.myVelY -= PLAYER_GRAVITY/3
+                } else {
+                    p.myVelY += PLAYER_GRAVITY/2
+                }
+            } else {
+                p.myVelY += PLAYER_GRAVITY;
+                if (p.myVelY < 0 && !up_pressed)
+                    p.myVelY += PLAYER_JUMP_DRAG;
+            } 
         }
-        p.dashing = true
-        p.dash_start_frame = getFrame()
-        p.grounded_since_dash = false;
-        p.setSize(...PLAYER_DASH_SIZE);
-        p.setDisplaySize(...PLAYER_DASH_DISPLAY_SIZE);
-        p.setOffset(...PLAYER_DASH_OFFSET)
+
+        if (p.loosely_grounded || (p.myVelY > 0 && myTouching(p, missiles, 0, p.myVelY))) {
+            p.can_dash = true;
+            if (up_pressed) {
+                if (p.super_jump_possible) {
+                    p.myVelY = PLAYER_SUPER_JUMP_SPEED;
+                } else {
+                    if (p.flying_started_at) {
+                        p.myVelY = Math.min(PLAYER_JUMP_SPEED/6, p.myVelY);
+                    } else {
+                        p.myVelY = Math.min(PLAYER_JUMP_SPEED, p.myVelY);
+                    }
+                }
+            }
+        }
+
+        if (left_pressed)
+        {
+            p.anims.play('left', true);
+            if (! p.strictly_grounded) {
+                p.anims.setProgress(.25);
+                p.anims.stop();
+            }
+            p.x -= PLAYER_WALK_SPEED; 
+            p.body.x -= PLAYER_WALK_SPEED; 
+            player_attempt_horizontal_save(p);
+        }
+        else if (right_pressed)
+        {
+            p.anims.play('right', true);
+            if (! p.strictly_grounded) {
+                p.anims.setProgress(.25);
+                p.anims.stop();
+            }
+            p.x += PLAYER_WALK_SPEED;
+            p.body.x += PLAYER_WALK_SPEED;
+            player_attempt_horizontal_save(p);
+        }
+        else
+        {
+            p.anims.play('turn');
+            player_shift_to_rounded_position(p);
+        }
+        if (!p.active)
+            return
+
+        if (p.super_dash_started_at) {
+            p.can_dash = getFrame() - p.dash_start_frame > 15;
+
+            if (p.controlled_by == 'human') {
+                super_dash_lines.forEach(function (line) {
+                    line.setPosition(p.x, p.y);
+                    line.setVisible(p.can_dash);
+                })
+                super_dash_circles.forEach(function (circle) {
+                    circle.setPosition(p.x, p.y);
+                    circle.setVisible(p.can_dash);
+                });
+            }
+        }
+
+        if (down_pressed && p.can_dash && !p.flying_started_at/*&& getFrame() - p.dash_start_frame > PLAYER_DASH_RECHARGE_FRAMES*/ && (left_pressed || right_pressed || !p.strictly_grounded)) {
+            
+            if (left_pressed) {
+                p.dash_delta = [-PLAYER_DASH_SPEED, 0]
+                p.anims.play('dash_right');
+            } else if (right_pressed) {
+                p.dash_delta = [PLAYER_DASH_SPEED, 0]
+                p.anims.play('dash_right');
+
+            } else if (up_pressed && p.super_dash_started_at) {
+                p.dash_delta = [0, -PLAYER_DASH_SPEED]
+            } else if (!p.super_dash_started_at) {
+                p.dash_delta = [0, PLAYER_DASH_SPEED * 1.5]
+                p.anims.play('dash_downward');
+            } else {
+                p.dash_delta = false;
+            }
+            if (p.super_dash_started_at) {
+                if (p.dash_delta) { // Never super dash down
+                    myMove(p, p.dash_delta[0]*PLAYER_DASH_FRAMES, p.dash_delta[1]*PLAYER_DASH_FRAMES);
+                    p.dash_start_frame = getFrame();
+                    p.can_dash = false;
+                    p.myVelY = 0;
+                }
+            } else {
+                p.dashing = true
+                p.dash_start_frame = getFrame()
+                p.can_dash = false;
+                p.setSize(...PLAYER_DASH_SIZE);
+                p.setDisplaySize(...PLAYER_DASH_DISPLAY_SIZE);
+                p.setOffset(...PLAYER_DASH_OFFSET)
+            }
+        }
+
+
+        // Powerups
+        p.flipX = false;
+        if (p.flying_started_at) {
+            var frame = 9;
+            if (left_pressed)
+                frame = 11;
+            else if (right_pressed) {
+                frame = 11;
+                p.flipX = true;
+            }
+            frame += Math.floor(getFrame()/2) % 2
+            p.setFrame(frame);
+            
+            if (getFrame() - p.flying_started_at > 500) {
+                p.flying_started_at = false;
+            }
+        }
+        if (p.super_dash_started_at && getFrame() - p.super_dash_started_at > 500) {
+            p.super_dash_started_at = false;
+            super_dash_lines.forEach(function (line) {
+                line.setVisible(false);
+            })
+            super_dash_circles.forEach(function (circle) {
+                circle.setVisible(false);
+            });
+        }
+        if (p.water_walking_at && getFrame() - p.water_walking_at > 500) {
+            p.water_walking_at = false;
+        }
+        if (p.unexplodable_at && getFrame() - p.unexplodable_at > 500) {
+            p.unexplodable_at = false;
+        }
+
+        // Vertical Velocity enactment
+        p.body.y += p.myVelY;
+        p.y += p.myVelY;
+
+        for (var i=0; i<5; i++) {
+            var delta = player_resolve_vertical(p);
+            if (delta == 0)
+                break;
+        }
+
+        // Water hazard:
+        if (checkOverlap(p, water))
+            player_destroy(p);
     }
+    // End not-dash
 
-    // Vertical Velocity enactment
-    p.body.y += p.myVelY;
-    p.y += p.myVelY;
+    // Snowflake powerups
+    snowflakes.children.iterate(function (snowflake) {
+        if (p.snowflakes.has(snowflake.created_at) || !checkOverlap(snowflake, p))
+            return;
 
-    for (var i=0; i<5; i++) {
-        var delta = player_resolve_vertical(p);
-        if (delta == 0)
-            break;
-    }
+        var lobes = (p.snowflakes.size % 6) + 1
+        // Keep track of which have been collected
+        p.snowflakes.add(snowflake.created_at) 
 
-    // Water hazard:
-    if (checkOverlap(p, water))
-        player_destroy(p);
+        if (p.controlled_by == 'human') {
+            snowflake_indicator.setFrame(3 + lobes).setVisible(true);
+            snowflake_indicator.lobe_added_at = getFrame();
+            snowflake_indicator.setTint(SNOWFLAKE_TINTS[snowflake.whichPowerup]);
+
+            snowflake.setAlpha(.7);
+            snowflake.setTint(0xaaaaaa);
+
+        }
+
+        if (lobes == 6) { // Powerup time!
+            if (snowflake.whichPowerup == 0)
+                p.unexplodable_at = getFrame();
+            else if (snowflake.whichPowerup == 1)
+                p.flying_started_at = getFrame()
+            else if (snowflake.whichPowerup == 2)
+                p.water_walking_at = getFrame();
+            else if (snowflake.whichPowerup == 3)
+                p.super_dash_started_at = getFrame()
+        }
+    });
 }
 
 function getFrame() {
