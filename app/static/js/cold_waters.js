@@ -378,14 +378,14 @@ function create () {
     snowflake_indicator = this.add.image(22, 10, 'snowflake', 4).setOrigin(.5,0).setDisplaySize(35,40).setVisible(false);
 
     super_dash_lines = [];
+    var radius = 12;
     var length = PLAYER_DASH_SPEED * PLAYER_DASH_FRAMES;
-    super_dash_lines.push(this.add.line(0,0, length/2,0, length,0, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
-    super_dash_lines.push(this.add.line(0,0, -length/2,0, -length,0, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
+    super_dash_lines.push(this.add.line(0,0, length/2,0, length-radius,0, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
+    super_dash_lines.push(this.add.line(0,0, -length/2,0, -length+radius,0, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
 
-    super_dash_lines.push(this.add.line(0,0, 0,-length/2, 0,-length, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
+    super_dash_lines.push(this.add.line(0,0, 0,-length/2, 0,-length+radius, 0xaaaa00).setOrigin(0,0).setDepth(90).setVisible(false));
 
     super_dash_circles = [];
-    var radius = 12;
     super_dash_circles.push(this.add.circle(0,length, radius, 0xaaaa00).setDisplayOrigin(-length+radius,radius).setDepth(90).setVisible(false));
     super_dash_circles.push(this.add.circle(0,-length, radius, 0xaaaa00).setDisplayOrigin(length+radius,radius).setDepth(90).setVisible(false));
 
@@ -393,6 +393,11 @@ function create () {
 
     powerup_bar_background = this.add.rectangle(0,0, 50,10, 0x222222).setOrigin(0,0).setDepth(91).setVisible(true);
     powerup_bar_foreground = this.add.rectangle(2,2, 46,6, 0xaaaa00).setOrigin(0,0).setDepth(92).setVisible(true);
+
+    unexplodable_circles = [];
+    for (var i=0; i<3; i++) {
+        unexplodable_circles.push(this.add.circle(0,0, 25).setFillStyle().setStrokeStyle(3, 0xff8888).setDepth(90).setVisible(false));
+    }
 
     this.anims.create({
 	key: 'left',
@@ -568,8 +573,11 @@ function newGame(this_thing) {
     super_dash_lines.forEach(function (line) {
         line.setVisible(false);
     })
-    super_dash_circles.forEach(function (line) {
-        line.setVisible(false);
+    super_dash_circles.forEach(function (circle) {
+        circle.setVisible(false);
+        circle.setFillStyle();
+        circle.setStrokeStyle(2, 0xaaaa00)
+
     })
 
     // Make sure we're using the correct recording
@@ -1760,7 +1768,18 @@ function player_update(p) {
             else 
                 powerup_bar_background.fillColor = 0x222222;
         }
-    } else {
+
+        // Unexplodable rings
+        var i = 1;
+        unexplodable_circles.forEach(function (circle) {
+            circle.setVisible(p.unexplodable_at);
+            if (p.unexplodable_at) {
+                var angle = (getFrame() * i) / 5
+                circle.setPosition(p.x + 5 * Math.cos(angle), p.y + 5*Math.sin(angle));
+                i+=.35;
+            }
+        });
+    } else { // Not controlled by human
         p.label.setX(p.x - p.label.width/2);
         p.label.setY(p.y - 30);
         if (f*4 >= p.controls_recording.controls_array.length) {
@@ -1884,7 +1903,6 @@ function player_update(p) {
 
         if (p.super_dash_started_at) {
             p.can_dash = getFrame() - p.dash_start_frame > 15;
-
             if (p.controlled_by == 'human') {
                 super_dash_lines.forEach(function (line) {
                     line.setPosition(p.x, p.y);
