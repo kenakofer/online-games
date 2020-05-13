@@ -682,7 +682,7 @@ function newGame(this_thing) {
     game.rng_integrity_check = "";
     player.setDepth(9);
 
-    //player.unexplodable_at = -100;
+    //player.super_dash_started_at = -100;
 
     // TODO this is kind of a mess of logic. It REALLY need some TLC
     //
@@ -1640,6 +1640,8 @@ function player_resolve_vertical(p) {
         lower_delta_y = collision.body.bottom - p.body.top + 1;
 
         var kill_threshold = PLAYER_VERTICAL_KILL_THRESHOLD + Math.abs(p.myVelY)
+        if (p.super_dash_started_at)
+            kill_threshold *= 2;
 
 
         // Kill if the distance is too great
@@ -1671,9 +1673,12 @@ function player_attempt_horizontal_save(p) {
     if (collision) {
         left_delta_x = collision.body.left - p.body.right - 1;
         right_delta_x = collision.body.right - p.body.left + 1;
+        var kill_threshold = PLAYER_HORIZONTAL_KILL_THRESHOLD;
+        if (p.super_dash_started_at)
+            kill_threshold *= 2;
 
         // Kill if the distance is too great
-        if (Math.min(right_delta_x, -left_delta_x) > PLAYER_HORIZONTAL_KILL_THRESHOLD) {
+        if (Math.min(right_delta_x, -left_delta_x) > kill_threshold) {
             //console.log("Delta x would have been "+Math.min(right_delta_x, -left_delta_x));
             return player_destroy(p);
         }
