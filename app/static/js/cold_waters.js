@@ -87,6 +87,16 @@ const SCORE_PER_FRAME = .5
 const UFO_WIDTH = 100
 const UFO_HEIGHT = 40
 
+const SHIELD = 0;
+const FLYING = 1;
+const WATER_WALK = 2;
+const SUPER_DASH = 3;
+
+const POWERUP_LENGTH = 500;
+const POWERUP_TEXTS = ["Shield", "Flying", "Water Walk", "Super Dash"];
+const POWERUP_TEXT_COLORS = ["#f77", "#afa", "#aef", "#fe7"];
+const SNOWFLAKE_TINTS = [0xffaaaa, 0xccffbb, 0xddddff, 0xffddaa];
+
 const ELECTRO_BALL_SPEED = 6;
 const ELECTRO_BALL_WIDTH = 64;
 const ELECTRO_BALL_HEIGHT = 18;
@@ -99,7 +109,6 @@ const SNOWFLAKE_SPEED = 2;
 
 const SNOWFLAKE_WIND_INTERVAL = 35;
 const SNOWFLAKE_WIND_FRAMES = 20;
-const SNOWFLAKE_TINTS = [0xffaaaa, 0xccffbb, 0xddddff, 0xffddaa];
 
 // Combined, these make for a minimum jump height of ~60 pixels (1 box) and max
 // of ~160 pixels (3 box), and super jump around 260 pixels (5 boxes)
@@ -344,6 +353,9 @@ function create () {
     replay_instructions.push(this.add.text(5/6*GAME_WIDTH,GAME_HEIGHT/2, 'RIGHT\nNew seed', { fontSize: '40px', fill: '#fff', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
     replay_instructions.push(this.add.text(GAME_WIDTH/2,5/6*GAME_HEIGHT, 'DOWN\nEasier', { fontSize: '40px', fill: '#afa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
 
+    powerup_text = this.add.text(50, 30, 'Super Dash', { fontSize: '24px', fill: '#ffff00' }).setDepth(100).setOrigin(0,0).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false);
+    // ["Super Dash", "Water Walk", "Flying", "Shield"
+
     // Maybe move this into the mobile stuff
     scene = game.scene.scenes[0]
     scene.input.on('pointerdown', pointerdown);
@@ -375,7 +387,7 @@ function create () {
         }, this);
     }
 
-    snowflake_indicator = this.add.image(22, 10, 'snowflake', 4).setOrigin(.5,0).setDisplaySize(35,40).setVisible(false);
+    snowflake_indicator = this.add.image(25, 5, 'snowflake', 4).setOrigin(.5,0).setDisplaySize(45,50).setVisible(false);
 
     super_dash_lines = [];
     var radius = 12;
@@ -506,9 +518,9 @@ function create () {
     cursors = this.input.keyboard.createCursorKeys();
     debug_key = this.input.keyboard.addKey('D');
 
-    upperLeftText = this.add.text(46, 16, 'Score: 0', { fontSize: '24px', fill: '#fff' });
-    upperLeftText.setShadow(-1, 1, 'rgba(0,0,0)', 0);
-    upperLeftText.setDepth(100);
+    score_text = this.add.text(50, 5, 'Score: 0', { fontSize: '24px', fill: '#fff' });
+    score_text.setShadow(-1, 1, 'rgba(0,0,0)', 0);
+    score_text.setDepth(100);
 
     upperRightText = this.add.text(GAME_WIDTH-120, 9, 'Score: 0', { fontSize: '10px', fill: '#000' });
     upperRightText.setDepth(100);
@@ -568,6 +580,7 @@ function newGame(this_thing) {
     seed_scores_text.setVisible(false);
     seed_scores_header.setVisible(false);
     leader_board_text.setVisible(false);
+    powerup_text.setVisible(false);
     leader_board_header.setVisible(false);
     snowflake_indicator.setVisible(false);
     super_dash_lines.forEach(function (line) {
@@ -681,8 +694,9 @@ function newGame(this_thing) {
     }
     game.rng_integrity_check = "";
     player.setDepth(9);
+    player.powerup_at = [false, false, false, false, false, false];
 
-    //player.super_dash_started_at = -100;
+    // player.super_dash_started_at = -100;
 
     // TODO this is kind of a mess of logic. It REALLY need some TLC
     //
@@ -752,6 +766,7 @@ function ghost_from_recording(recording, this_thing) {
 
     ghost.setAlpha(GHOST_START_ALPHA);
     ghost.setDepth(8);
+    ghost.powerup_at = [false, false, false, false, false, false];
 
     var label_color, tint_color, label_text;
     if (recording.name == user_name) {
@@ -984,7 +999,7 @@ function update () {
             snowflake_indicator.lobe_added_at = false;
             snowflake_indicator.angle = 0;
         } else {
-            snowflake_indicator.angle = Math.sin(.2*f)*100 / (f**.7)
+            snowflake_indicator.angle = -Math.sin(.2*f)*100 / (f**.7)
         }
     }
 
@@ -1052,7 +1067,6 @@ function update () {
     }
 
     if (getFrame() % 10 == 0) {
-        var text = "Score: "+Math.floor(player.score);
         if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30) {
 
             if (!seed_scores_text.visible) {
@@ -1092,7 +1106,7 @@ function update () {
                     replay_instructions[i].setAlpha(.6);
             }
         }
-        upperLeftText.setText(text);
+        score_text.setText("Score: "+Math.floor(player.score));
 
         rng_index = Math.floor(getFrame() / 10);
 
@@ -1735,6 +1749,35 @@ function player_powerup_state(p) {
         return [-1, -1];
 }
 
+function start_powerup(p, which_powerup) {
+    if (p.controlled_by == 'human') {
+        powerup_text.setVisible(true);
+        powerup_text.setText(POWERUP_TEXTS[which_powerup]);
+        powerup_text.setColor(POWERUP_TEXT_COLORS[which_powerup])
+    }
+    p.powerup_at[which_powerup] = getFrame();
+}
+
+function stop_powerup(p, which_powerup) {
+    p.powerup_at[which_powerup] = false;
+    if (p.controlled_by != 'human')
+        return;
+    if (p.powerup_at.every(function(pow) {return pow == false})) {
+        powerup_text.setVisible(false);
+    }
+}
+
+function powerup_tick(p) {
+    var f = getFrame();
+    p.powerup_at.forEach(function (value, index) {
+        if (!value)
+            return;
+        if(f - value > POWERUP_LENGTH) {
+            stop_powerup(p, index);
+        }
+    });
+}
+
 function player_update(p) {
     if (!p.active) {
         return;
@@ -1766,7 +1809,7 @@ function player_update(p) {
             powerup_bar_foreground.setPosition(p.x-23, p.y-28);
             powerup_bar_foreground.fillColor = SNOWFLAKE_TINTS[p_state[0]];
             var f = getFrame() - p_state[1];
-            var percent_left = 1 - f / 500
+            var percent_left = 1 - f / POWERUP_LENGTH
             powerup_bar_foreground.width = percent_left * 46
             if (f > 400 && f % 10 < 5)
                 powerup_bar_background.fillColor = 0xff0000;
@@ -1954,6 +1997,7 @@ function player_update(p) {
             }
         }
 
+        powerup_tick(p)
 
         // Powerups
         p.flipX = false;
@@ -1968,11 +2012,11 @@ function player_update(p) {
             frame += Math.floor(getFrame()/2) % 2
             p.setFrame(frame);
             
-            if (getFrame() - p.flying_started_at > 500) {
+            if (getFrame() - p.flying_started_at > POWERUP_LENGTH) {
                 p.flying_started_at = false;
             }
         }
-        if (p.super_dash_started_at && getFrame() - p.super_dash_started_at > 500) {
+        if (p.super_dash_started_at && getFrame() - p.super_dash_started_at > POWERUP_LENGTH) {
             p.super_dash_started_at = false;
             super_dash_lines.forEach(function (line) {
                 line.setVisible(false);
@@ -1981,10 +2025,10 @@ function player_update(p) {
                 circle.setVisible(false);
             });
         }
-        if (p.water_walking_at && getFrame() - p.water_walking_at > 500) {
+        if (p.water_walking_at && getFrame() - p.water_walking_at > POWERUP_LENGTH) {
             p.water_walking_at = false;
         }
-        if (p.unexplodable_at && getFrame() - p.unexplodable_at > 500) {
+        if (p.unexplodable_at && getFrame() - p.unexplodable_at > POWERUP_LENGTH) {
             p.unexplodable_at = false;
         }
 
@@ -2032,6 +2076,7 @@ function player_update(p) {
                 p.water_walking_at = getFrame();
             else if (snowflake.whichPowerup == 3)
                 p.super_dash_started_at = getFrame()
+            start_powerup(p, snowflake.whichPowerup);
         }
     });
 }
