@@ -6,6 +6,7 @@
 // TODO
 //
 // For next score reset:
+//  change to anomoly_random
 //  change player alignment to box_size/2?
 //  Change rng check to ghost state check
 //
@@ -23,6 +24,7 @@
 //   Dragging between 
 //   Add username selection screen
 //   Add credits screen
+//   Store cause of death
 //
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
@@ -51,6 +53,7 @@ const BASE_ODDS_BY_DIFFICULTY = {
         'missile': 250,
         'ufo': 2000,
         'anomoly': 3000,
+        //'anomoly': 300,
         'snowflake': 100,
     },
     1: {
@@ -73,6 +76,7 @@ const MISSILE_WIDTH = 30;
 const GAME_WIDTH_IN_BOXES = GAME_WIDTH/BOX_SIZE;
 const EXPLOSION_SIZE = 178;
 const BIG_EXPLOSION_SIZE = 230;
+const ANOMOLY_RADIUS = 66;
 const FOREGROUND_WATER_TILE_WIDTH = 80;
 const FOREGROUND_WATER_TILE_HEIGHT = 40;
 const BACKGROUND_WATER_TILE_WIDTH = 80;
@@ -81,6 +85,8 @@ const CRATE_SPEED = 3;
 const SHARK_SPEED = 2;
 const UFO_SPEED = 2;
 const METAL_CRATE_SINK_SPEED = .5;
+const ANOMOLY_SPEED = .6;
+const ANOMOLY_PULSE_INTERVAL = 100;
 const BOMB_BLINK_FRAMES = 34;
 const BOMB_BLINK_STATES = 5;
 const SCORE_PER_FRAME = .5
@@ -140,6 +146,7 @@ var CODE_HASH;
 var game_div;
 var httpRequest;
 var ufo_random; 
+var anomoly_random; 
 var particle_random = new Phaser.Math.RandomDataGenerator(["0"])
 var virtual_screen_pressed = [
     [false, false, false],
@@ -788,17 +795,18 @@ function ghost_from_recording(recording, this_thing) {
 function create_anomoly(this_thing) {
     var shape = this_thing.make.graphics();
     shape.fillStyle(0xffffff);
-    shape.fillCircle(0, 0, 66);
+    shape.fillCircle(0, 0, ANOMOLY_RADIUS);
     shape.fillPath();
     var mask = shape.createGeometryMask();
 
     anomoly = anomolies.create(GAME_WIDTH/2, GAME_HEIGHT/2);
-    anomoly.setSize(132,132);
+    anomoly.setSize(ANOMOLY_RADIUS*2,ANOMOLY_RADIUS*2);
     anomoly.setMask(mask);
     anomoly.mask_shape = shape;
     anomoly.setDepth(50);
+    anomoly.setTint(0xff7777);
 
-    anomoly.mask_shape.x = random_between(0, GAME_WIDTH);
+    anomoly.mask_shape.x = random_between(0, GAME_WIDTH); // TODO switch to anomoly_random
     anomoly.mask_shape.y = GAME_HEIGHT + 100;
 }
 
@@ -1024,23 +1032,36 @@ function update () {
         else
             return;
 
-	if (anomoly.mask_shape.x < focus.x)
-	    anomoly.mask_shape.x += 1;
-	else
-	    anomoly.mask_shape.x -= 1;
+        var angle = Math.atan2(anomoly.mask_shape.y - focus.y, anomoly.mask_shape.x - focus.x) * 180 / Math.PI;
 
-	if (anomoly.mask_shape.y < focus.y)
-	    anomoly.mask_shape.y += 1;
-	else
-	    anomoly.mask_shape.y -= 1;
+        anomoly.myVelY = -ANOMOLY_SPEED * Math.sin(angle * Math.PI / 180)
+        anomoly.myVelX = -ANOMOLY_SPEED * Math.cos(angle * Math.PI / 180)
+
+        anomoly.mask_shape.x += anomoly.myVelX;
+        anomoly.mask_shape.y += anomoly.myVelY;
+        //myMove(anomoly, anomoly.myVelX, anomoly.myVelY);
 
 	anomoly.body.x = anomoly.mask_shape.x - anomoly.body.width/2
 	anomoly.body.y = anomoly.mask_shape.y - anomoly.body.height/2
 	if (checkOverlapGroup(anomoly, explosions)) {
-            anomoly.mask_shape.scale -= .02;
-            if (anomoly.mask_shape.scale < 0)
+            anomoly.body.width -= 1;
+            anomoly.body.height -= 1;
+            anomoly.mask_shape.scale = anomoly.body.width/2 / ANOMOLY_RADIUS
+            if (anomoly.width <= 60)
                 anomoly.destroy(true);
 	}
+
+        var f = getFrame();
+        
+        var brightness = Math.min((f % ANOMOLY_PULSE_INTERVAL)*10, 200)
+        anomoly.setTint(Phaser.Display.Color.GetColor(255, 55+brightness, 55+brightness));
+
+        if (f % ANOMOLY_PULSE_INTERVAL == 0 && player.active) {
+            if (Phaser.Math.Distance.Between(anomoly.mask_shape.x, anomoly.mask_shape.y, player.x, player.y) < anomoly.body.width/2) {
+                player_destroy(player);
+            }
+        }
+
     });
     // Stuff to destroy
     this.physics.world.staticBodies.each(function (body) {
@@ -1297,7 +1318,7 @@ function randomSpawns(this_thing) {
     if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 35) {
         initialize_shark_fin()
     }
-    if (random_between(0,getOdds('anomoly')) == 0) {
+    if (random_between(0,getOdds('anomoly')) == 0) { // TODO use anomoly_random
         create_anomoly(this_thing);
     }
     if (ufo_random_between(0,getOdds('ufo')) == 0) {
@@ -1346,6 +1367,10 @@ function ufo_random_between(x, y) {
     return ufo_random.between(x, y);
 }
 
+function anomoly_random_between(x, y) {
+    return anomoly_random.between(x, y);
+}
+
 function snowflake_random_between(x, y) {
     return snowflake_random.between(x, y);
 }
@@ -1353,6 +1378,7 @@ function snowflake_random_between(x, y) {
 function seed_rngs(seed) {
     // The string has to be in a list and a string for some reason?
     ufo_random = new Phaser.Math.RandomDataGenerator(["ufo"+seed])
+    anomoly_random = new Phaser.Math.RandomDataGenerator(["anomoly"+seed])
     snowflake_random = new Phaser.Math.RandomDataGenerator(["snowflake"+seed])
     return Phaser.Math.RND.init(["main"+seed]);
 }
