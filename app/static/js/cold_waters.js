@@ -1047,7 +1047,7 @@ function update () {
             anomoly.body.width -= 1;
             anomoly.body.height -= 1;
             anomoly.mask_shape.scale = anomoly.body.width/2 / ANOMOLY_RADIUS
-            if (anomoly.width <= 60)
+            if (anomoly.body.width <= 60)
                 anomoly.destroy(true);
 	}
 
@@ -1056,7 +1056,7 @@ function update () {
         var brightness = Math.min((f % ANOMOLY_PULSE_INTERVAL)*10, 200)
         anomoly.setTint(Phaser.Display.Color.GetColor(255, 55+brightness, 55+brightness));
 
-        if (f % ANOMOLY_PULSE_INTERVAL == 0 && player.active) {
+        if (f % ANOMOLY_PULSE_INTERVAL == 0 && player.active && !player.unexplodable_at) {
             if (Phaser.Math.Distance.Between(anomoly.mask_shape.x, anomoly.mask_shape.y, player.x, player.y) < anomoly.body.width/2) {
                 player_destroy(player);
             }
