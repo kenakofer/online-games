@@ -27,7 +27,7 @@
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //
-const CODE_VERSION = "136";
+const CODE_VERSION = "137";
 
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
 const T_HALF_LIFE = 3000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
@@ -809,7 +809,7 @@ function create_anomoly(this_thing) {
     anomoly.setDepth(50);
     anomoly.setTint(0xff7777);
 
-    anomoly.mask_shape.x = random_between(0, GAME_WIDTH); // TODO switch to anomoly_random
+    anomoly.mask_shape.x = anomoly_random_between(0, GAME_WIDTH); // TODO switch to anomoly_random
     anomoly.mask_shape.y = GAME_HEIGHT + 100;
 }
 
@@ -1340,7 +1340,7 @@ function randomSpawns(this_thing, frequency) {
     if (shark_fins.countActive() == 0 && random_between(0, 100) < frequency && crates.countActive() > 35) {
         initialize_shark_fin()
     }
-    if (getFrame() % getOdds('anomoly') < frequency) {
+    if (getFrame() > 0 && getFrame() % getOdds('anomoly') < frequency) {
         create_anomoly(this_thing);
     }
     if (ufo_random_between(0,getOdds('ufo')) < frequency) {
