@@ -7,8 +7,11 @@
 //
 // For next score reset:
 //  change to anomoly_random
+//  periodic anomolies instead of random
 //  change player alignment to box_size/2?
 //  Change rng check to ghost state check
+//  Warning lines powerup
+//  Only run random_spawn every X frames
 //
 // Minor:
 //  flip bomb crates (careful of recycling issues)
@@ -85,7 +88,7 @@ const CRATE_SPEED = 3;
 const SHARK_SPEED = 2;
 const UFO_SPEED = 2;
 const METAL_CRATE_SINK_SPEED = .5;
-const ANOMOLY_SPEED = .6;
+const ANOMOLY_SPEED = 1;
 const ANOMOLY_PULSE_INTERVAL = 100;
 const BOMB_BLINK_FRAMES = 34;
 const BOMB_BLINK_STATES = 5;
@@ -360,7 +363,6 @@ function create () {
     replay_instructions.push(this.add.text(5/6*GAME_WIDTH,GAME_HEIGHT/2, 'RIGHT\nNew seed', { fontSize: '40px', fill: '#fff', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
     replay_instructions.push(this.add.text(GAME_WIDTH/2,5/6*GAME_HEIGHT, 'DOWN\nEasier', { fontSize: '40px', fill: '#afa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
 
-    powerup_text = this.add.text(50, 30, 'Super Dash', { fontSize: '24px', fill: '#ffff00' }).setDepth(100).setOrigin(0,0).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false);
     // ["Super Dash", "Water Walk", "Flying", "Shield"
 
     // Maybe move this into the mobile stuff
@@ -394,7 +396,7 @@ function create () {
         }, this);
     }
 
-    snowflake_indicator = this.add.image(25, 5, 'snowflake', 4).setOrigin(.5,0).setDisplaySize(45,50).setVisible(false);
+    snowflake_indicator = this.add.image(25, 5, 'snowflake', 4).setOrigin(.5,0).setDisplaySize(45,50).setVisible(false).setDepth(100);
 
     super_dash_lines = [];
     var radius = 12;
@@ -525,12 +527,10 @@ function create () {
     cursors = this.input.keyboard.createCursorKeys();
     debug_key = this.input.keyboard.addKey('D');
 
-    score_text = this.add.text(50, 5, 'Score: 0', { fontSize: '24px', fill: '#fff' });
-    score_text.setShadow(-1, 1, 'rgba(0,0,0)', 0);
-    score_text.setDepth(100);
+    score_text = this.add.text(50, 5, 'Score: 0', { fontSize: '24px', fill: '#fff' }).setShadow(-1, 1, 'rgba(0,0,0)', 0).setDepth(100);
+    powerup_text = this.add.text(50, 30, 'Super Dash', { fontSize: '24px', fill: '#ffff00' }).setDepth(100).setOrigin(0,0).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false);
 
-    upperRightText = this.add.text(GAME_WIDTH-120, 9, 'Score: 0', { fontSize: '10px', fill: '#000' });
-    upperRightText.setDepth(100);
+    upperRightText = this.add.text(GAME_WIDTH-120, 9, 'Score: 0', { fontSize: '10px', fill: '#000' }).setDepth(100).setVisible(false);
 
     game.hard = 0;
 
@@ -814,10 +814,7 @@ function update () {
     game.myFrame += 1;
 
     if (debug_key.isDown) {
-        this.physics.debug = !this.physics.debug;
-        this.physics.world.staticBodies.iterate(function (body) {
-            body.gameObject.setDebug(this.physics.debug, this.physics.debug);
-        });
+        upperRightText.setVisible(true);
     }
 
     if (keyboard_instructions && player.dashing) {
@@ -1149,8 +1146,10 @@ function update () {
 
         if (rng_ok)
             upperRightText.setColor("#000000")
-        else 
+        else {
             upperRightText.setColor("#ff0000")
+            upperRightText.setVisible(true);
+        }
     }
 
     if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30 &&
