@@ -27,7 +27,7 @@
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
 //
-const CODE_VERSION = "137";
+const CODE_VERSION = "138";
 
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
 const T_HALF_LIFE = 3000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
@@ -125,7 +125,7 @@ const PLAYER_GRAVITY = .45;
 const PLAYER_JUMP_SPEED = -12.5;
 const PLAYER_JUMP_DRAG = 1.0; 
 const PLAYER_SUPER_JUMP_SPEED = -15;
-const PLAYER_WALK_SPEED = 5;
+const PLAYER_WALK_SPEED = 4;
 
 const PLAYER_SIZE = [23, 38];
 const PLAYER_DISPLAY_SIZE = [29, 48];
