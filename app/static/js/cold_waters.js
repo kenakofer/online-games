@@ -34,7 +34,7 @@
 //  Powerups
 //   6 part snowflakes
 //
-const CODE_VERSION = "134";
+const CODE_VERSION = "135";
 
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
 const T_HALF_LIFE = 3000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
@@ -56,7 +56,6 @@ const BASE_ODDS_BY_DIFFICULTY = {
         'missile': 250,
         'ufo': 2000,
         'anomoly': 3000,
-        //'anomoly': 300,
         'snowflake': 100,
     },
     1: {
@@ -75,6 +74,7 @@ const TARGET_FPS = 50;
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 const BOX_SIZE = 50;
+const CREATION_HEIGHT = -BOX_SIZE*2
 const MISSILE_WIDTH = 30;
 const GAME_WIDTH_IN_BOXES = GAME_WIDTH/BOX_SIZE;
 const EXPLOSION_SIZE = 178;
@@ -95,6 +95,13 @@ const BOMB_BLINK_STATES = 5;
 const SCORE_PER_FRAME = .5
 const UFO_WIDTH = 100
 const UFO_HEIGHT = 40
+const WARNING_LINE_COLORS = {
+    bomb_crate: 0x000000,
+    missile: 0xff0000,
+    plain_crate: 0xddaa88,
+    metal_crate: 0x999999,
+    snowflake: 0xffffff,
+}
 
 const SHIELD = 0;
 const FLYING = 1;
@@ -102,9 +109,9 @@ const WATER_WALK = 2;
 const SUPER_DASH = 3;
 
 const POWERUP_LENGTH = 500;
-const POWERUP_TEXTS = ["Shield", "Flying", "Water Walk", "Super Dash"];
-const POWERUP_TEXT_COLORS = ["#f77", "#afa", "#aef", "#fe7"];
-const SNOWFLAKE_TINTS = [0xffaaaa, 0xccffbb, 0xddddff, 0xffddaa];
+const POWERUP_TEXTS = ["Shield", "Flying", "Water Walk", "Super Dash", "Drop Warning"];
+const POWERUP_TEXT_COLORS = ["#f77", "#afa", "#aef", "#fe7", "#c66"];
+const SNOWFLAKE_TINTS = [0xffaaaa, 0xccffbb, 0xddddff, 0xffddaa, 0xbb5555];
 
 const ELECTRO_BALL_SPEED = 6;
 const ELECTRO_BALL_WIDTH = 64;
@@ -577,6 +584,8 @@ function newGame(this_thing) {
     scene.physics.world.staticBodies.each(function (object) {
         if (object.gameObject.label)
             object.gameObject.label.destroy(true);
+        if (object.gameObject.warning_line)
+            object.gameObject.warning_line.destroy(true);
         object.gameObject.destroy(true);
     });
 
@@ -704,6 +713,8 @@ function newGame(this_thing) {
     player.powerup_at = [false, false, false, false, false, false];
 
     // player.super_dash_started_at = -100;
+    player.drop_warning_started_at = -100;
+    start_powerup(player, 4);
 
     // TODO this is kind of a mess of logic. It REALLY need some TLC
     //
@@ -851,9 +862,11 @@ function update () {
         }
     });
     plain_crates.children.iterate(function (crate) {
+        warning_line_step(crate, WARNING_LINE_COLORS.plain_crate);
         crate_step(crate);
     });
     metal_crates.children.iterate(function (crate) {
+        warning_line_step(crate, WARNING_LINE_COLORS.metal_crate);
         if (crate.electrified) {
             redness = particle_random_between(0, 150);
             crate.setTint(Phaser.Display.Color.GetColor(105+redness, 255, 255));
@@ -884,6 +897,7 @@ function update () {
         crate_step(crate);
     });
     bomb_crates.children.each(function(crate) {
+        warning_line_step(crate, WARNING_LINE_COLORS.bomb_crate);
         crate.body.x = crate.x - 25
         crate.body.y = crate.y - 25
         if (!crate.active)
@@ -960,6 +974,7 @@ function update () {
     });
 
     missiles.children.each(function(missile) {
+        warning_line_step(missile, WARNING_LINE_COLORS.missile);
         missile.y += MISSILE_SPEED
         missile.body.y += MISSILE_SPEED
         missile.angle += Math.sin(missile.y/30)
@@ -973,6 +988,7 @@ function update () {
     });
 
     snowflakes.children.each(function(snowflake) {
+        warning_line_step(snowflake, WARNING_LINE_COLORS.snowflake);
         snowflake.y += SNOWFLAKE_SPEED
         snowflake.body.y += SNOWFLAKE_SPEED
 
@@ -1064,7 +1080,7 @@ function update () {
     this.physics.world.staticBodies.each(function (body) {
         var object = body.gameObject;
 
-        if (object.x > GAME_WIDTH + 150 || object.x < -150 || object.y > GAME_HEIGHT + 50 || object.y < -BOX_SIZE * 2) {
+        if (object.x > GAME_WIDTH + 150 || object.x < -150 || object.y > GAME_HEIGHT + 50 || object.y < -300) {
             if (object.texture.key == 'plain_crate_destroyed' || object.texture.key == 'clove') {
                 destroyed_stuff.killAndHide(object);
             } else if (players.children.entries.includes(object)) {
@@ -1170,6 +1186,19 @@ function update () {
         game.my_best_recording = best_recording([player.controls_recording, game.my_best_recording])
         newGame(this);
         return;
+    }
+}
+
+function warning_line_step(object, color) {
+    if (!object.warning_line) {
+        object.warning_line = scene.add.line(object.x,8, 0,0, object.body.width,0, color).setDepth(90);
+        object.warning_line.setLineWidth(6);
+    }
+    if (object.y < -BOX_SIZE/2 + 5 && player.drop_warning_started_at) {
+        object.warning_line.setPosition(object.x, 8)
+        object.warning_line.setVisible(true);
+    } else {
+        object.warning_line.setVisible(false);
     }
 }
 
@@ -1299,19 +1328,19 @@ function isSurroundTouching(spriteA, spriteB) {
 function randomSpawns(this_thing) {
 
     if (random_between(0,getOdds('plain_crate')) == 0) {
-        var crate = initialize_plain_crate(plain_crates.create(0,-BOX_SIZE))
+        var crate = initialize_plain_crate(plain_crates.create(0,CREATION_HEIGHT))
         move_to_empty_top_spot(crate); 
     }
     if (random_between(0,getOdds('bomb_crate')) == 0) {
-        var crate = initialize_bomb_crate(bomb_crates.get(), 0, -BOX_SIZE);
+        var crate = initialize_bomb_crate(bomb_crates.get(), 0, CREATION_HEIGHT);
         move_to_empty_top_spot(crate); 
     }
     if (random_between(0,getOdds('metal_crate')) == 0) {
-        var crate = initialize_metal_crate(metal_crates.create(0,-BOX_SIZE))
+        var crate = initialize_metal_crate(metal_crates.create(0,CREATION_HEIGHT))
         move_to_empty_top_spot(crate); 
     }
     if (random_between(0,getOdds('missile')) == 0) {
-        var missile = initialize_missile(missiles.create(0, -BOX_SIZE))
+        var missile = initialize_missile(missiles.create(0, CREATION_HEIGHT))
         move_to_empty_top_spot(missile); 
     }
     if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 35) {
@@ -1324,7 +1353,7 @@ function randomSpawns(this_thing) {
         initialize_ufo()
     }
     if (snowflake_random_between(0,getOdds('snowflake')) == 0) {
-        var snowflake = initialize_snowflake(snowflakes.create(0, -BOX_SIZE))
+        var snowflake = initialize_snowflake(snowflakes.create(0, CREATION_HEIGHT))
         move_to_empty_top_spot(snowflake, snowflake_random); 
         snowflake.x += 7;
         snowflake.body.x += 7;
@@ -1395,7 +1424,7 @@ function initialize_missile(missile) {
 }
 
 function initialize_snowflake(snowflake) {
-    snowflake.whichPowerup = snowflake_random_between(0, 3);
+    snowflake.whichPowerup = snowflake_random_between(0, SNOWFLAKE_TINTS.length-1);
     snowflake.setTint(SNOWFLAKE_TINTS[snowflake.whichPowerup]);
     snowflake.setSize(10, 10);
     snowflake.setDisplaySize(BOX_SIZE/2 - 1, BOX_SIZE/2 - 1);
@@ -1511,6 +1540,7 @@ function initialize_bomb_crate(crate, x, y) {
     if (random_between(0,1) == 1)
         crate.flipX = true;
     crate.myDestroy = bomb_crate_destroy
+
     return crate;
 }
 
@@ -1539,6 +1569,9 @@ function plain_crate_destroy(crate) {
 
 function generic_destroy(object) {
     object.destroy(true);
+    if (object.warning_line) {
+        object.warning_line.destroy(true);
+    }
     //particles = splinter_emitter.emitParticleAt(object.x, object.y, 2)
 }
 
@@ -1770,6 +1803,8 @@ function player_powerup_state(p) {
         return [2, p.water_walking_at];
     else if (p.super_dash_started_at)
         return [3, p.super_dash_started_at];
+    else if (p.drop_warning_started_at)
+        return [4, p.drop_warning_started_at];
     else
         return [-1, -1];
 }
@@ -2056,6 +2091,9 @@ function player_update(p) {
         if (p.unexplodable_at && getFrame() - p.unexplodable_at > POWERUP_LENGTH) {
             p.unexplodable_at = false;
         }
+        if (p.drop_warning_started_at && getFrame() - p.drop_warning_started_at > POWERUP_LENGTH) {
+            p.drop_warning_started_at = false;
+        }
 
         // Vertical Velocity enactment
         p.body.y += p.myVelY;
@@ -2101,6 +2139,8 @@ function player_update(p) {
                 p.water_walking_at = getFrame();
             else if (snowflake.whichPowerup == 3)
                 p.super_dash_started_at = getFrame()
+            else if (snowflake.whichPowerup == 4)
+                p.drop_warning_started_at = getFrame()
             start_powerup(p, snowflake.whichPowerup);
         }
     });
