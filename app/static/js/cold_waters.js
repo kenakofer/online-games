@@ -6,12 +6,7 @@
 // TODO
 //
 // For next score reset:
-//  change to anomoly_random
-//  periodic anomolies instead of random
-//  change player alignment to box_size/2?
 //  Change rng check to ghost state check
-//  Warning lines powerup
-//  Only run random_spawn every X frames
 //
 // Minor:
 //  flip bomb crates (careful of recycling issues)
@@ -31,10 +26,8 @@
 //
 // Major:
 //  Remove physics (bodies?) entirely to try to solve performance issues
-//  Powerups
-//   6 part snowflakes
 //
-const CODE_VERSION = "135";
+const CODE_VERSION = "136";
 
 const T_INF_FACTOR = .6; // the time factor in random spawns drops from 1 to this number asymptotically
 const T_HALF_LIFE = 3000; // the time factor in random spawns drops halfway to T_INF_FACTOR after this number of frames
@@ -713,8 +706,7 @@ function newGame(this_thing) {
     player.powerup_at = [false, false, false, false, false, false];
 
     // player.super_dash_started_at = -100;
-    player.drop_warning_started_at = -100;
-    start_powerup(player, 4);
+    // player.drop_warning_started_at = -100;
 
     // TODO this is kind of a mess of logic. It REALLY need some TLC
     //
@@ -1090,7 +1082,7 @@ function update () {
             }
         }
     });
-    randomSpawns(this);
+    randomSpawns(this, 10);
 
     // RNG integrity check
     if (getFrame() % 10 == 0) {
@@ -1325,34 +1317,36 @@ function isSurroundTouching(spriteA, spriteB) {
     return (spriteA.active && spriteB.active && Phaser.Geom.Intersects.RectangleToRectangle(bounds1, spriteB.body.getBounds({})) && spriteA != spriteB)
 }
 
-function randomSpawns(this_thing) {
+function randomSpawns(this_thing, frequency) {
+    if (getFrame() % frequency != 0)
+        return;
 
-    if (random_between(0,getOdds('plain_crate')) == 0) {
+    if (random_between(0,getOdds('plain_crate')) < frequency) {
         var crate = initialize_plain_crate(plain_crates.create(0,CREATION_HEIGHT))
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,getOdds('bomb_crate')) == 0) {
+    if (random_between(0,getOdds('bomb_crate')) < frequency) {
         var crate = initialize_bomb_crate(bomb_crates.get(), 0, CREATION_HEIGHT);
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,getOdds('metal_crate')) == 0) {
+    if (random_between(0,getOdds('metal_crate')) < frequency) {
         var crate = initialize_metal_crate(metal_crates.create(0,CREATION_HEIGHT))
         move_to_empty_top_spot(crate); 
     }
-    if (random_between(0,getOdds('missile')) == 0) {
+    if (random_between(0,getOdds('missile')) < frequency) {
         var missile = initialize_missile(missiles.create(0, CREATION_HEIGHT))
         move_to_empty_top_spot(missile); 
     }
-    if (shark_fins.countActive() == 0 && random_between(0, 100) == 0 && crates.countActive() > 35) {
+    if (shark_fins.countActive() == 0 && random_between(0, 100) < frequency && crates.countActive() > 35) {
         initialize_shark_fin()
     }
-    if (random_between(0,getOdds('anomoly')) == 0) { // TODO use anomoly_random
+    if (getFrame() % getOdds('anomoly') < frequency) {
         create_anomoly(this_thing);
     }
-    if (ufo_random_between(0,getOdds('ufo')) == 0) {
+    if (ufo_random_between(0,getOdds('ufo')) < frequency) {
         initialize_ufo()
     }
-    if (snowflake_random_between(0,getOdds('snowflake')) == 0) {
+    if (snowflake_random_between(0,getOdds('snowflake')) < frequency) {
         var snowflake = initialize_snowflake(snowflakes.create(0, CREATION_HEIGHT))
         move_to_empty_top_spot(snowflake, snowflake_random); 
         snowflake.x += 7;
