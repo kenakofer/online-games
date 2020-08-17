@@ -62,6 +62,8 @@ const BASE_ODDS_BY_DIFFICULTY = {
     }
 };
 
+const DELAY_AFTER_DEATH_UNTIL_REPLAY = 50;
+
 const TARGET_FPS = 50;
 
 const GAME_WIDTH = 800;
@@ -1093,7 +1095,7 @@ function update () {
     }
 
     if (getFrame() % 10 == 0) {
-        if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30) {
+        if (game.frameOfDeath && getFrame() - game.frameOfDeath > DELAY_AFTER_DEATH_UNTIL_REPLAY) {
 
             if (!seed_scores_text.visible) {
                 // Redraw the (possibly old) scores before fetching new ones
@@ -1160,7 +1162,7 @@ function update () {
         }
     }
 
-    if (game.frameOfDeath && getFrame() - game.frameOfDeath > 30 &&
+    if (game.frameOfDeath && getFrame() - game.frameOfDeath > DELAY_AFTER_DEATH_UNTIL_REPLAY &&
         (my_pressed('left') || my_pressed('right') || my_pressed('up') || my_pressed('down'))) {
         player.controls_recording.score = player.score;
 
