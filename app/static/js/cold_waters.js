@@ -220,15 +220,15 @@ function preload () {
     this.load.spritesheet('bomb_crate', 'bomb_crate_sheet.jpg', { frameWidth: 99, frameHeight: 100 });
     this.load.spritesheet('explosion', 'explosion_sheet.png', { frameWidth: 89, frameHeight: 89 });
     this.load.spritesheet('electro_ball', 'electro_ball.png', { frameWidth: 128, frameHeight: 35 });
-    this.load.json('leader_board_-1', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/-1')
-    this.load.json('leader_board_0', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/0')
-    this.load.json('leader_board_1', 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/1')
+    this.load.json('leader_board_-1', 'https://games.gc.my/onion_ninja/leader_board/'+CODE_VERSION+'/-1')
+    this.load.json('leader_board_0', 'https://games.gc.my/onion_ninja/leader_board/'+CODE_VERSION+'/0')
+    this.load.json('leader_board_1', 'https://games.gc.my/onion_ninja/leader_board/'+CODE_VERSION+'/1')
 
     game.seed = (new Date).getTime() % SEED_COUNT;
     game.hard = 0;
 
     // Load just the one seed/difficult now, load the rest later
-    this.load.json('best_recording_'+game.seed+'_'+game.hard, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+game.seed+'/'+game.hard)
+    this.load.json('best_recording_'+game.seed+'_'+game.hard, 'https://games.gc.my/onion_ninja/get_best_recording/'+CODE_VERSION+'/'+game.seed+'/'+game.hard)
 
     physics = this.physics;
 }
@@ -321,7 +321,7 @@ function create () {
     // Let these load while the user starts playing
     for (var h=-1;h<=1;h++)
         for (var i=0;i<SEED_COUNT;i++)
-            this.load.json('best_recording_'+i+'_'+h, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+i+'/'+h)
+            this.load.json('best_recording_'+i+'_'+h, 'https://games.gc.my/onion_ninja/get_best_recording/'+CODE_VERSION+'/'+i+'/'+h)
     this.load.start();
 
     this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
@@ -1648,7 +1648,7 @@ function uploadRecording(controls_recording) {
 
     httpRequest = new XMLHttpRequest(); 
     httpRequest.onload = contentsSent;
-    httpRequest.open('POST', 'https://games.gc.my/cold_waters', true);
+    httpRequest.open('POST', 'https://games.gc.my/onion_ninja', true);
     httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     httpRequest.send('thing='+encodeURIComponent(JSON.stringify({controls_recording: object_to_send})));
 }
@@ -2203,12 +2203,12 @@ function sleep(ms) {
 
 function refresh_best_recording(seed, hard) {
     game.cache.json.remove('best_recording_'+seed+'_'+hard);
-    scene.load.json('best_recording_'+seed+'_'+hard, 'https://games.gc.my/cold_waters/get_best_recording/'+CODE_VERSION+'/'+seed+'/'+hard)
+    scene.load.json('best_recording_'+seed+'_'+hard, 'https://games.gc.my/onion_ninja/get_best_recording/'+CODE_VERSION+'/'+seed+'/'+hard)
     scene.load.start();
 }
 function refresh_leader_boards(hard) {
     game.cache.json.remove('leader_board_'+hard);
-    scene.load.json('leader_board_'+hard, 'https://games.gc.my/cold_waters/leader_board/'+CODE_VERSION+'/'+hard)
+    scene.load.json('leader_board_'+hard, 'https://games.gc.my/onion_ninja/leader_board/'+CODE_VERSION+'/'+hard)
     scene.load.start();
 }
 

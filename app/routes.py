@@ -161,8 +161,8 @@ def blitz_lobby():
                 title='Dutch Blitz Lobby',
             )
 
-@app.route('/cold_waters',  methods=['GET', 'POST'])
-@app.route('/cold_waters/', methods=['GET', 'POST'])
+@app.route('/onion_ninja',  methods=['GET', 'POST'])
+@app.route('/onion_ninja/', methods=['GET', 'POST'])
 @login_required
 def cold_waters():
     if request.method == 'GET':
@@ -206,7 +206,7 @@ def cold_waters():
             'rng_integrity_check': fetched_score.rng_integrity_check
         });
 
-@app.route('/cold_waters/get_best_recording/<code_version>/<seed>/<hard>')
+@app.route('/onion_ninja/get_best_recording/<code_version>/<seed>/<hard>')
 @login_required
 def cold_waters_get_best_recording(code_version, seed, hard):
     score = ColdWatersScore.query.filter_by(code_version=code_version, seed=seed, hard=hard).order_by(ColdWatersScore.score.desc()).first()
@@ -224,7 +224,7 @@ def cold_waters_get_best_recording(code_version, seed, hard):
         'rng_integrity_check': score.rng_integrity_check
     });
 
-@app.route('/cold_waters/leader_board/<code_version>/<hard>')
+@app.route('/onion_ninja/leader_board/<code_version>/<hard>')
 @login_required
 def cold_waters_leader_board(code_version, hard):
     user_ids = ColdWatersScore.query.with_entities(ColdWatersScore.user_id).filter_by(code_version=code_version, hard=hard).distinct()
