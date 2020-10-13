@@ -161,6 +161,18 @@ def blitz_lobby():
                 title='Dutch Blitz Lobby',
             )
 
+@app.route('/music_game')
+@app.route('/music_game/')
+@login_required
+def music_game():
+    user = get_stable_user()
+    return render_template(
+                'music_game.html',
+                title='Music game prototype',
+                user_id=user.id,
+                user_name=user.username,
+            )
+
 @app.route('/onion_ninja',  methods=['GET', 'POST'])
 @app.route('/onion_ninja/', methods=['GET', 'POST'])
 @login_required
