@@ -1,7 +1,7 @@
 /* TODO
  * Better platforming feel
  * Dash
- * Sounds on jump/dash
+ * Sounds on run/jump/dash
  *
  * Beat limitations/enablements:
  *  Don't want too many limitations on typical platforming; prefer to positively reward beat conformity:
@@ -25,16 +25,22 @@ const Z = DEPTH = 2;
 const WIDTH = 0;
 const HEIGHT = 1;
 
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 600;
+const GAME_WIDTH = 1200;
+const GAME_HEIGHT = 768;
 
 const PLAYER_SIZE = [23, 38];
 const PLAYER_DISPLAY_SIZE = [29, 48];
 const PLAYER_OFFSET = [4, 10];
-const PLAYER_GRAVITY = .1;
-const PLAYER_JUMP_DELTA_V = -5.5;
-const PLAYER_HORIZONTAL_GROUND_FRICTION = .8;
-const PLAYER_GROUND_SPEED_DELTA_V = 1.0;
+const PLAYER_GRAVITY = .8;
+const PLAYER_QUICK_JUMP_DRAG = 1.2;
+const PLAYER_JUMP_DELTA_V = -14.0;
+const PLAYER_MAX_FALL_SPEED = 10.0;
+const PLAYER_FAILED_JUMP_DELTA_V = -4.0;
+const PLAYER_HORIZONTAL_GROUND_FRICTION = .65;
+const PLAYER_GROUND_SPEED_DELTA_V = 2.5;
+const PLAYER_DASH_MS = 75;
+const PLAYER_DASH_VELOCITY = [25, -1];
+const BEAT_THRESHHOLD = 80;
 
 const DEFAULT_MUSIC_CONFIG = {
     mute: false,
@@ -156,6 +162,7 @@ function createGameObject(scene, overrides) {
         sound_key: null,
         sound: null,
         solid: false,
+        enemy: false,
         sound_loop_duration: null,
         ...overrides
     };
@@ -167,7 +174,8 @@ function createGameObject(scene, overrides) {
 	    go.sprite = scene.add.tileSprite(go.position[X], go.position[Y], go.size[WIDTH], go.size[HEIGHT], go.sprite_key);
 	else {
 	    go.sprite = scene.add.sprite(go.position[X], go.position[Y], go.sprite_key);
-            go.sprite.setSize(go.size);
+            go.sprite.setSize(...go.size);
+            go.sprite.setDisplaySize(...go.size);
         }
         go.sprite.setDepth(go.position[DEPTH]);
         go.sprite.setOrigin(0,0);
@@ -184,6 +192,9 @@ function createGameObject(scene, overrides) {
     if (go.solid) {
         scene.solid_game_objects.push(go);
     }
+    if (go.enemy) {
+        scene.enemy_game_objects.push(go);
+    }
 
     return go;
 }
@@ -192,13 +203,14 @@ function createSlime(scene, overrides) {
     const slime = createGameObject(scene, {
         class: "Slime",
         sprite_key: "slime_sheet",
-        size: [64, 64],
+        size: [64, 43],
         anim_key: "slime_anim",
         anim_duration: 500,
         anim_yoyo: true,
         sound_loop_duration: 8000,
         sound_key: "slime_melody",
         anim_start_frame: 4,
+        enemy: true,
         ...overrides
     });
     return slime;
@@ -247,32 +259,47 @@ function createWall(scene, overrides) {
 function createPlayer(scene, overrides) {
     const player = createGameObject(scene, {
         class: "Player",
-        size: [64, 64],
+        size: [40, 64],
         sprite_key: "beat_square_sheet",
         anim_key: "beat_square_anim",
         anim_duration: 500,
         update: playerUpdate,
-        grounded_on: null,
+        grounded_on: false,
+        jump_sound: scene.sound.add('jump', DEFAULT_MUSIC_CONFIG),
+        jump_fail_sound: scene.sound.add('jump_fail', DEFAULT_MUSIC_CONFIG),
+        dash_sound: scene.sound.add('dash', DEFAULT_MUSIC_CONFIG),
+        dash_fail_sound: scene.sound.add('dash_fail', DEFAULT_MUSIC_CONFIG),
+        dashing_since: false,
+        facing_right: false,
+        sound_key: "footsteps_beat",
+        sound_loop_duration: 2000,
         ...overrides
     });
     return player;
 }
 
 function playerUpdate(scene) {
-    this.velocity[Y] += PLAYER_GRAVITY;
+    if (!this.dashing_since) {
+        this.velocity[Y] += PLAYER_GRAVITY;
+        if (this.velocity[Y] > PLAYER_MAX_FALL_SPEED)
+            this.velocity[Y] = PLAYER_MAX_FALL_SPEED
+    }
+
     this.changePos([0, this.velocity[Y]]);
     vert_collider = this.overlaps(scene.solid_game_objects)
-    if (vert_collider && this.relativeVel(vert_collider)[Y] > 0) {
-        this.grounded_on = vert_collider
-        this.setPos([this.position[X], vert_collider.position[Y] - this.size[HEIGHT] - .001]);
+    this.grounded_on = null;
+    if (vert_collider) {
+        if (this.relativeVel(vert_collider)[Y] > 0) {
+            this.grounded_on = vert_collider
+            this.setPos([this.position[X], vert_collider.position[Y] - this.size[HEIGHT] - .001]);
+        } else {
+            this.setPos([this.position[X], vert_collider.position[Y] + vert_collider.size[HEIGHT] + .001]);
+        }
+
         this.velocity[Y] = vert_collider.velocity[Y];
-        this.velocity[X] -= this.grounded_on.velocity[X];
-        this.velocity[X] *= PLAYER_HORIZONTAL_GROUND_FRICTION;
-        this.velocity[X] += this.grounded_on.velocity[X];
         if (this.overlaps(scene.solid_game_objects))
             debugger;
     } else {
-        this.grounded_on = null;
     }
 
     this.changePos([this.velocity[X], 0]);
@@ -288,15 +315,65 @@ function playerUpdate(scene) {
         this.velocity[Y] += wall_collider.velocity[Y];
     }
 
-    if (this.grounded_on && my_pressed('up')) {
-        this.velocity[Y] += PLAYER_JUMP_DELTA_V;
+    this.sound.mute = !(this.grounded_on && Math.abs(this.velocity[X]) > 1)
+
+    if (isPressed('up') && !scene.prior_presses['up']) {
+        enemy = this.overlaps(scene.enemy_game_objects)
+        if (enemy && this.getBottom() - enemy.position[Y] > 40) 
+            enemy = false;
+        if (this.grounded_on || enemy) {
+            if (scene.ms_since_beat > -BEAT_THRESHHOLD && scene.ms_since_beat < BEAT_THRESHHOLD) {
+                // jump
+                this.velocity[Y] = PLAYER_JUMP_DELTA_V;
+                this.jump_sound.play();
+            } else {
+                // failed jump
+                this.velocity[Y] = PLAYER_FAILED_JUMP_DELTA_V;
+                this.jump_fail_sound.play();
+            }
+        }
     }
-    if (this.grounded_on && my_pressed('left')) {
-        console.log('left');
-        this.velocity[X] -= PLAYER_GROUND_SPEED_DELTA_V;
+    if (!this.dashing_since && !this.grounded_on && this.velocity[Y] < 0 && !isPressed('up')) {
+        this.velocity[Y] += PLAYER_QUICK_JUMP_DRAG;
     }
-    else if (this.grounded_on && my_pressed('right')) {
-        this.velocity[X] += PLAYER_GROUND_SPEED_DELTA_V;
+
+    if (!this.dashing_since && isPressed('space') && !scene.prior_presses['space']) {
+        if (scene.ms_since_off_beat > -BEAT_THRESHHOLD && scene.ms_since_off_beat < BEAT_THRESHHOLD) {
+            if (this.facing_right) {
+                this.velocity = PLAYER_DASH_VELOCITY.slice();
+            } else {
+                this.velocity = PLAYER_DASH_VELOCITY.slice();
+                this.velocity[X] *= -1;
+            }
+            this.dashing_since = scene.time_elapsed;
+            this.dash_sound.play();
+        } else {
+            this.dash_fail_sound.play();
+        }
+    }
+    if (this.dashing_since) {
+        enemy = this.overlaps(scene.enemy_game_objects)
+        if (enemy) {
+            // Bounce off at a higher angle, restarting the dash counter
+            this.dashing_since = scene.time_elapsed;
+            this.velocity[X] *= -1;
+            this.velocity[Y] -= 8;
+        }
+        if (scene.time_elapsed - this.dashing_since > PLAYER_DASH_MS)
+            this.dashing_since = false;
+    } else {
+        if (isPressed('left')) {
+            this.velocity[X] -= PLAYER_GROUND_SPEED_DELTA_V;
+            this.facing_right = false;
+        }
+        else if (isPressed('right')) {
+            this.velocity[X] += PLAYER_GROUND_SPEED_DELTA_V;
+            this.facing_right = true;
+        }
+
+        //this.velocity[X] -= vert_collider.velocity[X];
+        this.velocity[X] *= PLAYER_HORIZONTAL_GROUND_FRICTION;
+        //this.velocity[X] += vert_collider.velocity[X];
     }
 }
 
@@ -323,18 +400,24 @@ function preload () {
     this.load.setBaseURL('../static/assets/music_game');
     this.load.image('background', 'background.jpg');
     this.load.image('rock_wall', 'rock_wall_64x64.png');
-    this.load.spritesheet('slime_sheet', 'slime_sheet.png', { frameWidth: 64, frameHeight: 64 });
+    this.load.spritesheet('slime_sheet', 'slime_64x43_sheet4.png', { frameWidth: 64, frameHeight: 43 });
     this.load.spritesheet('clock_sheet', 'clock_32x62_sheet20.png', { frameWidth: 32, frameHeight: 62 });
     this.load.spritesheet('beat_square_sheet', 'beat_square_64x64_sheet8.png', { frameWidth: 64, frameHeight: 64 });
 
-    this.load.audio('slime_melody', 'bird_bpm120_b16.wav')
+    this.load.audio('slime_melody', 'spider_bpm120_b16.wav')
     this.load.audio('clock_beat', 'clock_bpm120_b4.wav')
     this.load.audio('drum_beat', 'rhythm_bpm120_b16.wav')
+    this.load.audio('footsteps_beat', 'footsteps_bpm120_b4.wav')
+    this.load.audio('jump', 'jump.wav')
+    this.load.audio('jump_fail', 'jump_fail.wav')
+    this.load.audio('dash', 'dash.wav')
+    this.load.audio('dash_fail', 'dash_fail.wav')
 }
 
 function create () {
     this.game_objects = [];
     this.solid_game_objects = [];
+    this.enemy_game_objects = [];
 
     this.add.image(GAME_WIDTH/2, GAME_HEIGHT/2, 'background');
     mobile_lines = [];
@@ -399,17 +482,30 @@ function create () {
     panner_node.rolloffFactor = 1;
     panner_node.connect(master_volume_node);
 
+    scene.prior_presses = {
+        'up': isPressed('up'),
+        'down': isPressed('down'),
+        'left': isPressed('left'),
+        'right': isPressed('right'),
+        'space': isPressed('space')
+    }
+
     newGame(this);
 }
 
 function newGame(scene) {
-    player = createSlime(scene, {position: [GAME_WIDTH/2, GAME_HEIGHT/3]})
+    createSlime(scene, {position: [450,457]})
     scene.clock = createClock(scene, {position: [GAME_WIDTH/3, GAME_HEIGHT/2]})
     createDrums(scene, {position: [GAME_WIDTH/3, GAME_HEIGHT/3]})
     scene.start_time = Date.now()
     scene.player = createPlayer(scene, {position: [GAME_WIDTH*2/3, GAME_HEIGHT/2]})
-    scene.wall = createWall(scene, {position: [50, 400], size: [600, 50]})
-    createWall(scene, {position: [200, 200], size: [20, 100]})
+    createWall(scene, {position: [50, 400], size: [200, 30]})
+    createWall(scene, {position: [900, 400], size: [200, 30]})
+    createWall(scene, {position: [600, 600], size: [600, 30]})
+    createWall(scene, {position: [50, 100], size: [600, 30]})
+    createWall(scene, {position: [400, 500], size: [600, 30]})
+    createWall(scene, {position: [200, 700], size: [600, 30]})
+
 }
 
 function debugInfo() {
@@ -419,9 +515,12 @@ function debugInfo() {
 }
 
 function update () {
+    scene.beat_duration = 500;
     scene.myFrame += 1;
     scene.last_time_elapsed = scene.time_elapsed
     scene.time_elapsed = Date.now() - scene.start_time
+    scene.ms_since_off_beat = (scene.time_elapsed % scene.beat_duration) - scene.beat_duration/2;
+    scene.ms_since_beat = ((scene.time_elapsed + scene.beat_duration/2) % scene.beat_duration) - scene.beat_duration/2;
     scene.game_objects.forEach(function (go) {
         if (!go.active)
             return;
@@ -429,10 +528,17 @@ function update () {
         setFrameByTime(go, scene.time_elapsed)
         loopSoundByTime(go, scene.time_elapsed, scene.last_time_elapsed)
     });
+    scene.prior_presses = {
+        'up': isPressed('up'),
+        'down': isPressed('down'),
+        'left': isPressed('left'),
+        'right': isPressed('right'),
+        'space': isPressed('space')
+    }
     debugInfo()
 }
 
-function my_pressed(direction) {
+function isPressed(direction) {
     var value = false;
     switch (direction) {
         case 'up':
@@ -446,6 +552,9 @@ function my_pressed(direction) {
             break;
         case 'right':
             value = cursors.right.isDown || virtual_screen_pressed[0][2] || virtual_screen_pressed[1][2] || virtual_screen_pressed[2][2]
+            break;
+        case 'space':
+            value = cursors.space.isDown || virtual_screen_pressed[1][1]
             break;
     }
     return value;
@@ -616,10 +725,10 @@ function player_update(p) {
     var up_press, down_pressed, left_pressed, right_pressed;
     var f = getFrame();
     if (p.controlled_by == "human") {
-        up_pressed = my_pressed('up')
-        down_pressed = my_pressed('down');
-        left_pressed = my_pressed('left');
-        right_pressed = my_pressed('right');
+        up_pressed = isPressed('up')
+        down_pressed = isPressed('down');
+        left_pressed = isPressed('left');
+        right_pressed = isPressed('right');
         p.controls_recording.controls_array[f*4+0] = up_pressed*1;
         p.controls_recording.controls_array[f*4+1] = down_pressed*1;
         p.controls_recording.controls_array[f*4+2] = left_pressed*1;
