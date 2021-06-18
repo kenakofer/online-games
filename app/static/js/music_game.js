@@ -1,4 +1,9 @@
 /* TODO
+ * Player states:
+ *  Hurt
+ *  Grounded/Airborn
+ *  Dashing
+ *
  * Better platforming feel
  * Dash
  * Sounds on run/jump/dash
@@ -36,11 +41,14 @@ const PLAYER_QUICK_JUMP_DRAG = 1.2;
 const PLAYER_JUMP_DELTA_V = -14.0;
 const PLAYER_MAX_FALL_SPEED = 10.0;
 const PLAYER_FAILED_JUMP_DELTA_V = -4.0;
-const PLAYER_HORIZONTAL_GROUND_FRICTION = .65;
+const PLAYER_HORIZONTAL_FRICTION = .65;
 const PLAYER_GROUND_SPEED_DELTA_V = 2.5;
 const PLAYER_DASH_MS = 75;
 const PLAYER_DASH_VELOCITY = [25, -1];
+const PLAYER_HURT_DURATION = 1000;
+const PLAYER_HURT_VELOCITY = [6, -10];
 const BEAT_THRESHHOLD = 80;
+const ENEMY_STOMP_RANGE = 30;
 
 const DEFAULT_MUSIC_CONFIG = {
     mute: false,
@@ -101,10 +109,11 @@ game_object_methods = {
         [this.sprite.x, this.sprite.y] = this.position;
         return this.position;
     },
-    changePos: function (pos) {
+    changePos: function (pos, no_sprite_update) {
         this.position[X] += pos[X];
         this.position[Y] += pos[Y];
-        [this.sprite.x, this.sprite.y] = this.position;
+        if (!no_sprite_update)
+            [this.sprite.x, this.sprite.y] = this.position;
         return this.position;
     },
     relativeVel: function (go2) {
@@ -141,6 +150,12 @@ game_object_methods = {
         group.forEach(function(go) {
            result = result || go1.overlaps(go); 
         });
+        return result;
+    },
+    wouldOverlap: function(posChange, go2) {
+        this.changePos(posChange, true);
+        result = this.overlaps(go2);
+        this.changePos([posChange[0]*-1, posChange[1]*-1], true);
         return result;
     },
 }
@@ -270,6 +285,8 @@ function createPlayer(scene, overrides) {
         dash_sound: scene.sound.add('dash', DEFAULT_MUSIC_CONFIG),
         dash_fail_sound: scene.sound.add('dash_fail', DEFAULT_MUSIC_CONFIG),
         dashing_since: false,
+        hurting_since: false,
+        paralyzed_since: false,
         facing_right: false,
         sound_key: "footsteps_beat",
         sound_loop_duration: 2000,
@@ -278,82 +295,126 @@ function createPlayer(scene, overrides) {
     return player;
 }
 
-function playerUpdate(scene) {
-    if (!this.dashing_since) {
-        this.velocity[Y] += PLAYER_GRAVITY;
-        if (this.velocity[Y] > PLAYER_MAX_FALL_SPEED)
-            this.velocity[Y] = PLAYER_MAX_FALL_SPEED
-    }
+function enactGravity(go, gravity, max_fall_speed) {
+    go.velocity[Y] += gravity;
+    if (go.velocity[Y] > max_fall_speed)
+        go.velocity[Y] = max_fall_speed
+}
 
-    this.changePos([0, this.velocity[Y]]);
-    vert_collider = this.overlaps(scene.solid_game_objects)
-    this.grounded_on = null;
-    if (vert_collider) {
-        if (this.relativeVel(vert_collider)[Y] > 0) {
-            this.grounded_on = vert_collider
-            this.setPos([this.position[X], vert_collider.position[Y] - this.size[HEIGHT] - .001]);
+function enactHorizontalVelocityWithCollisions(go, colliders) {
+    go.changePos([go.velocity[X], 0]);
+    wall_collider = go.overlaps(colliders)
+    if (wall_collider) {
+        if (go.relativeVel(wall_collider)[X] > 0) 
+            go.setPos([wall_collider.position[X] - go.size[WIDTH] - .001, go.position[Y]]);
+        else
+            go.setPos([wall_collider.position[X] + wall_collider.size[WIDTH] + .001, go.position[Y]]);
+        go.velocity[X] = wall_collider.velocity[X];
+        //go.velocity[Y] -= wall_collider.velocity[Y];
+        //go.velocity[Y] *= PLAYER_HORIZONTAL_FRICTION;
+        //go.velocity[Y] += wall_collider.velocity[Y];
+    }
+}
+
+function tryJump(go) {
+    enemy = go.wouldOverlap([0, 10], scene.enemy_game_objects);
+    enemy_bounce = enemy && go.getBottom() - enemy.position[Y] < ENEMY_STOMP_RANGE
+    if (go.grounded_on || enemy_bounce) {
+        if (scene.ms_since_beat > -BEAT_THRESHHOLD && scene.ms_since_beat < BEAT_THRESHHOLD) {
+            // jump
+            go.velocity[Y] = PLAYER_JUMP_DELTA_V;
+            go.jump_sound.play();
         } else {
-            this.setPos([this.position[X], vert_collider.position[Y] + vert_collider.size[HEIGHT] + .001]);
+            // failed jump
+            go.velocity[Y] = PLAYER_FAILED_JUMP_DELTA_V;
+            go.jump_fail_sound.play();
+        }
+        if (enemy_bounce) {
+            go.position[Y] = enemy.position[Y] - go.size[HEIGHT];
+            go.changePos([0,0]);
+        }
+    }
+}
+
+function enactVerticalVelocityWithCollisions(go, colliders) {
+    go.changePos([0, go.velocity[Y]]);
+    vert_collider = go.overlaps(colliders)
+    go.grounded_on = null;
+    if (vert_collider) {
+        if (go.relativeVel(vert_collider)[Y] > 0) {
+            go.grounded_on = vert_collider
+            go.setPos([go.position[X], vert_collider.position[Y] - go.size[HEIGHT] - .001]);
+        } else {
+            go.setPos([go.position[X], vert_collider.position[Y] + vert_collider.size[HEIGHT] + .001]);
         }
 
-        this.velocity[Y] = vert_collider.velocity[Y];
-        if (this.overlaps(scene.solid_game_objects))
+        go.velocity[Y] = vert_collider.velocity[Y];
+        if (go.overlaps(colliders))
             debugger;
-    } else {
-    }
+    } 
+}
 
-    this.changePos([this.velocity[X], 0]);
-    wall_collider = this.overlaps(scene.solid_game_objects)
-    if (wall_collider) {
-        if (this.relativeVel(wall_collider)[X] > 0) 
-            this.setPos([wall_collider.position[X] - this.size[WIDTH] - .001, this.position[Y]]);
-        else
-            this.setPos([wall_collider.position[X] + wall_collider.size[WIDTH] + .001, this.position[Y]]);
-        this.velocity[X] = wall_collider.velocity[X];
-        this.velocity[Y] -= wall_collider.velocity[Y];
-        this.velocity[Y] *= PLAYER_HORIZONTAL_GROUND_FRICTION;
-        this.velocity[Y] += wall_collider.velocity[Y];
+function tryStartDash(go) {
+    if (scene.ms_since_off_beat > -BEAT_THRESHHOLD && scene.ms_since_off_beat < BEAT_THRESHHOLD) {
+        if (go.facing_right) {
+            go.velocity = PLAYER_DASH_VELOCITY.slice();
+        } else {
+            go.velocity = PLAYER_DASH_VELOCITY.slice();
+            go.velocity[X] *= -1;
+        }
+        go.dashing_since = scene.time_elapsed;
+        go.dash_sound.play();
+    } else {
+        go.dash_fail_sound.play();
     }
+}
+
+function startHurting(go) {
+    go.hurting_since = scene.time_elapsed;
+    go.paralyzed_since = scene.time_elapsed;
+    go.velocity = PLAYER_HURT_VELOCITY.slice();
+    if (go.facing_right) {
+        go.velocity[X] *= -1;
+    }
+}
+
+function playerUpdate(scene) {
+    if (!this.dashing_since)
+        enactGravity(this, PLAYER_GRAVITY, PLAYER_MAX_FALL_SPEED);
+
+    enactVerticalVelocityWithCollisions(this, scene.solid_game_objects);
+    enactHorizontalVelocityWithCollisions(this, scene.solid_game_objects);
 
     this.sound.mute = !(this.grounded_on && Math.abs(this.velocity[X]) > 1)
 
+    this.enemy_overlap = this.overlaps(scene.enemy_game_objects)
+
     if (isPressed('up') && !scene.prior_presses['up']) {
-        enemy = this.overlaps(scene.enemy_game_objects)
-        if (enemy && this.getBottom() - enemy.position[Y] > 40) 
-            enemy = false;
-        if (this.grounded_on || enemy) {
-            if (scene.ms_since_beat > -BEAT_THRESHHOLD && scene.ms_since_beat < BEAT_THRESHHOLD) {
-                // jump
-                this.velocity[Y] = PLAYER_JUMP_DELTA_V;
-                this.jump_sound.play();
-            } else {
-                // failed jump
-                this.velocity[Y] = PLAYER_FAILED_JUMP_DELTA_V;
-                this.jump_fail_sound.play();
-            }
-        }
+        tryJump(this);
     }
+
+    // jump drag
     if (!this.dashing_since && !this.grounded_on && this.velocity[Y] < 0 && !isPressed('up')) {
         this.velocity[Y] += PLAYER_QUICK_JUMP_DRAG;
     }
 
-    if (!this.dashing_since && isPressed('space') && !scene.prior_presses['space']) {
-        if (scene.ms_since_off_beat > -BEAT_THRESHHOLD && scene.ms_since_off_beat < BEAT_THRESHHOLD) {
-            if (this.facing_right) {
-                this.velocity = PLAYER_DASH_VELOCITY.slice();
-            } else {
-                this.velocity = PLAYER_DASH_VELOCITY.slice();
-                this.velocity[X] *= -1;
-            }
-            this.dashing_since = scene.time_elapsed;
-            this.dash_sound.play();
-        } else {
-            this.dash_fail_sound.play();
+    // paralyzed disablement
+    if (this.paralyzed_since && this.grounded_on)
+            this.paralyzed_since = false;
+
+    // hurting flash
+    if (this.hurting_since) {
+        this.sprite.setVisible(!this.sprite.visible)
+        if (scene.time_elapsed - this.hurting_since > PLAYER_HURT_DURATION) {
+            this.hurting_since = false;
+            this.paralyzed_since = false;
         }
+    } else {
+        this.sprite.setVisible(true)
     }
+
     if (this.dashing_since) {
-        enemy = this.overlaps(scene.enemy_game_objects)
-        if (enemy) {
+        if (this.enemy_overlap) {
             // Bounce off at a higher angle, restarting the dash counter
             this.dashing_since = scene.time_elapsed;
             this.velocity[X] *= -1;
@@ -362,18 +423,27 @@ function playerUpdate(scene) {
         if (scene.time_elapsed - this.dashing_since > PLAYER_DASH_MS)
             this.dashing_since = false;
     } else {
-        if (isPressed('left')) {
-            this.velocity[X] -= PLAYER_GROUND_SPEED_DELTA_V;
-            this.facing_right = false;
-        }
-        else if (isPressed('right')) {
-            this.velocity[X] += PLAYER_GROUND_SPEED_DELTA_V;
-            this.facing_right = true;
+        if (!this.paralyzed_since) {
+            this.velocity[X] *= PLAYER_HORIZONTAL_FRICTION;
+
+            if (isPressed('left')) {
+                this.velocity[X] -= PLAYER_GROUND_SPEED_DELTA_V;
+                this.facing_right = false;
+            }
+            else if (isPressed('right')) {
+                this.velocity[X] += PLAYER_GROUND_SPEED_DELTA_V;
+                this.facing_right = true;
+            }
+            if (isPressed('space') && !scene.prior_presses['space'])
+                tryStartDash(this);
         }
 
-        //this.velocity[X] -= vert_collider.velocity[X];
-        this.velocity[X] *= PLAYER_HORIZONTAL_GROUND_FRICTION;
-        //this.velocity[X] += vert_collider.velocity[X];
+
+        // enemy_overlap causes damage
+        if (this.enemy_overlap && this.getBottom() - this.enemy_overlap.position[Y] > ENEMY_STOMP_RANGE && !this.hurting_since) {
+            console.log('enemy overlap!!!');
+            startHurting(this);
+        }
     }
 }
 

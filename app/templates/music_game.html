@@ -1,0 +1,26 @@
+<html>
+<head>
+    <link rel='stylesheet' href='{{ url_for("static",filename="styles/styles.css") }}'>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.4/Pizzicato.js "></script> 
+    <script type="text/javascript" src='{{ url_for("static",filename="js/music_game.js") }}'></script>
+    <!-- For template variables -->
+    <script type="text/javascript">
+        var user_name = "{{ user_name }}";
+        var user_id = "{{ user_id }}";
+    </script>
+    <meta name="viewport" content="initial-scale=1.0" />
+
+<style> 
+* {
+    margin: 0;
+    padding: 0;
+}
+canvas {
+    border: 3px solid black;
+}
+</style> 
+</head>
+<body>
+    <div id='game_div'></div>
+</body>
