@@ -1,11 +1,11 @@
-from app import socketio
+from site_main import socketio
 from flask_socketio import emit, join_room, leave_room
 from flask_login import current_user
-from app.models import get_stable_user
+from models import get_stable_user
 from time import sleep
-from app.hanabi import HanabiGame, hanabi_games
-from app.blitz import BlitzGame, blitz_games
-from app.freeplay import FreeplayGame, freeplay_games
+from hanabi import HanabiGame, hanabi_games
+from blitz import BlitzGame, blitz_games
+from freeplay import FreeplayGame, freeplay_games
 from time import time
 
 @socketio.on('message')

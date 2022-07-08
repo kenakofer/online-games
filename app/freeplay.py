@@ -1,5 +1,5 @@
 from random import shuffle, random, sample, randint
-from app import app, db, socketio
+from site_main import app, db, socketio
 import threading
 from time import sleep, time
 from json import load

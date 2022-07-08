@@ -1,21 +1,22 @@
-from app import app, db
+from site_main import app, db
 from flask import render_template, flash, redirect, request, url_for, escape
 import flask
 # from flask_oauth2_login import GoogleLogin
 from math import floor
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, get_stable_user, ColdWatersScore, load_cold_waters_score
-from app.hanabi import hanabi_games, HanabiGame
-from app.blitz import blitz_games, BlitzGame
-from app.freeplay import freeplay_games, FreeplayGame
+from models import User, get_stable_user, ColdWatersScore, load_cold_waters_score
+from hanabi import hanabi_games, HanabiGame
+from blitz import blitz_games, BlitzGame
+from freeplay import freeplay_games, FreeplayGame
 from datetime import timedelta
 import json
+import os
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
 
-CLIENT_SECRETS_FILE = 'client_secret.json'
+CLIENT_SECRETS_FILE = os.path.dirname(__file__) + '/oauth_client_secret.apps.googleusercontent.com.json'
 SCOPES = ['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
@@ -393,12 +394,13 @@ def login_success(**params):
         user = User(email=profile['email'], fullname=profile['name'], username=profile['given_name'])
         db.session.add(user)
         db.session.commit()
+        db.session.expire_all()
         message = 'Created and logged in user {}'.format(profile['name'])
     else:
         message = 'Login successful for {}'.format(profile['name'])
-    login_user(user) #TODO add remember me option
     print(message)
     flash(message)
+    login_user(user) #TODO add remember me option
     print("cookie set to {}".format(request.cookies.get('next')))
     dest = request.cookies.get('next') or '/'
     return redirect(dest)

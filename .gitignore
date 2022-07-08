@@ -1,4 +1,5 @@
-/config.py
+*client_secret*
+config.py
 *.pyc
 *.db
 *.wsgi

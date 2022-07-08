@@ -1,7 +1,8 @@
 # When this file is included, it allows calls to "flask shell" on
 # the CLI to import these variables. Quite handy!
-from app import app, db
-from app.models import User
+# python3 -i shell_setup.py
+from site_main import app, db
+from models import User
 
 
 @app.shell_context_processor

@@ -1,6 +1,6 @@
 from random import shuffle
-from app import db
-from app.models import User
+from site_main import db
+from models import User
 
 #The list to be filled with hanabigames
 hanabi_games = {}
