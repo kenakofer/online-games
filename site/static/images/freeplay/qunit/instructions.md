@@ -5,8 +5,8 @@
 
 ## Maps
 
-[Basic & 2 player](https://games.gc.my/static/images/freeplay/quantum/maps1.jpg)
+[Basic & 2 player](https://games.kenakofer.com/static/images/freeplay/quantum/maps1.jpg)
 
-[3 & 4 player](https://games.gc.my/static/images/freeplay/quantum/maps2.jpg)
+[3 & 4 player](https://games.kenakofer.com/static/images/freeplay/quantum/maps2.jpg)
 
-[Maps with the void tile](https://games.gc.my/static/images/freeplay/quantum/maps_void.jpg)
+[Maps with the void tile](https://games.kenakofer.com/static/images/freeplay/quantum/maps_void.jpg)

@@ -333,7 +333,7 @@ def login():
     # match one of the authorized redirect URIs for the OAuth 2.0 client, which you
     # configured in the API Console. If this value doesn't match an authorized URI,
     # you will get a 'redirect_uri_mismatch' error.
-    flow.redirect_uri = 'https://games.gc.my/login/google'
+    flow.redirect_uri = 'https://games.kenakofer.com/login/google'
 
     # Generate URL for request to Google's OAuth 2.0 server.
     # Use kwargs to set optional request parameters.
@@ -376,7 +376,7 @@ def oauth2callback():
 def login_success(**params):
     # Load credentials from the session.
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES, state = flask.session['state'])
-    flow.redirect_uri = 'https://games.gc.my/login/google'
+    flow.redirect_uri = 'https://games.kenakofer.com/login/google'
 
     authorization_response = flask.request.url
     flow.fetch_token(authorization_response=authorization_response)
