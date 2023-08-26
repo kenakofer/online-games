@@ -8,3 +8,11 @@ The site's backend uses Flask, with addons socketio, sqlalchemy, and
 login.
 
 The frontend uses JQuery ~~and Knockout.js~~.
+
+
+=====
+
+Notes from getting it set up again after so long:
+
+1. Changed name to wsgi.py in the outer directory so flask stuff associates better
+2. Create DBs by using `flask shell`, then db.drop_all() and db.create_all(). Manually creating tables that seem to match is a bad idea and easy to get wrong.
