@@ -1,0 +1,176 @@
+{
+    "quick_messages":[
+        "10",
+        "20",
+        "30",
+        "40",
+        "50",
+        "60",
+        "70",
+        "80",
+        "90"
+    ],
+    "private_hand_height":0,
+    "decks": {
+        "Bulls":{
+            "width":80,
+            "height":80,
+            "snap_card_to_grid": [[75,0], [75,0]],
+            "face_up":true,
+            "force_card_depth": 1,
+            "default_face_up_offset":[3,2],
+            "default_face_down_offset":[1,1],
+            "shuffle":false,
+            "can_rotate":true,
+            "cards":[
+                {
+                    "alt_text":"Bull",
+                    "front_image_url":"/static/images/freeplay/postdiction/bull.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/bull.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":20
+                }
+            ]
+        },
+        "Bears":{
+            "width":80,
+            "height":80,
+            "snap_card_to_grid": [[75,0], [75,0]],
+            "face_up":true,
+            "force_card_depth": 1,
+            "default_face_up_offset":[3,2],
+            "default_face_down_offset":[1,1],
+            "shuffle":false,
+            "can_rotate":true,
+            "cards":[
+                {
+                    "alt_text":"Bear",
+                    "front_image_url":"/static/images/freeplay/postdiction/bear.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/bear.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":20
+                }
+            ]
+        },
+        "Whales":{
+            "width":80,
+            "height":80,
+            "snap_card_to_grid": [[75,0], [75,0]],
+            "face_up":true,
+            "force_card_depth": 1,
+            "default_face_up_offset":[3,2],
+            "default_face_down_offset":[1,1],
+            "shuffle":false,
+            "can_rotate":true,
+            "cards":[
+                {
+                    "alt_text":"Whale",
+                    "front_image_url":"/static/images/freeplay/postdiction/whale.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/whale.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":20
+                }
+            ]
+        },
+        "Ostriches":{
+            "width":80,
+            "height":80,
+            "snap_card_to_grid": [[75,0], [75,0]],
+            "face_up":true,
+            "force_card_depth": 1,
+            "default_face_up_offset":[3,2],
+            "default_face_down_offset":[1,1],
+            "shuffle":false,
+            "can_rotate":true,
+            "cards":[
+                {
+                    "alt_text":"Ostrich",
+                    "front_image_url":"/static/images/freeplay/postdiction/ostrich.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/ostrich.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":20
+                }
+            ]
+        },
+        "Money":{
+            "face_up":false,
+            "default_face_up_offset":[10, 0],
+            "default_face_down_offset":[5,0],
+            "shuffle":false,
+            "cards": [
+                {
+                    "alt_text":"50",
+                    "front_image_url":"/static/images/freeplay/postdiction/50.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/50.png",
+                    "back_image_style":"100% 100%",
+                    "width":70,
+                    "height":70,
+                    "repetitions": 30
+                },
+                {
+                    "alt_text":"10",
+                    "front_image_url":"/static/images/freeplay/postdiction/10.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/10.png",
+                    "back_image_style":"100% 100%",
+                    "width":60,
+                    "height":60,
+                    "repetitions": 30
+                }
+            ]
+        },
+        "No Shares":{
+            "width":95,
+            "height":95,
+            "face_up":false,
+            "default_face_up_offset":[10, 0],
+            "default_face_down_offset":[2,0],
+            "shuffle":false,
+            "stack_group":"Shares",
+            "cards": [
+                {
+                    "alt_text":"Worth 100 if the answer is NO",
+                    "front_image_url":"/static/images/freeplay/postdiction/no_share.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/no_share.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions": 30
+                }
+            ]
+        },
+        "Yes Shares":{
+            "width":95,
+            "height":95,
+            "face_up":false,
+            "default_face_up_offset":[10, 0],
+            "default_face_down_offset":[2,0],
+            "shuffle":false,
+            "stack_group":"Shares",
+            "cards": [
+                {
+                    "alt_text":"Worth 100 if the answer is YES",
+                    "front_image_url":"/static/images/freeplay/postdiction/yes_share.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/yes_share.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions": 30
+                }
+            ]
+        },
+        "Market Boards":{
+            "width":1500,
+            "height":800,
+            "default_face_up_offset":[0, 42],
+            "default_face_down_offset":[3,2],
+            "face_up":true,
+            "shuffle":false,
+            "stack_group":"Command Cards",
+            "cards": [
+                {
+                    "alt_text":"",
+                    "front_image_url":"/static/images/freeplay/postdiction/market.png",
+                    "back_image_url":"/static/images/freeplay/postdiction/market.png",
+                    "back_image_style":"100% 100%",
+                    "repetitions":4
+                }
+            ]
+        }
+    }
+}
