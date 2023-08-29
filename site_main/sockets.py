@@ -33,6 +33,7 @@ def update_request(data):
 
 @socketio.on('JOIN ROOM', namespace='/hanabi')
 def join(data):
+    print('Client {}: JOIN ROOM: {}'.format(get_stable_user(), data))
     join_room(data['room'])
     emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
 
@@ -114,6 +115,10 @@ def card_move(data):
 @socketio.on('connect', namespace='/freeplay')
 def connect_freeplay():
     print('Client {}: Connected to freeplay'.format(current_user))
+
+@socketio.on('disconnect', namespace='/freeplay')
+def handle_disconnect():
+    print('Client disconnected:', request.sid, current_user)
 
 @socketio.on('UPDATE REQUEST', namespace='/freeplay')
 def update_request(data):
@@ -304,6 +309,7 @@ def pco_set(data):
     return_data = {'movables_info':[{'id':obj.id, 'offset_per_dependent':obj.offset_per_dependent}]}
     socketio.emit('UPDATE', return_data, broadcast=True, room=data['gameid'], namespace='/freeplay')
     g.time_of_last_update = time()
+
 @socketio.on('SEND MESSAGE', namespace='/freeplay')
 def send_message(data):
     g = freeplay_games[data['gameid']]

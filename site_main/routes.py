@@ -1,4 +1,4 @@
-from site_main import app, db
+from site_main import app, db, client
 from flask import render_template, flash, redirect, request, url_for, escape
 import flask
 # from flask_oauth2_login import GoogleLogin
@@ -17,11 +17,24 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 
 CLIENT_SECRETS_FILE = os.path.dirname(__file__) + '/oauth_client_secret.apps.googleusercontent.com.json'
-SCOPES = ['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
+# SCOPES = ['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
 # google_login = GoogleLogin(app)
 print('starting views...')
+
+@app.before_request
+def before_request():
+    app.logger.info('aHeaders: %s', request.headers)
+    print ()
+    print('                 >>>>>> URL:', request.url)
+    print('pHeaders:', request.headers)
+
+@app.after_request
+def after_request(response):
+    app.logger.info('aStatus: %s', response.status)
+    print('pStatus: %s', response.status)
+    return response
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -30,6 +43,7 @@ def page_not_found(e):
 
 @app.errorhandler(401)
 def handle_needs_login(e):
+    print("Handling 401")
     response = redirect('/login')
     print(request)
     print("Setting cookie 'next' to {}".format(request.url))
@@ -40,10 +54,19 @@ def handle_needs_login(e):
 @app.route("/index")
 @app.route("/index/")
 def index():
-    return render_template('index.html', title='Card and Board Games Online')
+    print("/index")
+    result = "Overwrite me"
+    result = render_template('index.html', title='Card and Board Games Online')
+    # result = render_template('404.html')
+    # result = "Overwritten"
+    print("Returning result")
+    print("Result: ", result)
+    print("Result length:", len(result))
+    return result
 
 @app.route("/pagecount")
 def pagecount():
+    print("/pagecount")
     messages = [
         'Peanut butter is delicious with oatmeal',
         'Raisins are too',
@@ -61,6 +84,7 @@ def pagecount():
 @app.route('/hanabi/<player_num>/<gameid>/')
 @login_required
 def hanabi(player_num, gameid):
+    print("/hanabi")
     # Current_user now will be the same object as current_user, so we get user here
     user = get_stable_user()
     print("{} is requesting to join hanabi gameid {}".format(user, gameid))
@@ -85,8 +109,8 @@ def hanabi(player_num, gameid):
 
     print("Taking {} player index".format(game.player_index[user])) #Put the user into the game room
     return render_template(
-            'hanabi.html', 
-            title='Hanabi Board', 
+            'hanabi.html',
+            title='Hanabi Board',
             socketio_namespace='/hanabi',
             player_index=game.player_index[user],
             player_count=game.player_count,
@@ -99,6 +123,7 @@ def hanabi(player_num, gameid):
 @app.route('/hanabi/')
 @login_required
 def hanabi_lobby():
+    print("/hanabi_lobby")
     return render_template(
                 'hanabi_lobby.html',
                 title='Hanabi Lobby',
@@ -111,6 +136,7 @@ def hanabi_lobby():
 @app.route('/blitz/<gameid>/')
 @login_required
 def blitz(gameid):
+    print("/blitz")
     player_num = int(request.args.get('num') or 2)
     AI_num = request.args.get('AI') or 0
     stock_size = request.args.get('stock') or 9
@@ -144,8 +170,8 @@ def blitz(gameid):
 
     print("Taking {} player index".format(index)) #Put the user into the game room
     return render_template(
-            'blitz.html', 
-            title='Dutch Blitz', 
+            'blitz.html',
+            title='Dutch Blitz',
             socketio_namespace='/blitz',
             player_index=index,
             player_count=game.player_count,
@@ -157,6 +183,7 @@ def blitz(gameid):
 @app.route('/blitz/')
 @login_required
 def blitz_lobby():
+    print("/blitz_lobby")
     return render_template(
                 'blitz_lobby.html',
                 title='Dutch Blitz Lobby',
@@ -166,6 +193,7 @@ def blitz_lobby():
 @app.route('/music_game/')
 @login_required
 def music_game():
+    print("/music_game")
     user = get_stable_user()
     return render_template(
                 'music_game.html',
@@ -178,6 +206,7 @@ def music_game():
 @app.route('/onion_ninja/', methods=['GET', 'POST'])
 @login_required
 def cold_waters():
+    print("/onion_ninja")
     if request.method == 'GET':
         user = get_stable_user()
         return render_template(
@@ -222,6 +251,7 @@ def cold_waters():
 @app.route('/onion_ninja/get_best_recording/<code_version>/<seed>/<hard>')
 @login_required
 def cold_waters_get_best_recording(code_version, seed, hard):
+    print("/onion_ninja/get_best_recording")
     score = ColdWatersScore.query.filter_by(code_version=code_version, seed=seed, hard=hard).order_by(ColdWatersScore.score.desc()).first()
     if score is None:
         return json.dumps({'response': 'None found'})
@@ -240,6 +270,7 @@ def cold_waters_get_best_recording(code_version, seed, hard):
 @app.route('/onion_ninja/leader_board/<code_version>/<hard>')
 @login_required
 def cold_waters_leader_board(code_version, hard):
+    print("/onion_ninja/leader_board")
     user_ids = ColdWatersScore.query.with_entities(ColdWatersScore.user_id).filter_by(code_version=code_version, hard=hard).distinct()
     print(user_ids)
     results = []
@@ -267,6 +298,7 @@ def cold_waters_leader_board(code_version, hard):
 @app.route('/freeplay/')
 @login_required
 def freeplay_lobby():
+    print("/freeplay_lobby")
     return render_template(
                 'freeplay_lobby.html',
                 title='Freeplay Lobby',
@@ -276,6 +308,7 @@ def freeplay_lobby():
 @app.route('/freeplay/<game_name>/<gameid>/')
 @login_required
 def freeplay(game_name, gameid):
+    print("/freeplay/"+str(game_name)+"/"+str(gameid))
     game_name = game_name.lower()
     # Current_user now will be the same object as current_user, so we get user here
     user = get_stable_user()
@@ -318,86 +351,96 @@ def freeplay(game_name, gameid):
 #########
 # Login #
 #########
-@app.route('/login')
+import requests
+GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
+REDIRECT_URI = 'https://games.kenakofer.com/login/google'
+def get_google_provider_cfg():
+    return requests.get(GOOGLE_DISCOVERY_URL).json()
+
 @app.route('/login/')
+@app.route("/login")
 def login():
-    if current_user.is_authenticated:
-        return redirect('/')
+    # Find out what URL to hit for Google login
+    google_provider_cfg = get_google_provider_cfg()
+    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Use the client_secret.json file to identify the application requesting
-    # authorization. The client ID (from that file) and access scopes are required.
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
-
-    # Indicate where the API server will redirect the user after the user completes
-    # the authorization flow. The redirect URI is required. The value must exactly
-    # match one of the authorized redirect URIs for the OAuth 2.0 client, which you
-    # configured in the API Console. If this value doesn't match an authorized URI,
-    # you will get a 'redirect_uri_mismatch' error.
-    flow.redirect_uri = 'https://games.kenakofer.com/login/google'
-
-    # Generate URL for request to Google's OAuth 2.0 server.
-    # Use kwargs to set optional request parameters.
-    authorization_url, state = flow.authorization_url(access_type='offline')
-
-    # Store the state so the callback can verify the auth server response.
-    print("state:", state)
-    flask.session['state'] = state
-    print("state:", flask.session["state"])
-
-    print("Sending to authorization URL:", authorization_url)
-    return redirect(authorization_url)
-
-@app.route('/oauth2callback')
-def oauth2callback():
-    # Specify the state when creating the flow in the callback so that it can
-    # verified in the authorization server response.
-    state = flask.session['state']
-
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES, state = state)
-    flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
-
-    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    authorization_response = flask.request.url
-    flow.fetch_token(authorization_response=authorization_response)
-
-    # Store credentials in the session.
-    # ACTION ITEM: In a production app, you likely want to save these
-    #              credentials in a persistent database instead.
-    credentials = flow.credentials
-    flask.session['credentials'] = credentials_to_dict(credentials)
-
-    print("oauth2 credentials:", credentials)
-
-    return flask.redirect(flask.url_for('test_api_request'))
+    # Use library to construct the request for Google login and provide
+    # scopes that let you retrieve user's profile from Google
+    request_uri = client.prepare_request_uri(
+        authorization_endpoint,
+        redirect_uri=REDIRECT_URI,
+        scope=["openid", "email", "profile"],
+    )
+    return redirect(request_uri)
 
 
-@app.route('/login/google')
-# @google_login.login_success
-def login_success(**params):
-    # Load credentials from the session.
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES, state = flask.session['state'])
-    flow.redirect_uri = 'https://games.kenakofer.com/login/google'
+@app.route("/login/google")
+@app.route("/login/callback")
+def callback():
+    # Get authorization code Google sent back to you
+    code = request.args.get("code")
+    print("Got code:", code)
+    # Find out what URL to hit to get tokens that allow you to ask for
+    # things on behalf of a user
+    google_provider_cfg = get_google_provider_cfg()
+    token_endpoint = google_provider_cfg["token_endpoint"]
+    print("token_endpoint:", token_endpoint)
+    # Prepare and send a request to get tokens! Yay tokens!
+    token_url, headers, body = client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=request.base_url, ## Comment out?
+        code=code
+    )
+    token_response = requests.post(
+        token_url,
+        headers=headers,
+        data=body,
+        auth=(app.config['GOOGLE_CLIENT_ID'], app.config['GOOGLE_CLIENT_SECRET']),
+    )
+    print("token_response:", token_response)
 
-    authorization_response = flask.request.url
-    flow.fetch_token(authorization_response=authorization_response)
+    # Parse the tokens!
+    client.parse_request_body_response(json.dumps(token_response.json()))
 
-    credentials = flow.credentials
-    oauth2_client = googleapiclient.discovery.build('oauth2', 'v2', credentials=credentials)
-    profile = oauth2_client.userinfo().get().execute()
+    # Now that we have tokens (yay) let's find and hit URL
+    # from Google that gives you user's profile information,
+    # including their Google Profile Image and Email
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    print("userinfo_endpoint:", userinfo_endpoint)
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
 
-    print("login_success")
-    print("Profile:",profile)
-    user = User.query.filter_by(email=profile['email']).first()
+    print("userinfo_response:", userinfo_response)
+
+    # We want to make sure their email is verified.
+    # The user authenticated with Google, authorized our
+    # app, and now we've verified their email through Google!
+    if userinfo_response.json().get("email_verified"):
+        print("email_verified")
+        unique_id = userinfo_response.json()["sub"]
+        users_email = userinfo_response.json()["email"]
+        picture = userinfo_response.json()["picture"]
+        users_name = userinfo_response.json()["given_name"]
+        print("unique_id:", unique_id)
+        print("users_email:", users_email)
+        print("users_name:", users_name)
+    else:
+        print("email not verified")
+        return "User email not available or not verified by Google.", 400
+
+    user = User.query.filter_by(email=users_email).first()
+    
     print(user)
     # If there is not an entry for the user, create one
     if user is None:
-        user = User(email=profile['email'], fullname=profile['name'], username=profile['given_name'])
+        user = User(email=users_email, fullname=users_name, username=users_name)
         db.session.add(user)
         db.session.commit()
         db.session.expire_all()
-        message = 'Created and logged in user {}'.format(profile['name'])
+        message = 'Created and logged in user {}'.format(users_name)
     else:
-        message = 'Login successful for {}'.format(profile['name'])
+        message = 'Login successful for {}'.format(users_name)
     print(message)
     flash(message)
     login_user(user) #TODO add remember me option
@@ -407,5 +450,6 @@ def login_success(**params):
 
 @app.route('/logout')
 def logout():
+    print("/logout")
     logout_user()
     return redirect('/')
