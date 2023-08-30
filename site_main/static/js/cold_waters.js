@@ -10,7 +10,7 @@
 //
 // Minor:
 //  flip bomb crates (careful of recycling issues)
-// 
+//
 //  Bug: Slowdown on multiple explosions (recursion maybe?)
 //  Refactor destroy methods
 //  Depth constants
@@ -19,7 +19,7 @@
 //  Medium:
 //   Add explosion/fire particles
 //   Make anomalies cooler
-//   Dragging between 
+//   Dragging between
 //   Add username selection screen
 //   Add credits screen
 //   Store cause of death
@@ -125,7 +125,7 @@ const SNOWFLAKE_WIND_FRAMES = 20;
 // of ~160 pixels (3 box), and super jump around 260 pixels (5 boxes)
 const PLAYER_GRAVITY = .45;
 const PLAYER_JUMP_SPEED = -12.5;
-const PLAYER_JUMP_DRAG = 1.0; 
+const PLAYER_JUMP_DRAG = 1.0;
 const PLAYER_SUPER_JUMP_SPEED = -15;
 const PLAYER_WALK_SPEED = 4;
 
@@ -150,8 +150,8 @@ const SEED_COUNT = 10
 var CODE_HASH;
 var game_div;
 var httpRequest;
-var ufo_random; 
-var anomoly_random; 
+var ufo_random;
+var anomoly_random;
 var particle_random = new Phaser.Math.RandomDataGenerator(["0"])
 var virtual_screen_pressed = [
     [false, false, false],
@@ -202,7 +202,7 @@ function preload () {
     this.load.setBaseURL('../static/images/cold_waters');
     this.load.text('current_source_code', '../../../static/js/cold_waters.js');
 
-    this.load.image('background', 'bg_cropped.jpg');
+    this.load.image('background', 'ice_mountain_bg.jpg');
     this.load.image('water', 'water_surface_tile.png');
     this.load.image('plain_crate', 'plain_crate.png');
     this.load.image('metal_crate', 'metal_crate.png');
@@ -254,7 +254,7 @@ function pointerup(pointer, other) {
 function getRowColPressed(pointer) {
     if (! game_div)
         game_div = Phaser.DOM.GetTarget('game_div');
-    
+
     var row = 1;
     var col = 1;
 
@@ -271,7 +271,7 @@ function getRowColPressed(pointer) {
         row = 2;
     else
         row = 1;
-    return [row, col]; 
+    return [row, col];
 }
 
 function printPressedArray(array) {
@@ -360,7 +360,7 @@ function create () {
     leader_board_text = this.add.text(5/6*GAME_WIDTH, 5/6*GAME_HEIGHT - 25, get_leader_board_string(this), { fontSize: '14px', fill: '#fff', backgroundColor: '#233f7a', padding: 15 }).setAlpha(.8).setDepth(100).setOrigin(.5,.5).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
     leader_board_header = this.add.text(leader_board_text.x+leader_board_text.displayWidth/2+5, leader_board_text.y-leader_board_text.displayHeight/2+5, "Easy v129", { fontSize: '12px', fill: '#ff0' }).setAlpha(.8).setDepth(101).setOrigin(1,0).setShadow(-1,1,'rgba(0,0,0)', 0).setAlpha(.8).setVisible(false);
 
-    
+
     replay_instructions.push(this.add.text(GAME_WIDTH/2,GAME_HEIGHT/6, 'UP\nHarder', { fontSize: '40px', fill: '#faa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
     replay_instructions.push(this.add.text(5/6*GAME_WIDTH,GAME_HEIGHT/2, 'RIGHT\nNew seed', { fontSize: '40px', fill: '#fff', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
     replay_instructions.push(this.add.text(GAME_WIDTH/2,5/6*GAME_HEIGHT, 'DOWN\nEasier', { fontSize: '40px', fill: '#afa', align: 'center' }).setAlpha(.7).setDepth(100).setOrigin(.5,.5).setShadow(-2, 2, 'rgba(0,0,0)', 0).setVisible(false));
@@ -960,7 +960,7 @@ function update () {
         if (checkOverlap(electro_ball, player) && !player.unexplodable_at) {
             player_destroy(player)
         }
-        var metal_crate = checkOverlapGroup(electro_ball, metal_crates) 
+        var metal_crate = checkOverlapGroup(electro_ball, metal_crates)
         if (metal_crate) {
             electro_ball.destroy(true);
             setElectrified(metal_crate, true);
@@ -989,7 +989,7 @@ function update () {
         if (getFrame() % SNOWFLAKE_WIND_INTERVAL == 0)
             snowflake.wind_enabled = true;
 
-        var cycle = getFrame() % (SNOWFLAKE_WIND_INTERVAL*2) 
+        var cycle = getFrame() % (SNOWFLAKE_WIND_INTERVAL*2)
         snowflake.angle = Math.sin((cycle + 10) / SNOWFLAKE_WIND_INTERVAL * Math.PI)* 10;
 
         // Wind
@@ -1006,7 +1006,7 @@ function update () {
         var collision = checkOverlapGroup(snowflake, crates) || checkOverlap(snowflake, water) || checkOverlapGroup(snowflake, missiles)
         if (collision) {
             snowflake.myDestroy(snowflake);
-        } 
+        }
     });
     if (snowflake_indicator.lobe_added_at) {
         var f = getFrame() - snowflake_indicator.lobe_added_at;
@@ -1059,7 +1059,7 @@ function update () {
 	}
 
         var f = getFrame();
-        
+
         var brightness = Math.min((f % ANOMOLY_PULSE_INTERVAL)*10, 200)
         anomoly.setTint(Phaser.Display.Color.GetColor(255, 55+brightness, 55+brightness));
 
@@ -1228,7 +1228,7 @@ function crate_step(crate) {
         crate.body.y += CRATE_SPEED;
         crate.y += CRATE_SPEED;
     }
-        
+
     players.children.iterate(function(p) {
         //for (var i=0; i<5; i++) {
             if (checkOverlap(crate, p)) {
@@ -1250,7 +1250,7 @@ function crate_step(crate) {
         //crate.pause_crate_step = 10;
         raise_delta_y = collision.body.top - crate.body.bottom - 1;
         myMove(crate, 0, raise_delta_y);
-    } 
+    }
     if (crate.y == crate.last_y)
         crate.pause_crate_step = 5;
 
@@ -1280,7 +1280,7 @@ function checkOverlap(spriteA, spriteB) {
 function checkOverlapGroup(sprite, group) {
     var result = false;
     group.children.iterate(function(child) {
-       result = result || checkOverlap(sprite, child); 
+       result = result || checkOverlap(sprite, child);
     });
     return result;
 }
@@ -1325,19 +1325,19 @@ function randomSpawns(this_thing, frequency) {
 
     if (random_between(0,getOdds('plain_crate')) < frequency) {
         var crate = initialize_plain_crate(plain_crates.create(0,CREATION_HEIGHT))
-        move_to_empty_top_spot(crate); 
+        move_to_empty_top_spot(crate);
     }
     if (random_between(0,getOdds('bomb_crate')) < frequency) {
         var crate = initialize_bomb_crate(bomb_crates.get(), 0, CREATION_HEIGHT);
-        move_to_empty_top_spot(crate); 
+        move_to_empty_top_spot(crate);
     }
     if (random_between(0,getOdds('metal_crate')) < frequency) {
         var crate = initialize_metal_crate(metal_crates.create(0,CREATION_HEIGHT))
-        move_to_empty_top_spot(crate); 
+        move_to_empty_top_spot(crate);
     }
     if (random_between(0,getOdds('missile')) < frequency) {
         var missile = initialize_missile(missiles.create(0, CREATION_HEIGHT))
-        move_to_empty_top_spot(missile); 
+        move_to_empty_top_spot(missile);
     }
     if (shark_fins.countActive() == 0 && random_between(0, 100) < frequency && crates.countActive() > 35) {
         initialize_shark_fin()
@@ -1350,7 +1350,7 @@ function randomSpawns(this_thing, frequency) {
     }
     if (snowflake_random_between(0,getOdds('snowflake')) < frequency) {
         var snowflake = initialize_snowflake(snowflakes.create(0, CREATION_HEIGHT))
-        move_to_empty_top_spot(snowflake, snowflake_random); 
+        move_to_empty_top_spot(snowflake, snowflake_random);
         snowflake.x += 7;
         snowflake.body.x += 7;
     }
@@ -1358,7 +1358,7 @@ function randomSpawns(this_thing, frequency) {
 
 function getOdds(type) {
    var time_factor = T_INF_FACTOR + (1-T_INF_FACTOR) * (T_HALF_LIFE / (getFrame() + T_HALF_LIFE))
-   return BASE_ODDS_BY_DIFFICULTY[game.hard][type] * time_factor 
+   return BASE_ODDS_BY_DIFFICULTY[game.hard][type] * time_factor
 }
 
 function move_to_empty_top_spot(object, rng) {
@@ -1648,7 +1648,7 @@ function uploadRecording(controls_recording) {
         rng_integrity_check: controls_recording.rng_integrity_check,
     }
 
-    httpRequest = new XMLHttpRequest(); 
+    httpRequest = new XMLHttpRequest();
     httpRequest.onload = contentsSent;
     httpRequest.open('POST', 'https://games.kenakofer.com/onion_ninja', true);
     httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -1869,7 +1869,7 @@ function player_update(p) {
             powerup_bar_foreground.width = percent_left * 46
             if (f > 400 && f % 10 < 5)
                 powerup_bar_background.fillColor = 0xff0000;
-            else 
+            else
                 powerup_bar_background.fillColor = 0x222222;
         }
 
@@ -1925,7 +1925,7 @@ function player_update(p) {
             p.body.x += p.dash_delta[0]
             p.y += p.dash_delta[1]
             p.body.y += p.dash_delta[1]
-            
+
             p.angle += 360 / (PLAYER_DASH_FRAMES - 1) * Math.sign(p.dash_delta[0]+.01)
 
             p.myVelY = p.dash_delta[1] // Just for collision resolution
@@ -1957,7 +1957,7 @@ function player_update(p) {
                 p.myVelY += PLAYER_GRAVITY;
                 if (p.myVelY < 0 && !up_pressed)
                     p.myVelY += PLAYER_JUMP_DRAG;
-            } 
+            }
         }
 
         if (p.loosely_grounded || (p.myVelY > 0 && myTouching(p, missiles, 0, p.myVelY))) {
@@ -1982,8 +1982,8 @@ function player_update(p) {
                 p.anims.setProgress(.25);
                 p.anims.stop();
             }
-            p.x -= PLAYER_WALK_SPEED; 
-            p.body.x -= PLAYER_WALK_SPEED; 
+            p.x -= PLAYER_WALK_SPEED;
+            p.body.x -= PLAYER_WALK_SPEED;
             player_attempt_horizontal_save(p);
         }
         else if (right_pressed)
@@ -2020,7 +2020,7 @@ function player_update(p) {
         }
 
         if (down_pressed && p.can_dash && !p.flying_started_at/*&& getFrame() - p.dash_start_frame > PLAYER_DASH_RECHARGE_FRAMES*/ && (left_pressed || right_pressed || !p.strictly_grounded)) {
-            
+
             if (left_pressed) {
                 p.dash_delta = [-PLAYER_DASH_SPEED, 0]
                 p.anims.play('dash_right');
@@ -2067,7 +2067,7 @@ function player_update(p) {
             }
             frame += Math.floor(getFrame()/2) % 2
             p.setFrame(frame);
-            
+
             if (getFrame() - p.flying_started_at > POWERUP_LENGTH) {
                 p.flying_started_at = false;
             }
@@ -2114,7 +2114,7 @@ function player_update(p) {
 
         var lobes = (p.snowflakes.size % 6) + 1
         // Keep track of which have been collected
-        p.snowflakes.add(snowflake.created_at) 
+        p.snowflakes.add(snowflake.created_at)
 
         if (p.controlled_by == 'human') {
             snowflake_indicator.setFrame(3 + lobes).setVisible(true);
