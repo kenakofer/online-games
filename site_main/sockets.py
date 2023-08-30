@@ -118,7 +118,7 @@ def connect_freeplay():
 
 @socketio.on('disconnect', namespace='/freeplay')
 def handle_disconnect():
-    print('Client disconnected:', request.sid, current_user)
+    print('Client disconnected:', current_user)
 
 @socketio.on('UPDATE REQUEST', namespace='/freeplay')
 def update_request(data):

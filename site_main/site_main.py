@@ -30,6 +30,45 @@ socketio = SocketIO(app, async_mode='threading', engineio_logger=True, logger=Tr
 
 client = WebApplicationClient(Config.GOOGLE_CLIENT_ID)
 
+
+from sqlalchemy import event
+from sqlalchemy.orm import Session
+from sqlalchemy.engine import Engine
+
+@event.listens_for(Session, 'after_flush')
+def receive_after_flush(session, flush_context):
+    print('                        DB: After flush!')
+
+@event.listens_for(Session, 'after_commit')
+def receive_after_commit(session):
+    print('                        DB: Transaction committed!')
+
+@event.listens_for(Engine, "before_cursor_execute")
+def before_cursor_execute(conn, cursor, statement,
+                        parameters, context, executemany):
+    print("                        DB: Before Query: ", statement)
+
+@event.listens_for(Engine, 'connect')
+def receive_connect(dbapi_conn, connection_record):
+    print('                        DB: New database connection')
+
+@event.listens_for(Session, 'after_begin')
+def after_begin(session, transaction, connection):
+    print('                        DB: New transaction!')
+                        
+@event.listens_for(Session, 'after_transaction_end')  
+def after_transaction_end(session, transaction):
+    print('                        DB: Sessiosn transaction end!')
+
+@event.listens_for(Session, 'after_rollback')
+def receive_after_rollback(session):
+    print('                        DB: After rollback!')
+
+@event.listens_for(Session, 'after_soft_rollback')
+def receive_after_soft_rollback(session, previous_transaction):
+    print('                        DB: After soft rollback!')
+
+
 # from site import routes, models, shell_setup, sockets, hanabi
 import routes, models, shell_setup, sockets, hanabi
 

@@ -9,15 +9,13 @@ from hanabi import hanabi_games, HanabiGame
 from blitz import blitz_games, BlitzGame
 from freeplay import freeplay_games, FreeplayGame
 from datetime import timedelta
+import requests
 import json
 import os
 
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
-import googleapiclient.discovery
-
-CLIENT_SECRETS_FILE = os.path.dirname(__file__) + '/oauth_client_secret.apps.googleusercontent.com.json'
-# SCOPES = ['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
+SCOPES = ["openid", "email", "profile"]
+GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
+REDIRECT_URI = 'https://games.kenakofer.com/login/google'
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
 # google_login = GoogleLogin(app)
@@ -56,11 +54,16 @@ def handle_needs_login(e):
 def index():
     print("/index")
     result = "Overwrite me"
+    if current_user.is_anonymous:
+        result = "Not logged in"
+    else:
+        result = "Logged in as {}".format(current_user.username)
+
     result = render_template('index.html', title='Card and Board Games Online')
     # result = render_template('404.html')
     # result = "Overwritten"
-    print("Returning result")
-    print("Result: ", result)
+    # print("Returning result")
+    # print("Result: ", result)
     print("Result length:", len(result))
     return result
 
@@ -351,9 +354,6 @@ def freeplay(game_name, gameid):
 #########
 # Login #
 #########
-import requests
-GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
-REDIRECT_URI = 'https://games.kenakofer.com/login/google'
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
@@ -369,7 +369,7 @@ def login():
     request_uri = client.prepare_request_uri(
         authorization_endpoint,
         redirect_uri=REDIRECT_URI,
-        scope=["openid", "email", "profile"],
+        scope=SCOPES,
     )
     return redirect(request_uri)
 
