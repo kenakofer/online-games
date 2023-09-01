@@ -13,13 +13,13 @@
     "private_hand_height":0,
     "decks": {
         "Bulls":{
-            "width":80,
-            "height":80,
-            "snap_card_to_grid": [[75,0], [75,0]],
+            "width":70,
+            "height":70,
+            "snap_card_to_grid": [[92,17], [86,17]],
             "face_up":true,
-            "force_card_depth": 1,
+            "force_card_depth": 3,
             "default_face_up_offset":[3,2],
-            "default_face_down_offset":[1,1],
+            "default_face_down_offset":[2,2],
             "shuffle":false,
             "can_rotate":true,
             "cards":[
@@ -33,13 +33,13 @@
             ]
         },
         "Bears":{
-            "width":80,
-            "height":80,
-            "snap_card_to_grid": [[75,0], [75,0]],
+            "width":70,
+            "height":70,
+            "snap_card_to_grid": [[92,17], [86,17]],
             "face_up":true,
-            "force_card_depth": 1,
+            "force_card_depth": 3,
             "default_face_up_offset":[3,2],
-            "default_face_down_offset":[1,1],
+            "default_face_down_offset":[2,2],
             "shuffle":false,
             "can_rotate":true,
             "cards":[
@@ -53,13 +53,13 @@
             ]
         },
         "Whales":{
-            "width":80,
-            "height":80,
-            "snap_card_to_grid": [[75,0], [75,0]],
+            "width":70,
+            "height":70,
+            "snap_card_to_grid": [[92,17], [86,17]],
             "face_up":true,
-            "force_card_depth": 1,
+            "force_card_depth": 3,
             "default_face_up_offset":[3,2],
-            "default_face_down_offset":[1,1],
+            "default_face_down_offset":[2,2],
             "shuffle":false,
             "can_rotate":true,
             "cards":[
@@ -73,13 +73,13 @@
             ]
         },
         "Ostriches":{
-            "width":80,
-            "height":80,
-            "snap_card_to_grid": [[75,0], [75,0]],
+            "width":70,
+            "height":70,
+            "snap_card_to_grid": [[92,17], [86,17]],
             "face_up":true,
-            "force_card_depth": 1,
+            "force_card_depth": 3,
             "default_face_up_offset":[3,2],
-            "default_face_down_offset":[1,1],
+            "default_face_down_offset":[2,2],
             "shuffle":false,
             "can_rotate":true,
             "cards":[
@@ -92,38 +92,50 @@
                 }
             ]
         },
-        "Money":{
+        "50s":{
             "face_up":false,
-            "default_face_up_offset":[10, 0],
-            "default_face_down_offset":[5,0],
+            "default_face_up_offset":[20, 0],
+            "default_face_down_offset":[8,0],
             "shuffle":false,
+            "stack_group":"Money",
             "cards": [
                 {
                     "alt_text":"50",
                     "front_image_url":"/static/images/freeplay/postdiction/50.png",
                     "back_image_url":"/static/images/freeplay/postdiction/50.png",
                     "back_image_style":"100% 100%",
-                    "width":70,
-                    "height":70,
+                    "width":65,
+                    "height":65,
                     "repetitions": 30
-                },
+                }
+            ]
+        },
+        "10s":{
+            "face_up":false,
+            "default_face_up_offset":[20, 0],
+            "default_face_down_offset":[8,0],
+            "shuffle":false,
+            "stack_group":"Money",
+            "cards": [
                 {
                     "alt_text":"10",
                     "front_image_url":"/static/images/freeplay/postdiction/10.png",
                     "back_image_url":"/static/images/freeplay/postdiction/10.png",
                     "back_image_style":"100% 100%",
-                    "width":60,
-                    "height":60,
+                    "width":55,
+                    "height":55,
                     "repetitions": 30
                 }
             ]
         },
         "No Shares":{
-            "width":95,
-            "height":95,
+            "width":85,
+            "height":85,
             "face_up":false,
-            "default_face_up_offset":[10, 0],
-            "default_face_down_offset":[2,0],
+            "force_card_depth": 2,
+            "snap_card_to_grid": [[92,10], [86,10]],
+            "default_face_up_offset":[15, 0],
+            "default_face_down_offset":[3,3],
             "shuffle":false,
             "stack_group":"Shares",
             "cards": [
@@ -137,11 +149,13 @@
             ]
         },
         "Yes Shares":{
-            "width":95,
-            "height":95,
+            "width":85,
+            "height":85,
+            "force_card_depth": 2,
+            "snap_card_to_grid": [[92,10], [86,10]],
             "face_up":false,
-            "default_face_up_offset":[10, 0],
-            "default_face_down_offset":[2,0],
+            "default_face_up_offset":[15, 0],
+            "default_face_down_offset":[3,3],
             "shuffle":false,
             "stack_group":"Shares",
             "cards": [
@@ -155,13 +169,15 @@
             ]
         },
         "Market Boards":{
-            "width":1500,
-            "height":800,
+            "width":840,
+            "height":630,
+            "snap_card_to_grid": [[92,0], [86,0]],
             "default_face_up_offset":[0, 42],
             "default_face_down_offset":[3,2],
+            "force_card_depth": 1,
             "face_up":true,
             "shuffle":false,
-            "stack_group":"Command Cards",
+            "stack_group":"Market Boards",
             "cards": [
                 {
                     "alt_text":"",
