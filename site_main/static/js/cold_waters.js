@@ -293,7 +293,7 @@ function get_leader_board_string(scene) {
     if (!leader_board_object)
         return "Loading...";
     leader_board_object.forEach(function(entry){
-        var score_string = (""+entry.score).padStart(4, '0')
+        var score_string = (""+Math.floor(entry.score)).padStart(4, '0')
         string += "\n"+score_string+" - "+entry.username
     });
     return string;
@@ -304,7 +304,7 @@ function get_seed_scores_string(scene) {
     for (var i=0;i<SEED_COUNT;i++) {
         var recording = scene.cache.json.get('best_recording_'+i+'_'+game.hard)
         if (recording && recording.name) {
-            score_string = (""+recording.score).padStart(4, '0')
+            score_string = (""+Math.floor(recording.score)).padStart(4, '0')
             string += '\n'+getSeedString(i)+': '+score_string+" - "+recording.name;
         } else {
             score_string = "0".padStart(4, '0')
