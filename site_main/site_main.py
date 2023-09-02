@@ -26,9 +26,12 @@ db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
 login = LoginManager(app)
-socketio = SocketIO(app, async_mode='threading', engineio_logger=True, logger=True)
+socketio = SocketIO(app, async_mode='threading', engineio_logger=True, logger=True, ping_timeout=30, ping_interval=60)
 
 client = WebApplicationClient(Config.GOOGLE_CLIENT_ID)
+
+
+app.freeplay_games = {}
 
 
 from sqlalchemy import event
@@ -55,8 +58,8 @@ def receive_connect(dbapi_conn, connection_record):
 @event.listens_for(Session, 'after_begin')
 def after_begin(session, transaction, connection):
     print('                        DB: New transaction!')
-                        
-@event.listens_for(Session, 'after_transaction_end')  
+
+@event.listens_for(Session, 'after_transaction_end')
 def after_transaction_end(session, transaction):
     print('                        DB: Sessiosn transaction end!')
 

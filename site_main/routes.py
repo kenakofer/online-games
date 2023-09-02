@@ -7,7 +7,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from models import User, get_stable_user, ColdWatersScore, load_cold_waters_score
 from hanabi import hanabi_games, HanabiGame
 from blitz import blitz_games, BlitzGame
-from freeplay import freeplay_games, FreeplayGame
+from freeplay import FreeplayGame
 from datetime import timedelta
 import requests
 import json
@@ -23,10 +23,8 @@ print('starting views...')
 
 @app.before_request
 def before_request():
-    app.logger.info('aHeaders: %s', request.headers)
-    print ()
+    print('                                         ')
     print('                 >>>>>> URL:', request.url)
-    print('pHeaders:', request.headers)
 
 @app.after_request
 def after_request(response):
@@ -273,16 +271,25 @@ def cold_waters_get_best_recording(code_version, seed, hard):
 @app.route('/onion_ninja/leader_board/<code_version>/<hard>')
 @login_required
 def cold_waters_leader_board(code_version, hard):
+    # Disabling because the query is hard to run
+    return json.dumps([])
+
     print("/onion_ninja/leader_board")
-    user_ids = ColdWatersScore.query.with_entities(ColdWatersScore.user_id).filter_by(code_version=code_version, hard=hard).distinct()
+    rows = ColdWatersScore.query.with_entities(ColdWatersScore.user_id).filter_by(code_version=code_version, hard=hard).distinct()
+    # Get the user ids from the rows
+    user_ids = [row for row, in rows]
     print(user_ids)
     results = []
 
     for user_id in user_ids:
-        recording = ColdWatersScore.query.filter_by(code_version=code_version, user_id=user_id, hard=hard).order_by(ColdWatersScore.score.desc()).first()
+        recording = ColdWatersScore.query.filter_by(
+            code_version=str(code_version),
+            user_id=int(user_id),
+            hard=int(hard)
+        ).order_by(ColdWatersScore.score.desc()).first()
         results.append(
             {
-                'user_id': user_id[0],
+                'user_id': user_id,
                 'username': User.query.get(user_id).username,
                 'score': recording.score,
                 'seed': recording.seed,
@@ -318,29 +325,20 @@ def freeplay(game_name, gameid):
     print("{} is requesting to join freeplay gameid {}".format(user, gameid))
     gameid = str(game_name+'/'+gameid)
     # If the game doesn't already exist, create it!
-    if not gameid in freeplay_games:
-        freeplay_games[gameid] = FreeplayGame(gameid, game_name)
+    if not gameid in app.freeplay_games:
+        app.freeplay_games[gameid] = FreeplayGame(gameid, game_name)
         print("Created gameid {}".format(gameid))
-    game = freeplay_games[gameid]
-    print("The users in the game already are {}".format([p.session_user for p in game.players]))
+    game = app.freeplay_games[gameid]
+    print("The users in the game already are {}".format([p for p in game.sid_to_player.values()]))
     # See if we are already in the player list
     # Otherwise, add to the end
-    # TODO change this
-    index = -1
-    for i,p in enumerate(game.players):
-        if not p.session_user:
-            print("Player is new")
-            p.session_user = user
-            index = i
-            break
-        elif p.session_user == user:
-            index = i
-            print("Player is returning")
-            break
-    if index==-1:
-        index = len(game.players)
+    if request.cookies['session'] in game.sid_to_player:
+        print("Player is returning")
+        player = game.sid_to_player[request.cookies['session']]
+    else:
+        print("Player is new")
         player = game.add_player(user)
-
+    index = player.player_index
 
     print("Taking {} player index".format(index)) #Put the user into the game room
     return render_template(
@@ -430,7 +428,7 @@ def callback():
         return "User email not available or not verified by Google.", 400
 
     user = User.query.filter_by(email=users_email).first()
-    
+
     print(user)
     # If there is not an entry for the user, create one
     if user is None:

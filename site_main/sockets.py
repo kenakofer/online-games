@@ -1,11 +1,11 @@
-from site_main import socketio
+from site_main import app, socketio
 from flask_socketio import emit, join_room, leave_room
 from flask_login import current_user
+from flask import request
 from models import get_stable_user
 from time import sleep
 from hanabi import HanabiGame, hanabi_games
 from blitz import BlitzGame, blitz_games
-from freeplay import FreeplayGame, freeplay_games
 from time import time
 
 @socketio.on('message')
@@ -112,29 +112,41 @@ def card_move(data):
 # Free Play #
 #############
 
+def freeplay_sign_player_into_game(gameid):
+    g = app.freeplay_games[gameid]
+    player = g.get_player_from_request()
+    if not player:
+        print("                                ERROR: Player not found from request session")
+        return None, None
+
+    # Because of possible socketio connection resets, try to join room again
+    join_room(gameid)
+    return g, player
+
+
 @socketio.on('connect', namespace='/freeplay')
 def connect_freeplay():
-    print('Client {}: Connected to freeplay'.format(current_user))
+    print('Client {}: Connected to freeplay'.format(request.cookies['session']))
 
 @socketio.on('disconnect', namespace='/freeplay')
 def handle_disconnect():
-    print('Client disconnected:', current_user)
+    print('Client disconnected:', request.cookies['session'])
 
 @socketio.on('UPDATE REQUEST', namespace='/freeplay')
 def update_request(data):
-    print('Client {}: UPDATE REQUEST: {}'.format(get_stable_user(), data))
-    print('The games are {}'.format(freeplay_games))
-    g = freeplay_games[data['gameid']]
+    print('Client {}: UPDATE REQUEST: {}'.format(request.sid, data))
+    print('The games are {}'.format(app.freeplay_games))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    g = app.freeplay_games[data['gameid']]
     g.send_update(keys=['all'], broadcast=False)
     g.time_of_last_update = time()
 
 @socketio.on('JOIN ROOM', namespace='/freeplay')
 def join(data):
-    print('Client {}: JOIN ROOM: {}'.format(get_stable_user(), data))
-    join_room(data['room'])
-    g = freeplay_games[data['room']]
+    print('Client {}: JOIN ROOM: {}'.format(request.sid, data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
     # Add a welcome message
-    name = g.get_active_player_tag()
+    name = player.get_short_display_name()
     g.add_message(None, name+' joined the game')
     # Send the newly joined client all the stuff
     g.send_update(keys=['all'], broadcast=False)
@@ -143,9 +155,8 @@ def join(data):
 
 @socketio.on('START MOVE', namespace='/freeplay')
 def start_move(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'START MOVE', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'START MOVE', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -154,9 +165,8 @@ def start_move(data):
 
 @socketio.on('STOP MOVE', namespace='/freeplay')
 def stop_move(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'STOP MOVE', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'STOP MOVE', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -166,9 +176,8 @@ def stop_move(data):
 
 @socketio.on('CONTINUE MOVE', namespace='/freeplay')
 def continue_move(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'CONTINUE MOVE', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'CONTINUE MOVE', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -177,9 +186,8 @@ def continue_move(data):
 
 @socketio.on('RESIZE', namespace='/freeplay')
 def resize(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'RESIZE', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'RESIZE', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -188,9 +196,8 @@ def resize(data):
 
 @socketio.on('COMBINE', namespace='/freeplay')
 def combine(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'COMBINE', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'COMBINE', data))
     if not g.confirm_or_destroy_id(data['top_id']):
         return False
     if not g.confirm_or_destroy_id(data['bottom_id']):
@@ -202,9 +209,8 @@ def combine(data):
 
 @socketio.on('SHUFFLE', namespace='/freeplay')
 def shuffle(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'shuffle', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'shuffle', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -212,9 +218,8 @@ def shuffle(data):
     g.time_of_last_update = time()
 @socketio.on('SORT', namespace='/freeplay')
 def sort(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'SORT', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'SORT', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -223,9 +228,8 @@ def sort(data):
 
 @socketio.on('ROLL', namespace='/freeplay')
 def roll(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'roll', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'roll', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -234,9 +238,8 @@ def roll(data):
 
 @socketio.on('INCREMENT', namespace='/freeplay')
 def increment(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'increment', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'increment', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -245,9 +248,8 @@ def increment(data):
 
 @socketio.on('ROTATE', namespace='/freeplay')
 def rotate(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'rotate', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'rotate', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -256,9 +258,8 @@ def rotate(data):
 
 @socketio.on('FLIP', namespace='/freeplay')
 def flip(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'flip', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'flip', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -267,9 +268,8 @@ def flip(data):
 
 @socketio.on('DEAL', namespace='/freeplay')
 def deal(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'DEAL', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'DEAL', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -277,9 +277,8 @@ def deal(data):
     g.time_of_last_update = time()
 @socketio.on('DESTROY', namespace='/freeplay')
 def destroy(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'DESTROY', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'DESTROY', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -299,9 +298,8 @@ def destroy(data):
 
 @socketio.on('PCO SET', namespace='/freeplay')
 def pco_set(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'PCO SET', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'PCO SET', data))
     if not g.confirm_or_destroy_id(data['obj_id']):
         return False
     obj = g.all_movables[data['obj_id']]
@@ -312,9 +310,8 @@ def pco_set(data):
 
 @socketio.on('SEND MESSAGE', namespace='/freeplay')
 def send_message(data):
-    g = freeplay_games[data['gameid']]
-    player = g.get_player_from_session(current_user)
-    print('Client {}, event {}: {}'.format(get_stable_user(), 'SEND MESSAGE', data))
+    g, player = freeplay_sign_player_into_game(data['gameid'])
+    print('Client {}, event {}: {}'.format(player, 'SEND MESSAGE', data))
     g.add_message(player, data['text'])
     g.send_messages()
     g.time_of_last_update = time()

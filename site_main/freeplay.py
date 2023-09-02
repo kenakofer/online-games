@@ -6,30 +6,26 @@ from json import load
 from collections import OrderedDict
 from markdown2 import markdown
 from flask_login import current_user
-
-#The dict to be filled with freeplay_games
-freeplay_games = {}
+from flask import request
 
 class FreeplayPlayer():
 
     def __init__(self, session_user, game):
         self.game = game
-        self.player_index = len(game.players)
-        game.players.append(self)
+        self.player_index = len(game.sid_to_player.values())
         self.session_user = session_user
+        self._display_name = session_user.fullname
+        self._sid = request.cookies['session']
+        game.sid_to_player[self._sid] = self
 
-        def __repr__(self):
-            return str(self.session_user)
+    def __repr__(self):
+        return str(self.get_display_name())
 
     def get_display_name(self):
-        if self.session_user:
-            return self.session_user.fullname
-        return None
+        return self._display_name
 
     def get_short_display_name(self):
-        if self.session_user:
-            return self.session_user.fullname.split()[0]
-        return None
+        return self.get_display_name().split()[0]
 
     def get_colored_tag(self):
         dn = self.get_short_display_name()
@@ -37,11 +33,8 @@ class FreeplayPlayer():
             return '$*'+str(self.player_index)+dn
         return ""
 
-    def __repr__(self):
-        return self.session_user.fullname
-
     def __eq__(self,other):
-        return other and self.session_user and other.session_user and self.session_user.id == other.session_user.id
+        return other and self._sid == other._sid
 
 class TableMovable:
 
@@ -786,7 +779,7 @@ class FreeplayGame:
     def __init__(self, gameid, deck_name='rook'):
         self.thread_lock = threading.Lock()
         self.thread_lock.acquire()
-        self.players = []
+        self.sid_to_player = {}
         self.decks = {}
         self.all_movables = {}
         self.gameid = gameid
@@ -806,17 +799,20 @@ class FreeplayGame:
         self.get_instructions_from_markdown(app.root_path+'/static/images/freeplay/'+deck_name+'/instructions.md')
 
     def get_active_player_tag(self):
-        player = self.get_player_from_session(current_user)
+        player = self.get_player_from_request()
         if player:
             name = player.get_colored_tag()
             return name
-        return "Someone"
+        return "Unknown Player"
 
     def get_sort_index(self):
         self.sort_index += 1
         return self.sort_index
 
     def add_player(self, session_user):
+        if self.get_player_from_request():
+            print('The request session id:', request.cookies["session"], 'already has a player')
+            return None
         if (self.get_player_from_session(session_user)):
             print('The session user {} already has a player'.format(session_user))
             return None
@@ -836,8 +832,15 @@ class FreeplayGame:
         self.id_counter += 1
         return str(self.id_counter).zfill(3)
 
+    
+    def get_player_from_request(self):
+        if request.cookies['session'] in self.sid_to_player:
+            return self.sid_to_player[request.cookies['session']] 
+        print('No player associated with this sid: {}'.format(request.cookies['session']))
+        return None
+
     def get_player_from_session(self, session_user):
-        player_list = [p for p in self.players if p.session_user == session_user]
+        player_list = [p for p in self.sid_to_player.values() if p.session_user == session_user]
         if len(player_list) == 0:
             print('No player associated with this session_user: {}'.format(session_user))
             return None
@@ -912,7 +915,7 @@ class FreeplayGame:
             all_data["movables_info"] = movables_info
         if 'players' in keys or 'all' in keys:
             # Only send first names
-            player_names = [p.get_short_display_name()for p in self.players if p.session_user]
+            player_names = [p.get_short_display_name() for p in self.sid_to_player.values() if p.session_user]
             all_data['players'] = player_names
         if 'messages' in keys or 'all' in keys:
             all_data['messages'] = self.messages

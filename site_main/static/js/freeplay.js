@@ -490,7 +490,7 @@ $( document ).ready(function () {
             if (index >= 0)
                 array.splice( index, 1);
             obj_old_parent.update_full_display_name();
-            obj_old_parent.sync_position(); //To update dimensions 
+            obj_old_parent.sync_position(); //To update dimensions
             // This doesn't look good if we don't also sync position on siblings
             // Only sync siblings that have a higher index in parent, since they are the only ones that will shift
             for (var i = index; i < obj_old_parent.dependent_ids.length; i++) {
@@ -824,7 +824,7 @@ $( document ).ready(function () {
     var join_room = function() {
         console.log('Attempting to join room '+template_gameid);
         if (! apm.have_received_update) {
-            socket.emit('JOIN ROOM', {room:template_gameid});
+            socket.emit('JOIN ROOM', {gameid:template_gameid});
             setTimeout(join_room, 1000);
         } else {
             console.log('Joined room.');
@@ -1260,9 +1260,9 @@ $( document ).ready(function () {
         }
     });
 
-    function once(fn, context) { 
+    function once(fn, context) {
 	var result;
-	return function() { 
+	return function() {
 	    if (fn) {
 		result = fn.apply(context || this, arguments);
 		fn = null;
