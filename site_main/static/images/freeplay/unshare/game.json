@@ -26,8 +26,8 @@
             "cards":[
                 {
                     "alt_text":"Bull",
-                    "front_image_url":"/static/images/freeplay/postdiction/bull.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/bull.png",
+                    "front_image_url":"/static/images/freeplay/unshare/bull.png",
+                    "back_image_url":"/static/images/freeplay/unshare/bull.png",
                     "back_image_style":"100% 100%",
                     "repetitions":20
                 }
@@ -47,8 +47,8 @@
             "cards":[
                 {
                     "alt_text":"Bear",
-                    "front_image_url":"/static/images/freeplay/postdiction/bear.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/bear.png",
+                    "front_image_url":"/static/images/freeplay/unshare/bear.png",
+                    "back_image_url":"/static/images/freeplay/unshare/bear.png",
                     "back_image_style":"100% 100%",
                     "repetitions":20
                 }
@@ -68,8 +68,8 @@
             "cards":[
                 {
                     "alt_text":"Whale",
-                    "front_image_url":"/static/images/freeplay/postdiction/whale.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/whale.png",
+                    "front_image_url":"/static/images/freeplay/unshare/whale.png",
+                    "back_image_url":"/static/images/freeplay/unshare/whale.png",
                     "back_image_style":"100% 100%",
                     "repetitions":20
                 }
@@ -89,8 +89,8 @@
             "cards":[
                 {
                     "alt_text":"Ostrich",
-                    "front_image_url":"/static/images/freeplay/postdiction/ostrich.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/ostrich.png",
+                    "front_image_url":"/static/images/freeplay/unshare/ostrich.png",
+                    "back_image_url":"/static/images/freeplay/unshare/ostrich.png",
                     "back_image_style":"100% 100%",
                     "repetitions":20
                 }
@@ -105,8 +105,8 @@
             "cards": [
                 {
                     "alt_text":"50",
-                    "front_image_url":"/static/images/freeplay/postdiction/50.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/50.png",
+                    "front_image_url":"/static/images/freeplay/unshare/50.png",
+                    "back_image_url":"/static/images/freeplay/unshare/50.png",
                     "back_image_style":"100% 100%",
                     "width":65,
                     "height":65,
@@ -123,8 +123,8 @@
             "cards": [
                 {
                     "alt_text":"10",
-                    "front_image_url":"/static/images/freeplay/postdiction/10.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/10.png",
+                    "front_image_url":"/static/images/freeplay/unshare/10.png",
+                    "back_image_url":"/static/images/freeplay/unshare/10.png",
                     "back_image_style":"100% 100%",
                     "width":55,
                     "height":55,
@@ -145,8 +145,8 @@
             "cards": [
                 {
                     "alt_text":"Worth 100 if the answer is NO",
-                    "front_image_url":"/static/images/freeplay/postdiction/no_share.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/no_share.png",
+                    "front_image_url":"/static/images/freeplay/unshare/no_share.png",
+                    "back_image_url":"/static/images/freeplay/unshare/no_share.png",
                     "back_image_style":"100% 100%",
                     "repetitions": 30
                 }
@@ -165,8 +165,8 @@
             "cards": [
                 {
                     "alt_text":"Worth 100 if the answer is YES",
-                    "front_image_url":"/static/images/freeplay/postdiction/yes_share.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/yes_share.png",
+                    "front_image_url":"/static/images/freeplay/unshare/yes_share.png",
+                    "back_image_url":"/static/images/freeplay/unshare/yes_share.png",
                     "back_image_style":"100% 100%",
                     "repetitions": 30
                 }
@@ -185,8 +185,8 @@
             "cards": [
                 {
                     "alt_text":"",
-                    "front_image_url":"/static/images/freeplay/postdiction/market.png",
-                    "back_image_url":"/static/images/freeplay/postdiction/market.png",
+                    "front_image_url":"/static/images/freeplay/unshare/market.png",
+                    "back_image_url":"/static/images/freeplay/unshare/market.png",
                     "back_image_style":"100% 100%",
                     "repetitions":4
                 }
