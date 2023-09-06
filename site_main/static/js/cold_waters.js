@@ -799,9 +799,12 @@ function ghost_from_recording(recording, this_thing) {
 
 function create_anomoly(this_thing) {
     var shape = this_thing.make.graphics();
+    // White circle with radius ANOMOLY_RADIUS with a red border
     shape.fillStyle(0xffffff);
     shape.fillCircle(0, 0, ANOMOLY_RADIUS);
-    shape.fillPath();
+    shape.lineStyle(2, 0xff0000);
+    shape.strokeCircle(0, 0, ANOMOLY_RADIUS + 4);
+
     var mask = shape.createGeometryMask();
 
     anomoly = anomolies.create(GAME_WIDTH/2, GAME_HEIGHT/2);
@@ -1032,7 +1035,7 @@ function update () {
     anomolies.children.each(function(anomoly) {
         var focus;
         // The fallback focus on player_ghost may not be accurate to original
-	if (player.active)
+        if (player.active)
             focus = player;
         else if (player_ghost.active)
             focus = player_ghost;
@@ -1048,15 +1051,17 @@ function update () {
         anomoly.mask_shape.y += anomoly.myVelY;
         //myMove(anomoly, anomoly.myVelX, anomoly.myVelY);
 
-	anomoly.body.x = anomoly.mask_shape.x - anomoly.body.width/2
-	anomoly.body.y = anomoly.mask_shape.y - anomoly.body.height/2
-	if (checkOverlapGroup(anomoly, explosions)) {
+        anomoly.body.x = anomoly.mask_shape.x - anomoly.body.width/2
+        anomoly.body.y = anomoly.mask_shape.y - anomoly.body.height/2
+        if (checkOverlapGroup(anomoly, explosions)) {
             anomoly.body.width -= 1;
             anomoly.body.height -= 1;
             anomoly.mask_shape.scale = anomoly.body.width/2 / ANOMOLY_RADIUS
-            if (anomoly.body.width <= 60)
+            if (anomoly.body.width <= 60) {
                 anomoly.destroy(true);
-	}
+                return;
+            }
+        }
 
         var f = getFrame();
 
