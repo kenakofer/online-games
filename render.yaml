@@ -9,9 +9,9 @@ services:
     # processes and they would not see each other.
     startCommand: gunicorn --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --bind 0.0.0.0:$PORT wsgi:application
     envVars:
-      # 3.11 is what this has actually been run against.
+      # 3.11.15 is what this has actually been run and tested against.
       - key: PYTHON_VERSION
-        value: "3.11.9"
+        value: "3.11.15"
       # The session cookie is the player's identity, and this key signs it.
       # Render generates one once and keeps it, so players stay logged in
       # across deploys. Never replace it casually.
