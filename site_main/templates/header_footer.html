@@ -3,15 +3,15 @@
         <link rel='stylesheet' href='{{ url_for("static",filename="styles/styles.css") }}'>
 
         {% if title %}
-        <title>{{ title }} - games.kenakofer.com </title>
+        <title>{{ title }} - Card and Board Games </title>
         {% else %}
-        <title>games.kenakofer.com</title>
+        <title>Card and Board Games</title>
         {% endif %}
         {% block head %}{% endblock %}
     </head>
     <body>
         <header class='header set_min_width'>
-            <span><a href='/'>Games.kenakofer.com</a></span>|
+            <span><a href='/'>Card and Board Games</a></span>|
             <span><a href='/hanabi'>Hanabi</a></span>|
             <span><a href='/blitz'>Dutch Blitz</a></span>|
             <span><a href='/freeplay'>Freeplay</a></span>|
