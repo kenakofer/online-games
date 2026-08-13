@@ -1,0 +1,15 @@
+{% extends "header_footer.html" %}
+{% block head %}
+{% endblock %}
+{% block content %}
+    <h1>Choose a name</h1>
+    <p>There are no accounts here. Pick whatever name you like and the other
+    players at your table will see it. If you clear your cookies you will be
+    asked again, and you can pick something different.</p>
+    <div align="center">
+    <form method="post" action="/login">
+        <b>Name: <input type="text" name="fullname" maxlength="{{ max_name_length }}" autocomplete="off" autofocus></b><br>
+        <input type="submit" value="Start playing">
+    </form>
+    </div>
+{% endblock %}

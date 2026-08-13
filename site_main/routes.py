@@ -1,24 +1,21 @@
-from site_main import app, db, client
-from flask import render_template, flash, redirect, request, url_for, escape
+from site_main import app
+from flask import render_template, flash, redirect, request, url_for
 import flask
-# from flask_oauth2_login import GoogleLogin
 from math import floor
 from flask_login import current_user, login_user, logout_user, login_required
-from models import User, get_stable_user
+from models import SessionUser, get_stable_user
 from hanabi import hanabi_games, HanabiGame
 from blitz import blitz_games, BlitzGame
 from freeplay import FreeplayGame
 from datetime import timedelta
-import requests
 import json
 import os
+import uuid
 
-SCOPES = ["openid", "email", "profile"]
-GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
-REDIRECT_URI = 'https://games.kenakofer.com/login/google'
+# Display names are cosmetic, but they end up in game UIs, so keep them short.
+MAX_NAME_LENGTH = 32
 
 ordinal = lambda n: "%d%s" % (n,"tsnrhtdd"[(floor(n/10)%10!=1)*(n%10<4)*n%10::4])
-# google_login = GoogleLogin(app)
 print('starting views...')
 
 @app.before_request
@@ -225,102 +222,39 @@ def freeplay(game_name, gameid):
 #########
 # Login #
 #########
-def get_google_provider_cfg():
-    return requests.get(GOOGLE_DISCOVERY_URL).json()
-
 @app.route('/login/')
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    # Find out what URL to hit for Google login
-    google_provider_cfg = get_google_provider_cfg()
-    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
+    """Pick a display name. There are no accounts and no password.
 
-    # Use library to construct the request for Google login and provide
-    # scopes that let you retrieve user's profile from Google
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
-        redirect_uri=REDIRECT_URI,
-        scope=SCOPES,
-    )
-    return redirect(request_uri)
+    Identity lives entirely in the signed session cookie: a generated id that
+    identifies the player, and the name they chose, which is only decoration.
+    """
+    if current_user.is_authenticated:
+        return redirect('/')
 
+    if request.method == 'POST':
+        fullname = (request.form.get('fullname') or '').strip()
+        if not fullname:
+            flash('Please enter a name.')
+            return render_template('login.html', title='Choose a name', max_name_length=MAX_NAME_LENGTH)
+        fullname = fullname[:MAX_NAME_LENGTH]
 
-@app.route("/login/google")
-@app.route("/login/callback")
-def callback():
-    # Get authorization code Google sent back to you
-    code = request.args.get("code")
-    print("Got code:", code)
-    # Find out what URL to hit to get tokens that allow you to ask for
-    # things on behalf of a user
-    google_provider_cfg = get_google_provider_cfg()
-    token_endpoint = google_provider_cfg["token_endpoint"]
-    print("token_endpoint:", token_endpoint)
-    # Prepare and send a request to get tokens! Yay tokens!
-    token_url, headers, body = client.prepare_token_request(
-        token_endpoint,
-        authorization_response=request.url,
-        redirect_url=request.base_url, ## Comment out?
-        code=code
-    )
-    token_response = requests.post(
-        token_url,
-        headers=headers,
-        data=body,
-        auth=(app.config['GOOGLE_CLIENT_ID'], app.config['GOOGLE_CLIENT_SECRET']),
-    )
-    print("token_response:", token_response)
+        flask.session['user_id'] = uuid.uuid4().hex
+        flask.session['fullname'] = fullname
+        login_user(SessionUser(flask.session['user_id'], fullname))
 
-    # Parse the tokens!
-    client.parse_request_body_response(json.dumps(token_response.json()))
+        dest = request.cookies.get('next') or '/'
+        return redirect(dest)
 
-    # Now that we have tokens (yay) let's find and hit URL
-    # from Google that gives you user's profile information,
-    # including their Google Profile Image and Email
-    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    print("userinfo_endpoint:", userinfo_endpoint)
-    uri, headers, body = client.add_token(userinfo_endpoint)
-    userinfo_response = requests.get(uri, headers=headers, data=body)
-
-    print("userinfo_response:", userinfo_response)
-
-    # We want to make sure their email is verified.
-    # The user authenticated with Google, authorized our
-    # app, and now we've verified their email through Google!
-    if userinfo_response.json().get("email_verified"):
-        print("email_verified")
-        unique_id = userinfo_response.json()["sub"]
-        users_email = userinfo_response.json()["email"]
-        picture = userinfo_response.json()["picture"]
-        users_name = userinfo_response.json()["given_name"]
-        print("unique_id:", unique_id)
-        print("users_email:", users_email)
-        print("users_name:", users_name)
-    else:
-        print("email not verified")
-        return "User email not available or not verified by Google.", 400
-
-    user = User.query.filter_by(email=users_email).first()
-
-    print(user)
-    # If there is not an entry for the user, create one
-    if user is None:
-        user = User(email=users_email, fullname=users_name, username=users_name)
-        db.session.add(user)
-        db.session.commit()
-        db.session.expire_all()
-        message = 'Created and logged in user {}'.format(users_name)
-    else:
-        message = 'Login successful for {}'.format(users_name)
-    print(message)
-    flash(message)
-    login_user(user) #TODO add remember me option
-    print("cookie set to {}".format(request.cookies.get('next')))
-    dest = request.cookies.get('next') or '/'
-    return redirect(dest)
+    return render_template('login.html', title='Choose a name', max_name_length=MAX_NAME_LENGTH)
 
 @app.route('/logout')
 def logout():
     print("/logout")
     logout_user()
+    # logout_user() only drops flask-login's own key; the identity we put in
+    # the session is ours to clear.
+    flask.session.pop('user_id', None)
+    flask.session.pop('fullname', None)
     return redirect('/')

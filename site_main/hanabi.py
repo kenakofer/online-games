@@ -1,5 +1,4 @@
 from random import shuffle
-from site_main import db
 
 #The list to be filled with hanabigames
 hanabi_games = {}
