@@ -89,9 +89,13 @@ class BlitzAI( threading.Thread ):
         for c in cards_to_check:
             # Find an empty pile to play a 1 in
             for p in self.game.play_piles:
-                if len(p.cards) > 0:
-                    sleep(self.speed + random()*.05 - .025)
                 if (c.number==len(p.cards)+1) and (len(p.cards)==0 or p.cards[0].color == c.color):
+                    # Pause once, on the move we are actually going to make.
+                    # This used to sleep on every pile inspected, which meant
+                    # cards*piles yields per pass; under gevent that reenters
+                    # the scheduler so often that a busy bot can keep the
+                    # worker from finishing a websocket handshake.
+                    sleep(self.speed + random()*.05 - .025)
                     self.player.play_card(c, p)
                     return True
 
