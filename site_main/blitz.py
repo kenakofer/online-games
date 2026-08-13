@@ -49,16 +49,24 @@ class BlitzAI( threading.Thread ):
 
     def run(self):
         while not self.game.game_over:
-            self.check_card_loop() or self.player.deal_deck()
+            played = self.check_card_loop()
+            if not played:
+                self.player.deal_deck()
             self.player.game.delete_if_stale()
             if self.stopped():
                 print("Blitz AI thread for game {} has been prematurely stopped".format(self.player.game.gameid))
                 return
-            # gevent turns these threads into greenlets, so nothing preempts us.
-            # check_card_loop only sleeps when it passes a non-empty pile, which
-            # at the start of a game is never: without this the loop spins and
-            # the worker never gets back to answering sockets.
-            sleep(self.speed)
+            # gevent turns these threads into greenlets, so nothing preempts us,
+            # and both branches above end in get_full_update, which serializes
+            # every card and emits it to every client. Sleeping is what lets the
+            # worker answer sockets at all.
+            #
+            # Turning over the deck when there is nothing to play is the
+            # expensive case: it makes no progress but still broadcasts, so a
+            # bot with no legal move would otherwise flood the room forever.
+            # Waiting longer there costs the bot nothing, since the board can
+            # only change when a human plays.
+            sleep(self.speed if played else max(self.speed, 1.0))
 
     def stop(self):
         self._stop_event.set()
