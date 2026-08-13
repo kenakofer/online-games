@@ -126,11 +126,12 @@ def freeplay_sign_player_into_game(gameid):
 
 @socketio.on('connect', namespace='/freeplay')
 def connect_freeplay():
-    print('Client {}: Connected to freeplay'.format(request.cookies['session']))
+    print('Client {}: Connected to freeplay'.format(request.cookies.get('session')))
 
+# python-socketio passes a disconnect reason, so accept and ignore it.
 @socketio.on('disconnect', namespace='/freeplay')
-def handle_disconnect():
-    print('Client disconnected:', request.cookies['session'])
+def handle_disconnect(reason=None):
+    print('Client disconnected:', request.cookies.get('session'), reason)
 
 @socketio.on('UPDATE REQUEST', namespace='/freeplay')
 def update_request(data):

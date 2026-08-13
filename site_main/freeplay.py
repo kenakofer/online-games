@@ -834,9 +834,10 @@ class FreeplayGame:
 
     
     def get_player_from_request(self):
-        if request.cookies['session'] in self.sid_to_player:
-            return self.sid_to_player[request.cookies['session']] 
-        print('No player associated with this sid: {}'.format(request.cookies['session']))
+        session_sid = request.cookies.get('session')
+        if session_sid in self.sid_to_player:
+            return self.sid_to_player[session_sid]
+        print('No player associated with this sid: {}'.format(session_sid))
         return None
 
     def get_player_from_session(self, session_user):

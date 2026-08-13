@@ -202,9 +202,10 @@ def freeplay(game_name, gameid):
     print("The users in the game already are {}".format([p for p in game.sid_to_player.values()]))
     # See if we are already in the player list
     # Otherwise, add to the end
-    if request.cookies['session'] in game.sid_to_player:
+    session_sid = request.cookies.get('session')
+    if session_sid in game.sid_to_player:
         print("Player is returning")
-        player = game.sid_to_player[request.cookies['session']]
+        player = game.sid_to_player[session_sid]
     else:
         print("Player is new")
         player = game.add_player(user)

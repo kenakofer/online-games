@@ -8,7 +8,11 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 login = LoginManager(app)
-socketio = SocketIO(app, async_mode='threading', engineio_logger=True, logger=True, ping_timeout=30, ping_interval=60)
+# threading mode was a debugging fallback while getting this running on a Pi.
+# gevent is what gunicorn serves this with, and it handles long-lived
+# websocket connections far better. (eventlet also works, but upstream now
+# declares itself deprecated and advises against new use.)
+socketio = SocketIO(app, async_mode='gevent', ping_timeout=30, ping_interval=60)
 
 app.freeplay_games = {}
 

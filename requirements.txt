@@ -5,6 +5,8 @@ python-socketio==5.16.4
 python-engineio==4.13.5
 markdown2==2.5.5
 
-# Serving
-eventlet==0.41.1
+# Serving. gevent rather than eventlet: eventlet now describes itself as
+# deprecated and advises against new use.
+gevent==26.8.0
+gevent-websocket==0.10.1
 gunicorn==26.0.0

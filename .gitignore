@@ -1,5 +1,6 @@
 *client_secret*
-config.py
+# config.py used to hold the Google client secret. It now only reads from the
+# environment, so it is tracked; real secrets live in env vars.
 *.pyc
 *.db
 *.wsgi
