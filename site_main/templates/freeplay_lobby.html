@@ -10,7 +10,10 @@
     <p>Freeplay gives you the cards needed to play an infinite variety of card games with your human friends, near or far. Like in real life, you, the humans, decide what rules you play by, and move the pieces according to those rules. This flexibility in Freeplay makes it easy for anyone to put together a deck of cards from a set of images, and use it on Freeplay without worrying about programming all the rules for the computer to understand.</p>
     <p>You can create or join a freeplay game from here. Choose one of the game types and a game room name. You can make up a game room, but you and your friends must use the same game room to play with each other. Powerusers will note that you can bypass this webpage by directly visiting a url in the format below.</p>
     <div align="center">
-    <form onSubmit="this.action='/freeplay/'+this.gametype.value+'/'+this.gameid.value">
+    <!-- Navigate ourselves and cancel the submit. Letting the form submit would
+         append every named field as a query string, repeating in ?gameid=... what
+         the path already says. -->
+    <form onSubmit="window.location='/freeplay/'+this.gametype.value+'/'+encodeURIComponent(this.gameid.value); return false;">
         <b>/freeplay /
             <select id="gametype" name="gametype" placeholder="Game type">
                 <option value="carcassonne">Carcassonne</option>
