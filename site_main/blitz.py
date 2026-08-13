@@ -54,6 +54,11 @@ class BlitzAI( threading.Thread ):
             if self.stopped():
                 print("Blitz AI thread for game {} has been prematurely stopped".format(self.player.game.gameid))
                 return
+            # gevent turns these threads into greenlets, so nothing preempts us.
+            # check_card_loop only sleeps when it passes a non-empty pile, which
+            # at the start of a game is never: without this the loop spins and
+            # the worker never gets back to answering sockets.
+            sleep(self.speed)
 
     def stop(self):
         self._stop_event.set()
