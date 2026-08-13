@@ -35,7 +35,7 @@ def update_request(data):
 def join(data):
     print('Client {}: JOIN ROOM: {}'.format(get_stable_user(), data))
     join_room(data['room'])
-    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
+    emit("SHOULD REQUEST UPDATE", {}, room=data['room'])
 
 # The client tells us that they moved a card. We decide if it's legal and what the implications are
 @socketio.on('CARD MOVE', namespace='/hanabi')
@@ -49,7 +49,7 @@ def card_move(data):
         result = g.trash_card(get_stable_user(), g.card_from_id(data['card_id']))
 
     # At the moment, just have the clients request their own individual updates
-    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=g.gameid)
+    emit("SHOULD REQUEST UPDATE", {}, room=g.gameid)
 
 @socketio.on('CLUE CARD', namespace='/hanabi')
 def clue_card(data):
@@ -57,7 +57,7 @@ def clue_card(data):
     g = hanabi_games[data['gameid']]
     g.give_clue(current_user, g.card_from_id(data['card_id']), data['card_field'])
     # At the moment, just have the clients request their own individual updates
-    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=g.gameid)
+    emit("SHOULD REQUEST UPDATE", {}, room=g.gameid)
 
 
 
@@ -80,7 +80,7 @@ def update_request(data):
 @socketio.on('JOIN ROOM', namespace='/blitz')
 def join(data):
     join_room(data['room'])
-    emit("SHOULD REQUEST UPDATE", {}, broadcast=True, room=data['room'])
+    emit("SHOULD REQUEST UPDATE", {}, room=data['room'])
 
 # The client tells us that they moved a card. We decide if it's legal and what the implications are
 @socketio.on('CARD MOVE', namespace='/blitz')
@@ -305,7 +305,7 @@ def pco_set(data):
     obj = g.all_movables[data['obj_id']]
     obj.offset_per_dependent = [int(data['pco_x']), int(data['pco_y'])]
     return_data = {'movables_info':[{'id':obj.id, 'offset_per_dependent':obj.offset_per_dependent}]}
-    socketio.emit('UPDATE', return_data, broadcast=True, room=data['gameid'], namespace='/freeplay')
+    socketio.emit('UPDATE', return_data, room=data['gameid'], namespace='/freeplay')
     g.time_of_last_update = time()
 
 @socketio.on('SEND MESSAGE', namespace='/freeplay')

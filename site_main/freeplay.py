@@ -161,7 +161,7 @@ class TableMovable:
                 "privacy":              o.privacy,
             } for o in objects]}
         #with app.test_request_context('/'):
-        socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay', include_self=include_self)
+        socketio.emit('UPDATE', data, room=self.game.gameid, namespace='/freeplay', include_self=include_self)
         self.game.thread_lock.release()
         return data
 
@@ -182,7 +182,7 @@ class TableMovable:
                 "dimensions":self.dimensions,
             }]}
         with app.test_request_context('/'):
-            socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+            socketio.emit('UPDATE', data, room=self.game.gameid, namespace='/freeplay')
         self.game.thread_lock.release()
 
     def rotate(self, amount, update=True):
@@ -199,7 +199,7 @@ class TableMovable:
                 "rotation":self.rotation
             }]}
             with app.test_request_context('/'):
-                socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+                socketio.emit('UPDATE', data, room=self.game.gameid, namespace='/freeplay')
             self.game.thread_lock.release()
 
     def get_info(self):
@@ -257,7 +257,7 @@ class TableMovable:
         del self.game.all_movables[self.id]
         if (update):
             with app.test_request_context('/'):
-                socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+                socketio.emit('UPDATE', data, room=self.game.gameid, namespace='/freeplay')
             self.game.thread_lock.release()
 
     def __repr__(self):
@@ -357,7 +357,7 @@ class Card(TableMovable):
                         }]
                     }
                 with app.test_request_context('/'):
-                    socketio.emit('UPDATE', data, broadcast=True, room=self.game.gameid, namespace='/freeplay')
+                    socketio.emit('UPDATE', data, room=self.game.gameid, namespace='/freeplay')
                 self.game.thread_lock.release()
 
     def get_info(self):
@@ -861,7 +861,7 @@ class FreeplayGame:
             "destroy":True,
         })
         with app.test_request_context('/'):
-            socketio.emit('UPDATE', data, broadcast=False, room=self.gameid, namespace='/freeplay')
+            socketio.emit('UPDATE', data, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
         # And since things might be royally messed up client side, update their movables
         self.send_update(broadcast=False)
@@ -891,7 +891,7 @@ class FreeplayGame:
         else:
             all_data = {'messages':self.messages[-5:]}
         with app.test_request_context('/'):
-            socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay')
+            socketio.emit('UPDATE', all_data, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
         return all_data
 
@@ -928,9 +928,9 @@ class FreeplayGame:
         print('updated keys: '+str(list(all_data.keys())))
 
         if (broadcast):
-            socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
+            socketio.emit('UPDATE', all_data, room=self.gameid, namespace='/freeplay', include_self=include_self)
         else:
-            socketio.emit('UPDATE', all_data, broadcast=False, room=self.gameid, namespace='/freeplay')
+            socketio.emit('UPDATE', all_data, room=self.gameid, namespace='/freeplay')
         self.thread_lock.release()
         return all_data
 
@@ -944,7 +944,7 @@ class FreeplayGame:
         movables_info = [{'id':m.id, 'show_face_number':m.show_face_number, 'roll':rolling} for m in which_movables]
         # Only send first names
         all_data = { "movables_info":movables_info }
-        socketio.emit('UPDATE', all_data, broadcast=True, room=self.gameid, namespace='/freeplay', include_self=include_self)
+        socketio.emit('UPDATE', all_data, room=self.gameid, namespace='/freeplay', include_self=include_self)
         self.thread_lock.release()
         return all_data
 

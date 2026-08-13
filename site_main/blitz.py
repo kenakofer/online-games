@@ -298,7 +298,7 @@ class BlitzGame:
             "game_over":int(self.game_over),
             }
         with app.test_request_context('/'):
-            socketio.emit('UPDATE INFO', all_data, broadcast=True, room=self.gameid, namespace='/blitz')
+            socketio.emit('UPDATE INFO', all_data, room=self.gameid, namespace='/blitz')
         self.thread_lock.release()
         return all_data
 
