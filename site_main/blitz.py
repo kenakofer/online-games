@@ -49,23 +49,31 @@ class BlitzAI( threading.Thread ):
 
     def run(self):
         while not self.game.game_over:
+            if self.stopped():
+                print("Blitz AI thread for game {} has been prematurely stopped".format(self.player.game.gameid))
+                return
+
+            # Nobody is watching, so there is nothing worth computing. Without
+            # this a table left open keeps a bot scanning the board forever,
+            # and on a small host that is enough to stop new websocket
+            # handshakes from completing. Bots resume as soon as a client
+            # touches the room again.
+            if not self.game.is_being_watched():
+                sleep(1.0)
+                continue
+
             played = self.check_card_loop()
             if not played:
                 self.player.deal_deck()
             self.player.game.delete_if_stale()
-            if self.stopped():
-                print("Blitz AI thread for game {} has been prematurely stopped".format(self.player.game.gameid))
-                return
-            # gevent turns these threads into greenlets, so nothing preempts us,
-            # and both branches above end in get_full_update, which serializes
-            # every card and emits it to every client. Sleeping is what lets the
-            # worker answer sockets at all.
-            #
-            # Turning over the deck when there is nothing to play is the
-            # expensive case: it makes no progress but still broadcasts, so a
-            # bot with no legal move would otherwise flood the room forever.
-            # Waiting longer there costs the bot nothing, since the board can
-            # only change when a human plays.
+
+            # gevent turns these threads into greenlets, so nothing preempts
+            # us: the loop only gives the worker a chance to answer sockets
+            # where it sleeps. check_card_loop already sleeps per pile it
+            # considers, which is the bot's thinking time, but a pass that
+            # finds no play still costs a full scan. Resting a second between
+            # passes costs the bot nothing, since only a human playing can
+            # change what is available to it.
             sleep(self.speed if played else max(self.speed, 1.0))
 
     def stop(self):
@@ -260,6 +268,9 @@ class BlitzGame:
         self.card_positions = {}
         self.thread_lock = threading.Lock()
         self.thread_lock.acquire()
+        # Set before any AI starts: the bots read this to decide whether the
+        # room is still being watched.
+        self.time_of_last_update = time()
 
         # Create the table positions
         self.play_piles = [CardPosition(self,"PLAY{}".format(i),[]) for i in range(4*self.player_count)]
@@ -273,7 +284,6 @@ class BlitzGame:
                 ai = BlitzAI(get_random_bot_name(),p,.1, 0)
                 ai.start()
                 self.ais.append(ai)
-        self.time_of_last_update = time()
         self.thread_lock.release()
 
     def get_blitz_player(self, session_user):
@@ -320,6 +330,14 @@ class BlitzGame:
             if card.id == card_id:
                 return card
         return None
+
+    # How long after the last client request the bots keep playing. Anything
+    # the room does sets time_of_last_update, so this stays true while a game
+    # is being watched and goes false a minute after everyone leaves.
+    IDLE_AFTER_SECONDS = 60
+
+    def is_being_watched(self):
+        return (time() - self.time_of_last_update) < self.IDLE_AFTER_SECONDS
 
     def delete_if_stale(self):
         # Stop the game and AIs if inactive for this many seconds
