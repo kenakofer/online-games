@@ -1,6 +1,5 @@
 from random import shuffle
 from site_main import app, db, socketio
-from models import User
 import threading
 from time import sleep, time
 from random import random, sample

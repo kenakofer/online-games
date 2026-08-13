@@ -4,7 +4,7 @@ import flask
 # from flask_oauth2_login import GoogleLogin
 from math import floor
 from flask_login import current_user, login_user, logout_user, login_required
-from models import User, get_stable_user, ColdWatersScore, load_cold_waters_score
+from models import User, get_stable_user
 from hanabi import hanabi_games, HanabiGame
 from blitz import blitz_games, BlitzGame
 from freeplay import FreeplayGame
@@ -64,22 +64,6 @@ def index():
     # print("Result: ", result)
     print("Result length:", len(result))
     return result
-
-@app.route("/pagecount")
-def pagecount():
-    print("/pagecount")
-    messages = [
-        'Peanut butter is delicious with oatmeal',
-        'Raisins are too',
-    ]
-    if current_user.is_anonymous:
-        message = 'Hello person! You should log in to see the awesome pageview counting facilities of this page!'
-    else:
-        current_user.pagecount+=1
-        db.session.commit()
-        messages.append( str(current_user.pagecount**2-1)+' is a cool nuber')
-        message = 'You have visited this page {} times!'.format(current_user.pagecount)
-    return render_template('pagecount.html', title='Pagecount', message=message,  messages=messages)
 
 @app.route('/hanabi/<player_num>/<gameid>')
 @app.route('/hanabi/<player_num>/<gameid>/')
@@ -189,117 +173,6 @@ def blitz_lobby():
                 'blitz_lobby.html',
                 title='Dutch Blitz Lobby',
             )
-
-@app.route('/music_game')
-@app.route('/music_game/')
-@login_required
-def music_game():
-    print("/music_game")
-    user = get_stable_user()
-    return render_template(
-                'music_game.html',
-                title='Music game prototype',
-                user_id=user.id,
-                user_name=user.username,
-            )
-
-@app.route('/onion_ninja',  methods=['GET', 'POST'])
-@app.route('/onion_ninja/', methods=['GET', 'POST'])
-@login_required
-def cold_waters():
-    print("/onion_ninja")
-    if request.method == 'GET':
-        user = get_stable_user()
-        return render_template(
-                    'cold_waters.html',
-                    title='Play Cold Waters',
-                    user_id=user.id,
-                    user_name=user.username,
-                    experimental=request.args.get('exp'),
-                )
-    elif request.method == 'POST':
-        user = get_stable_user()
-        print('request:', request)
-        controls_recording = json.loads(request.form.get('thing'))['controls_recording']
-        controls_array = controls_recording['controls_array'].encode()
-        print('controls_recording:', controls_recording)
-        score = ColdWatersScore(
-                user_id=user.id,
-                code_version=controls_recording['code_signature'],
-                hard=controls_recording['hard'],
-                seed=controls_recording['seed'],
-                score=controls_recording['score'],
-                controls_array=controls_array,
-                rng_integrity_check=controls_recording['rng_integrity_check']
-                )
-
-        db.session.add(score)
-        db.session.commit()
-
-        fetched_score = load_cold_waters_score(score.id)
-        print('Added the above recording to the DB')
-        print(fetched_score.controls_array == score.controls_array)
-        return json.dumps({
-            'name': user.username,
-            'code_version': fetched_score.code_version,
-            'hard': fetched_score.hard,
-            'seed': fetched_score.seed,
-            'score': fetched_score.score,
-            'controls_array': fetched_score.controls_array.decode(),
-            'rng_integrity_check': fetched_score.rng_integrity_check
-        });
-
-@app.route('/onion_ninja/get_best_recording/<code_version>/<seed>/<hard>')
-@login_required
-def cold_waters_get_best_recording(code_version, seed, hard):
-    print("/onion_ninja/get_best_recording")
-    score = ColdWatersScore.query.filter_by(code_version=code_version, seed=seed, hard=hard).order_by(ColdWatersScore.score.desc()).first()
-    if score is None:
-        return json.dumps({'response': 'None found'})
-    name = User.query.get(score.user_id).username
-    return json.dumps({
-        'response': 'Score found',
-        'name':name,
-        'code_version': score.code_version,
-        'hard': score.hard,
-        'seed': score.seed,
-        'score': score.score,
-        'controls_array': score.controls_array.decode(),
-        'rng_integrity_check': score.rng_integrity_check
-    });
-
-@app.route('/onion_ninja/leader_board/<code_version>/<hard>')
-@login_required
-def cold_waters_leader_board(code_version, hard):
-    # Disabling because the query is hard to run
-    return json.dumps([])
-
-    print("/onion_ninja/leader_board")
-    rows = ColdWatersScore.query.with_entities(ColdWatersScore.user_id).filter_by(code_version=code_version, hard=hard).distinct()
-    # Get the user ids from the rows
-    user_ids = [row for row, in rows]
-    print(user_ids)
-    results = []
-
-    for user_id in user_ids:
-        recording = ColdWatersScore.query.filter_by(
-            code_version=str(code_version),
-            user_id=int(user_id),
-            hard=int(hard)
-        ).order_by(ColdWatersScore.score.desc()).first()
-        results.append(
-            {
-                'user_id': user_id,
-                'username': User.query.get(user_id).username,
-                'score': recording.score,
-                'seed': recording.seed,
-                'hard': recording.hard
-            }
-        )
-
-    results.sort(key=lambda r: r['score'], reverse=True)
-    print(results)
-    return json.dumps(results);
 
 #############
 # Free Play #
